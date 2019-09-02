@@ -2,7 +2,7 @@ use alloc::{string::String, vec::Vec};
 use core::convert::TryFrom;
 use serde::{Deserialize, Serialize};
 
-use super::CoapError;
+use super::error::CoapError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HeaderRaw {

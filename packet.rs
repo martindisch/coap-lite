@@ -6,7 +6,7 @@ use core::convert::TryFrom;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 
-use super::{header, CoapError};
+use super::{error::CoapError, header};
 
 macro_rules! u8_to_unsigned_be {
     ($src:ident, $start:expr, $end:expr, $t:ty) => ({
@@ -15,7 +15,7 @@ macro_rules! u8_to_unsigned_be {
 }
 
 #[derive(PartialEq, Eq, Debug)]
-pub enum CoAPOption {
+pub enum CoapOption {
     IfMatch,
     UriHost,
     ETag,
@@ -90,7 +90,7 @@ impl Packet {
         return &self.token;
     }
 
-    pub fn set_option(&mut self, tp: CoAPOption, value: LinkedList<Vec<u8>>) {
+    pub fn set_option(&mut self, tp: CoapOption, value: LinkedList<Vec<u8>>) {
         let num = Self::get_option_number(tp);
         self.options.insert(num, value);
     }
@@ -101,14 +101,14 @@ impl Packet {
         let lsb = (content_format & 0xFF) as u8;
 
         let content_format: Vec<u8> = vec![msb, lsb];
-        self.add_option(CoAPOption::ContentFormat, content_format);
+        self.add_option(CoapOption::ContentFormat, content_format);
     }
 
     pub fn set_payload(&mut self, payload: Vec<u8>) {
         self.payload = payload;
     }
 
-    pub fn add_option(&mut self, tp: CoAPOption, value: Vec<u8>) {
+    pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
         let num = Self::get_option_number(tp);
         if let Some(list) = self.options.get_mut(&num) {
             list.push_back(value);
@@ -120,12 +120,12 @@ impl Packet {
         self.options.insert(num, list);
     }
 
-    pub fn get_option(&self, tp: CoAPOption) -> Option<&LinkedList<Vec<u8>>> {
+    pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
         let num = Self::get_option_number(tp);
         self.options.get(&num)
     }
 
-    pub fn clear_option(&mut self, tp: CoAPOption) {
+    pub fn clear_option(&mut self, tp: CoapOption) {
         let num = Self::get_option_number(tp);
         if let Some(list) = self.options.get_mut(&num) {
             list.clear()
@@ -133,7 +133,7 @@ impl Packet {
     }
 
     pub fn get_content_format(&self) -> Option<ContentFormat> {
-        if let Some(list) = self.get_option(CoAPOption::ContentFormat) {
+        if let Some(list) = self.get_option(CoapOption::ContentFormat) {
             if let Some(vector) = list.front() {
                 let msb = vector[0] as u16;
                 let lsb = vector[1] as u16;
@@ -147,12 +147,12 @@ impl Packet {
     }
 
     pub fn set_observe(&mut self, value: Vec<u8>) {
-        self.clear_option(CoAPOption::Observe);
-        self.add_option(CoAPOption::Observe, value);
+        self.clear_option(CoapOption::Observe);
+        self.add_option(CoapOption::Observe, value);
     }
 
     pub fn get_observe(&self) -> Option<&Vec<u8>> {
-        if let Some(list) = self.get_option(CoAPOption::Observe) {
+        if let Some(list) = self.get_option(CoapOption::Observe) {
             if let Some(flag) = list.front() {
                 return Some(flag);
             }
@@ -417,28 +417,28 @@ impl Packet {
         }
     }
 
-    fn get_option_number(tp: CoAPOption) -> usize {
+    fn get_option_number(tp: CoapOption) -> usize {
         match tp {
-            CoAPOption::IfMatch => 1,
-            CoAPOption::UriHost => 3,
-            CoAPOption::ETag => 4,
-            CoAPOption::IfNoneMatch => 5,
-            CoAPOption::Observe => 6,
-            CoAPOption::UriPort => 7,
-            CoAPOption::LocationPath => 8,
-            CoAPOption::UriPath => 11,
-            CoAPOption::ContentFormat => 12,
-            CoAPOption::MaxAge => 14,
-            CoAPOption::UriQuery => 15,
-            CoAPOption::Accept => 17,
-            CoAPOption::LocationQuery => 20,
-            CoAPOption::Block2 => 23,
-            CoAPOption::Block1 => 27,
-            CoAPOption::ProxyUri => 35,
-            CoAPOption::ProxyScheme => 39,
-            CoAPOption::Size1 => 60,
-            CoAPOption::Size2 => 28,
-            CoAPOption::NoResponse => 258,
+            CoapOption::IfMatch => 1,
+            CoapOption::UriHost => 3,
+            CoapOption::ETag => 4,
+            CoapOption::IfNoneMatch => 5,
+            CoapOption::Observe => 6,
+            CoapOption::UriPort => 7,
+            CoapOption::LocationPath => 8,
+            CoapOption::UriPath => 11,
+            CoapOption::ContentFormat => 12,
+            CoapOption::MaxAge => 14,
+            CoapOption::UriQuery => 15,
+            CoapOption::Accept => 17,
+            CoapOption::LocationQuery => 20,
+            CoapOption::Block2 => 23,
+            CoapOption::Block1 => 27,
+            CoapOption::ProxyUri => 35,
+            CoapOption::ProxyScheme => 39,
+            CoapOption::Size1 => 60,
+            CoapOption::Size2 => 28,
+            CoapOption::NoResponse => 258,
         }
     }
 }
@@ -468,7 +468,7 @@ mod test {
         assert_eq!(*packet.get_token(), vec![0x51, 0x55, 0x77, 0xE8]);
         assert_eq!(packet.options.len(), 2);
 
-        let uri_path = packet.get_option(CoAPOption::UriPath);
+        let uri_path = packet.get_option(CoapOption::UriPath);
         assert!(uri_path.is_some());
         let uri_path = uri_path.unwrap();
         let mut expected_uri_path = LinkedList::new();
@@ -476,7 +476,7 @@ mod test {
         expected_uri_path.push_back("Test".as_bytes().to_vec());
         assert_eq!(*uri_path, expected_uri_path);
 
-        let uri_query = packet.get_option(CoAPOption::UriQuery);
+        let uri_query = packet.get_option(CoapOption::UriQuery);
         assert!(uri_query.is_some());
         let uri_query = uri_query.unwrap();
         let mut expected_uri_query = LinkedList::new();
@@ -517,9 +517,9 @@ mod test {
             header::MessageClass::Request(header::RequestType::Get);
         packet.header.set_message_id(33950);
         packet.set_token(vec![0x51, 0x55, 0x77, 0xE8]);
-        packet.add_option(CoAPOption::UriPath, b"Hi".to_vec());
-        packet.add_option(CoAPOption::UriPath, b"Test".to_vec());
-        packet.add_option(CoAPOption::UriQuery, b"a=1".to_vec());
+        packet.add_option(CoapOption::UriPath, b"Hi".to_vec());
+        packet.add_option(CoapOption::UriPath, b"Test".to_vec());
+        packet.add_option(CoapOption::UriQuery, b"a=1".to_vec());
         assert_eq!(
             packet.to_bytes().unwrap(),
             vec![
