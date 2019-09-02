@@ -2,7 +2,7 @@ use alloc::{string::String, vec::Vec};
 use core::convert::TryFrom;
 use serde::{Deserialize, Serialize};
 
-use super::PackageError;
+use super::CoapError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HeaderRaw {
@@ -12,12 +12,9 @@ pub struct HeaderRaw {
 }
 
 impl HeaderRaw {
-    pub fn serialize_into(
-        &self,
-        buf: &mut Vec<u8>,
-    ) -> Result<(), PackageError> {
+    pub fn serialize_into(&self, buf: &mut Vec<u8>) -> Result<(), CoapError> {
         if buf.capacity() < 4 {
-            return Err(PackageError::InvalidHeader);
+            return Err(CoapError::InvalidPacketLength);
         }
 
         buf.push(self.ver_type_tkl);
@@ -30,11 +27,11 @@ impl HeaderRaw {
 }
 
 impl TryFrom<&[u8]> for HeaderRaw {
-    type Error = PackageError;
+    type Error = CoapError;
 
-    fn try_from(buf: &[u8]) -> Result<HeaderRaw, PackageError> {
+    fn try_from(buf: &[u8]) -> Result<HeaderRaw, CoapError> {
         if buf.len() < 4 {
-            return Err(PackageError::InvalidHeader);
+            return Err(CoapError::InvalidPacketLength);
         }
 
         let mut id_bytes = [0; 2];
