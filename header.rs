@@ -1,10 +1,51 @@
+use alloc::{string::String, vec::Vec};
+use core::convert::TryFrom;
 use serde::{Deserialize, Serialize};
+
+use super::PackageError;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HeaderRaw {
     ver_type_tkl: u8,
     code: u8,
     message_id: u16,
+}
+
+impl HeaderRaw {
+    pub fn serialize_into(
+        &self,
+        buf: &mut Vec<u8>,
+    ) -> Result<(), PackageError> {
+        if buf.capacity() < 4 {
+            return Err(PackageError::InvalidHeader);
+        }
+
+        buf.push(self.ver_type_tkl);
+        buf.push(self.code);
+        let id_bytes = self.message_id.to_be_bytes();
+        buf.extend(&id_bytes);
+
+        Ok(())
+    }
+}
+
+impl TryFrom<&[u8]> for HeaderRaw {
+    type Error = PackageError;
+
+    fn try_from(buf: &[u8]) -> Result<HeaderRaw, PackageError> {
+        if buf.len() < 4 {
+            return Err(PackageError::InvalidHeader);
+        }
+
+        let mut id_bytes = [0; 2];
+        id_bytes.copy_from_slice(&buf[2..4]);
+
+        Ok(HeaderRaw {
+            ver_type_tkl: buf[0],
+            code: buf[1],
+            message_id: u16::from_be_bytes(id_bytes),
+        })
+    }
 }
 
 impl Default for HeaderRaw {
