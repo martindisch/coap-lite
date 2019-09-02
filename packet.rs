@@ -14,28 +14,28 @@ macro_rules! u8_to_unsigned_be {
     })
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(PartialEq, Eq, Debug, FromPrimitive)]
 pub enum CoapOption {
-    IfMatch,
-    UriHost,
-    ETag,
-    IfNoneMatch,
-    Observe,
-    UriPort,
-    LocationPath,
-    UriPath,
-    ContentFormat,
-    MaxAge,
-    UriQuery,
-    Accept,
-    LocationQuery,
-    Block2,
-    Block1,
-    ProxyUri,
-    ProxyScheme,
-    Size1,
-    Size2,
-    NoResponse,
+    IfMatch = 1,
+    UriHost = 3,
+    ETag = 4,
+    IfNoneMatch = 5,
+    Observe = 6,
+    UriPort = 7,
+    LocationPath = 8,
+    UriPath = 11,
+    ContentFormat = 12,
+    MaxAge = 14,
+    UriQuery = 15,
+    Accept = 17,
+    LocationQuery = 20,
+    Block2 = 23,
+    Block1 = 27,
+    ProxyUri = 35,
+    ProxyScheme = 39,
+    Size1 = 60,
+    Size2 = 28,
+    NoResponse = 258,
 }
 
 #[derive(PartialEq, Eq, Debug, FromPrimitive)]
@@ -71,6 +71,9 @@ pub struct Packet {
     pub payload: Vec<u8>,
 }
 
+pub type Options<'a> =
+    alloc::collections::btree_map::Iter<'a, usize, LinkedList<Vec<u8>>>;
+
 impl Packet {
     pub fn new() -> Packet {
         Packet {
@@ -79,6 +82,10 @@ impl Packet {
             options: BTreeMap::new(),
             payload: Vec::new(),
         }
+    }
+
+    pub fn options(&self) -> Options {
+        self.options.iter()
     }
 
     pub fn set_token(&mut self, token: Vec<u8>) {
