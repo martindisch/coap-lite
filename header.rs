@@ -1,10 +1,9 @@
 use alloc::{string::String, vec::Vec};
 use core::convert::TryFrom;
-use serde::{Deserialize, Serialize};
 
 use super::error::CoapError;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct HeaderRaw {
     ver_type_tkl: u8,
     code: u8,
