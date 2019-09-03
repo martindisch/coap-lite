@@ -10,7 +10,9 @@ use super::{error::CoapError, header};
 
 macro_rules! u8_to_unsigned_be {
     ($src:ident, $start:expr, $end:expr, $t:ty) => ({
-        (0 .. $end - $start + 1).rev().fold(0, |acc, i| acc | $src[$start+i] as $t << i * 8)
+        (0..=$end - $start).rev().fold(
+            0, |acc, i| acc | $src[$start+i] as $t << i * 8
+        )
     })
 }
 
@@ -94,7 +96,7 @@ impl Packet {
     }
 
     pub fn get_token(&self) -> &Vec<u8> {
-        return &self.token;
+        &self.token
     }
 
     pub fn set_option(&mut self, tp: CoapOption, value: LinkedList<Vec<u8>>) {
@@ -142,8 +144,8 @@ impl Packet {
     pub fn get_content_format(&self) -> Option<ContentFormat> {
         if let Some(list) = self.get_option(CoapOption::ContentFormat) {
             if let Some(vector) = list.front() {
-                let msb = vector[0] as u16;
-                let lsb = vector[1] as u16;
+                let msb = u16::from(vector[0]);
+                let lsb = u16::from(vector[1]);
                 let number = (msb << 8) + lsb;
 
                 return ContentFormat::from_u16(number);
@@ -270,29 +272,25 @@ impl Packet {
                     }
                     let options_value = buf[idx..end].to_vec();
 
-                    if options.contains_key(&options_number) {
-                        let options_list =
-                            options.get_mut(&options_number).unwrap();
-                        options_list.push_back(options_value);
-                    } else {
-                        let mut list = LinkedList::new();
-                        list.push_back(options_value);
-                        options.insert(options_number, list);
-                    }
+                    options
+                        .entry(options_number)
+                        .or_insert_with(LinkedList::new)
+                        .push_back(options_value);
 
                     idx += length;
                 }
 
-                let mut payload = Vec::new();
-                if idx < buf.len() {
-                    payload = buf[(idx + 1)..buf.len()].to_vec();
-                }
+                let payload = if idx < buf.len() {
+                    buf[(idx + 1)..buf.len()].to_vec()
+                } else {
+                    Vec::new()
+                };
 
                 Ok(Packet {
-                    header: header,
-                    token: token,
-                    options: options,
-                    payload: payload,
+                    header,
+                    token,
+                    options,
+                    payload,
                 })
             }
             Err(_) => Err(CoapError::InvalidHeader),
@@ -349,14 +347,12 @@ impl Packet {
                     let buf_len = options_bytes.len();
                     ptr::copy(
                         header.as_ptr(),
-                        options_bytes.as_mut_ptr().offset(buf_len as isize),
+                        options_bytes.as_mut_ptr().add(buf_len),
                         header.len(),
                     );
                     ptr::copy(
                         value.as_ptr(),
-                        options_bytes
-                            .as_mut_ptr()
-                            .offset((buf_len + header.len()) as isize),
+                        options_bytes.as_mut_ptr().add(buf_len + header.len()),
                         value.len(),
                     );
                     options_bytes
@@ -367,7 +363,7 @@ impl Packet {
 
         let mut buf_length = 4 + self.payload.len() + self.token.len();
         if self.header.code != header::MessageClass::Empty
-            && self.payload.len() != 0
+            && !self.payload.is_empty()
         {
             buf_length += 1;
         }
@@ -388,13 +384,12 @@ impl Packet {
                     let buf_len = buf.len();
                     ptr::copy(
                         self.token.as_ptr(),
-                        buf.as_mut_ptr().offset(buf_len as isize),
+                        buf.as_mut_ptr().add(buf_len),
                         self.token.len(),
                     );
                     ptr::copy(
                         options_bytes.as_ptr(),
-                        buf.as_mut_ptr()
-                            .offset((buf_len + self.token.len()) as isize),
+                        buf.as_mut_ptr().add(buf_len + self.token.len()),
                         options_bytes.len(),
                     );
                     buf.set_len(
@@ -403,7 +398,7 @@ impl Packet {
                 }
 
                 if self.header.code != header::MessageClass::Empty
-                    && self.payload.len() != 0
+                    && !self.payload.is_empty()
                 {
                     buf.push(0xFF);
                     buf.reserve(self.payload.len());
@@ -412,7 +407,7 @@ impl Packet {
                         let buf_len = buf.len();
                         ptr::copy(
                             self.payload.as_ptr(),
-                            buf.as_mut_ptr().offset(buf.len() as isize),
+                            buf.as_mut_ptr().add(buf.len()),
                             self.payload.len(),
                         );
                         buf.set_len(buf_len + self.payload.len());
