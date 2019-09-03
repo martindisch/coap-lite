@@ -61,7 +61,7 @@ pub struct Header {
     message_id: u16,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum MessageClass {
     Empty,
     Request(RequestType),
@@ -69,7 +69,7 @@ pub enum MessageClass {
     Reserved,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum RequestType {
     Get,
     Post,
@@ -78,7 +78,7 @@ pub enum RequestType {
     UnKnown,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ResponseType {
     // 200 Codes
     Created,
@@ -138,7 +138,7 @@ impl Header {
     pub fn to_raw(&self) -> HeaderRaw {
         HeaderRaw {
             ver_type_tkl: self.ver_type_tkl,
-            code: class_to_code(&self.code),
+            code: class_to_code(self.code),
             message_id: self.message_id,
         }
     }
@@ -206,7 +206,7 @@ impl Header {
     }
 
     pub fn get_code(&self) -> String {
-        class_to_str(&self.code)
+        class_to_str(self.code)
     }
 
     #[inline]
@@ -220,8 +220,8 @@ impl Header {
     }
 }
 
-pub fn class_to_code(class: &MessageClass) -> u8 {
-    match *class {
+pub fn class_to_code(class: MessageClass) -> u8 {
+    match class {
         MessageClass::Empty => 0x00,
 
         MessageClass::Request(RequestType::Get) => 0x01,
@@ -306,7 +306,7 @@ pub fn code_to_str(code: u8) -> String {
     return format!("{}.{:02}", class_code, detail_code);
 }
 
-pub fn class_to_str(class: &MessageClass) -> String {
+pub fn class_to_str(class: MessageClass) -> String {
     code_to_str(class_to_code(class))
 }
 
@@ -319,12 +319,12 @@ mod test {
         for code in 0..255 {
             let class = code_to_class(code);
             let code_str = code_to_str(code);
-            let class_str = class_to_str(&class);
+            let class_str = class_to_str(class);
 
             // Reserved class could technically be many codes
             //   so only check valid items
             if class != MessageClass::Reserved {
-                assert_eq!(class_to_code(&class), code);
+                assert_eq!(class_to_code(class), code);
                 assert_eq!(code_str, class_str);
             }
         }

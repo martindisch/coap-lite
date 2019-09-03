@@ -16,7 +16,7 @@ macro_rules! u8_to_unsigned_be {
     })
 }
 
-#[derive(PartialEq, Eq, Debug, FromPrimitive)]
+#[derive(PartialEq, Eq, Debug, FromPrimitive, Clone, Copy)]
 pub enum CoapOption {
     IfMatch = 1,
     UriHost = 3,
