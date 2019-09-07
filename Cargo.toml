@@ -4,9 +4,8 @@ version = "0.1.0"
 authors = ["Martin Disch <martindisch@gmail.com>"]
 edition = "2018"
 
-[dependencies]
-num-derive = "0.2.5"
-num-traits = { version = "0.2.8", default-features = false }
+[lib]
+doctest = false
 
 [features]
 std = [
