@@ -3,7 +3,7 @@
 use core::fmt;
 
 #[derive(Debug)]
-pub enum CoapError {
+pub enum MessageError {
     InvalidHeader,
     InvalidPacketLength,
     InvalidTokenLength,
@@ -11,22 +11,22 @@ pub enum CoapError {
     InvalidOptionLength,
 }
 
-impl fmt::Display for CoapError {
+impl fmt::Display for MessageError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            CoapError::InvalidHeader => {
+            MessageError::InvalidHeader => {
                 write!(f, "CoAP error: invalid header")
             }
-            CoapError::InvalidPacketLength => {
+            MessageError::InvalidPacketLength => {
                 write!(f, "CoAP error: invalid packet length")
             }
-            CoapError::InvalidTokenLength => {
+            MessageError::InvalidTokenLength => {
                 write!(f, "CoAP error: invalid token length")
             }
-            CoapError::InvalidOptionDelta => {
+            MessageError::InvalidOptionDelta => {
                 write!(f, "CoAP error: invalid option delta")
             }
-            CoapError::InvalidOptionLength => {
+            MessageError::InvalidOptionLength => {
                 write!(f, "CoAP error: invalid option length")
             }
         }

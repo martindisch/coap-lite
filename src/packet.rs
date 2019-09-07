@@ -5,7 +5,7 @@ use alloc::{
 use core::convert::TryFrom;
 
 use super::{
-    error::{CoapError, InvalidContentFormat, InvalidObserve, InvalidOption},
+    error::{MessageError, InvalidContentFormat, InvalidObserve, InvalidOption},
     header,
 };
 
@@ -297,7 +297,7 @@ impl Packet {
     }
 
     /// Decodes a byte slice and construct the equivalent Packet.
-    pub fn from_bytes(buf: &[u8]) -> Result<Packet, CoapError> {
+    pub fn from_bytes(buf: &[u8]) -> Result<Packet, MessageError> {
         let header_result = header::HeaderRaw::try_from(buf);
         match header_result {
             Ok(raw_header) => {
@@ -306,11 +306,11 @@ impl Packet {
                 let options_start: usize = 4 + token_length as usize;
 
                 if token_length > 8 {
-                    return Err(CoapError::InvalidTokenLength);
+                    return Err(MessageError::InvalidTokenLength);
                 }
 
                 if options_start > buf.len() {
-                    return Err(CoapError::InvalidTokenLength);
+                    return Err(MessageError::InvalidTokenLength);
                 }
 
                 let token = buf[4..options_start].to_vec();
@@ -335,14 +335,14 @@ impl Packet {
                     match delta {
                         13 => {
                             if idx >= buf.len() {
-                                return Err(CoapError::InvalidOptionLength);
+                                return Err(MessageError::InvalidOptionLength);
                             }
                             delta = buf[idx] as usize + 13;
                             idx += 1;
                         }
                         14 => {
                             if idx + 1 >= buf.len() {
-                                return Err(CoapError::InvalidOptionLength);
+                                return Err(MessageError::InvalidOptionLength);
                             }
 
                             delta = (u16::from_be(u8_to_unsigned_be!(
@@ -355,7 +355,7 @@ impl Packet {
                             idx += 2;
                         }
                         15 => {
-                            return Err(CoapError::InvalidOptionDelta);
+                            return Err(MessageError::InvalidOptionDelta);
                         }
                         _ => {}
                     };
@@ -364,7 +364,7 @@ impl Packet {
                     match length {
                         13 => {
                             if idx >= buf.len() {
-                                return Err(CoapError::InvalidOptionLength);
+                                return Err(MessageError::InvalidOptionLength);
                             }
 
                             length = buf[idx] as usize + 13;
@@ -372,7 +372,7 @@ impl Packet {
                         }
                         14 => {
                             if idx + 1 >= buf.len() {
-                                return Err(CoapError::InvalidOptionLength);
+                                return Err(MessageError::InvalidOptionLength);
                             }
 
                             length = (u16::from_be(u8_to_unsigned_be!(
@@ -385,7 +385,7 @@ impl Packet {
                             idx += 2;
                         }
                         15 => {
-                            return Err(CoapError::InvalidOptionLength);
+                            return Err(MessageError::InvalidOptionLength);
                         }
                         _ => {}
                     };
@@ -394,7 +394,7 @@ impl Packet {
 
                     let end = idx + length;
                     if end > buf.len() {
-                        return Err(CoapError::InvalidOptionLength);
+                        return Err(MessageError::InvalidOptionLength);
                     }
                     let options_value = buf[idx..end].to_vec();
 
@@ -419,12 +419,12 @@ impl Packet {
                     payload,
                 })
             }
-            Err(_) => Err(CoapError::InvalidHeader),
+            Err(_) => Err(MessageError::InvalidHeader),
         }
     }
 
     /// Returns a vector of bytes representing the Packet.
-    pub fn to_bytes(&self) -> Result<Vec<u8>, CoapError> {
+    pub fn to_bytes(&self) -> Result<Vec<u8>, MessageError> {
         let mut options_delta_length = 0;
         let mut options_bytes: Vec<u8> = Vec::new();
         for (number, value_list) in self.options.iter() {
@@ -496,7 +496,7 @@ impl Packet {
         buf_length += options_bytes.len();
 
         if buf_length > 1280 {
-            return Err(CoapError::InvalidPacketLength);
+            return Err(MessageError::InvalidPacketLength);
         }
 
         let mut buf: Vec<u8> = Vec::with_capacity(buf_length);
@@ -541,7 +541,7 @@ impl Packet {
                 }
                 Ok(buf)
             }
-            Err(_) => Err(CoapError::InvalidHeader),
+            Err(_) => Err(MessageError::InvalidHeader),
         }
     }
 }
