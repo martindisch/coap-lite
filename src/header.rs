@@ -6,7 +6,7 @@ use core::{convert::TryFrom, fmt};
 
 use super::error::MessageError;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct HeaderRaw {
     ver_type_tkl: u8,
     code: u8,
@@ -60,14 +60,14 @@ impl Default for HeaderRaw {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct Header {
     ver_type_tkl: u8,
     pub code: MessageClass,
     message_id: u16,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MessageClass {
     Empty,
     Request(RequestType),
@@ -179,7 +179,7 @@ impl fmt::Display for MessageClass {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RequestType {
     Get,
     Post,
@@ -188,7 +188,7 @@ pub enum RequestType {
     UnKnown,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ResponseType {
     // 200 Codes
     Created,
@@ -223,7 +223,7 @@ pub enum ResponseType {
     UnKnown,
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MessageType {
     Confirmable,
     NonConfirmable,

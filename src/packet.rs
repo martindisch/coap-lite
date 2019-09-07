@@ -8,7 +8,7 @@ use super::{
     error::{
         InvalidContentFormat, InvalidObserve, InvalidOption, MessageError,
     },
-    header,
+    header::{Header, HeaderRaw, MessageClass},
 };
 
 macro_rules! u8_to_unsigned_be {
@@ -19,7 +19,7 @@ macro_rules! u8_to_unsigned_be {
     })
 }
 
-#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum CoapOption {
     IfMatch,
     UriHost,
@@ -103,7 +103,7 @@ impl From<CoapOption> for usize {
     }
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ContentFormat {
     TextPlain,
     ApplicationLinkFormat,
@@ -169,7 +169,7 @@ impl From<ContentFormat> for usize {
     }
 }
 
-#[derive(PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ObserveOption {
     Register,
     Deregister,
@@ -196,9 +196,9 @@ impl From<ObserveOption> for usize {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct Packet {
-    pub header: header::Header,
+    pub header: Header,
     token: Vec<u8>,
     options: BTreeMap<usize, LinkedList<Vec<u8>>>,
     pub payload: Vec<u8>,
@@ -210,7 +210,7 @@ pub type Options<'a> =
 impl Packet {
     pub fn new() -> Packet {
         Packet {
-            header: header::Header::new(),
+            header: Header::new(),
             token: Vec::new(),
             options: BTreeMap::new(),
             payload: Vec::new(),
@@ -300,10 +300,10 @@ impl Packet {
 
     /// Decodes a byte slice and construct the equivalent Packet.
     pub fn from_bytes(buf: &[u8]) -> Result<Packet, MessageError> {
-        let header_result = header::HeaderRaw::try_from(buf);
+        let header_result = HeaderRaw::try_from(buf);
         match header_result {
             Ok(raw_header) => {
-                let header = header::Header::from_raw(&raw_header);
+                let header = Header::from_raw(&raw_header);
                 let token_length = header.get_token_length();
                 let options_start: usize = 4 + token_length as usize;
 
@@ -490,8 +490,7 @@ impl Packet {
         }
 
         let mut buf_length = 4 + self.payload.len() + self.token.len();
-        if self.header.code != header::MessageClass::Empty
-            && !self.payload.is_empty()
+        if self.header.code != MessageClass::Empty && !self.payload.is_empty()
         {
             buf_length += 1;
         }
@@ -525,7 +524,7 @@ impl Packet {
                     );
                 }
 
-                if self.header.code != header::MessageClass::Empty
+                if self.header.code != MessageClass::Empty
                     && !self.payload.is_empty()
                 {
                     buf.push(0xFF);
