@@ -69,6 +69,101 @@ pub enum MessageClass {
     Reserved,
 }
 
+impl From<u8> for MessageClass {
+    fn from(number: u8) -> MessageClass {
+        match number {
+            0x00 => MessageClass::Empty,
+
+            0x01 => MessageClass::Request(RequestType::Get),
+            0x02 => MessageClass::Request(RequestType::Post),
+            0x03 => MessageClass::Request(RequestType::Put),
+            0x04 => MessageClass::Request(RequestType::Delete),
+
+            0x41 => MessageClass::Response(ResponseType::Created),
+            0x42 => MessageClass::Response(ResponseType::Deleted),
+            0x43 => MessageClass::Response(ResponseType::Valid),
+            0x44 => MessageClass::Response(ResponseType::Changed),
+            0x45 => MessageClass::Response(ResponseType::Content),
+            0x5F => MessageClass::Response(ResponseType::Continue),
+
+            0x80 => MessageClass::Response(ResponseType::BadRequest),
+            0x81 => MessageClass::Response(ResponseType::Unauthorized),
+            0x82 => MessageClass::Response(ResponseType::BadOption),
+            0x83 => MessageClass::Response(ResponseType::Forbidden),
+            0x84 => MessageClass::Response(ResponseType::NotFound),
+            0x85 => MessageClass::Response(ResponseType::MethodNotAllowed),
+            0x86 => MessageClass::Response(ResponseType::NotAcceptable),
+            0x8C => MessageClass::Response(ResponseType::PreconditionFailed),
+            0x8D => {
+                MessageClass::Response(ResponseType::RequestEntityTooLarge)
+            }
+            0x8F => {
+                MessageClass::Response(ResponseType::UnsupportedContentFormat)
+            }
+            0x88 => {
+                MessageClass::Response(ResponseType::RequestEntityIncomplete)
+            }
+            0x9d => MessageClass::Response(ResponseType::TooManyRequests),
+
+            0x90 => MessageClass::Response(ResponseType::InternalServerError),
+            0x91 => MessageClass::Response(ResponseType::NotImplemented),
+            0x92 => MessageClass::Response(ResponseType::BadGateway),
+            0x93 => MessageClass::Response(ResponseType::ServiceUnavailable),
+            0x94 => MessageClass::Response(ResponseType::GatewayTimeout),
+            0x95 => MessageClass::Response(ResponseType::ProxyingNotSupported),
+            _ => MessageClass::Reserved,
+        }
+    }
+}
+
+impl From<MessageClass> for u8 {
+    fn from(class: MessageClass) -> u8 {
+        match class {
+            MessageClass::Empty => 0x00,
+
+            MessageClass::Request(RequestType::Get) => 0x01,
+            MessageClass::Request(RequestType::Post) => 0x02,
+            MessageClass::Request(RequestType::Put) => 0x03,
+            MessageClass::Request(RequestType::Delete) => 0x04,
+
+            MessageClass::Response(ResponseType::Created) => 0x41,
+            MessageClass::Response(ResponseType::Deleted) => 0x42,
+            MessageClass::Response(ResponseType::Valid) => 0x43,
+            MessageClass::Response(ResponseType::Changed) => 0x44,
+            MessageClass::Response(ResponseType::Content) => 0x45,
+            MessageClass::Response(ResponseType::Continue) => 0x5F,
+
+            MessageClass::Response(ResponseType::BadRequest) => 0x80,
+            MessageClass::Response(ResponseType::Unauthorized) => 0x81,
+            MessageClass::Response(ResponseType::BadOption) => 0x82,
+            MessageClass::Response(ResponseType::Forbidden) => 0x83,
+            MessageClass::Response(ResponseType::NotFound) => 0x84,
+            MessageClass::Response(ResponseType::MethodNotAllowed) => 0x85,
+            MessageClass::Response(ResponseType::NotAcceptable) => 0x86,
+            MessageClass::Response(ResponseType::PreconditionFailed) => 0x8C,
+            MessageClass::Response(ResponseType::RequestEntityTooLarge) => {
+                0x8D
+            }
+            MessageClass::Response(ResponseType::UnsupportedContentFormat) => {
+                0x8F
+            }
+            MessageClass::Response(ResponseType::RequestEntityIncomplete) => {
+                0x88
+            }
+            MessageClass::Response(ResponseType::TooManyRequests) => 0x9d,
+
+            MessageClass::Response(ResponseType::InternalServerError) => 0x90,
+            MessageClass::Response(ResponseType::NotImplemented) => 0x91,
+            MessageClass::Response(ResponseType::BadGateway) => 0x92,
+            MessageClass::Response(ResponseType::ServiceUnavailable) => 0x93,
+            MessageClass::Response(ResponseType::GatewayTimeout) => 0x94,
+            MessageClass::Response(ResponseType::ProxyingNotSupported) => 0x95,
+
+            _ => 0xFF,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum RequestType {
     Get,
@@ -130,7 +225,7 @@ impl Header {
     pub fn from_raw(raw: &HeaderRaw) -> Header {
         Header {
             ver_type_tkl: raw.ver_type_tkl,
-            code: code_to_class(raw.code),
+            code: raw.code.into(),
             message_id: raw.message_id,
         }
     }
@@ -138,7 +233,7 @@ impl Header {
     pub fn to_raw(&self) -> HeaderRaw {
         HeaderRaw {
             ver_type_tkl: self.ver_type_tkl,
-            code: class_to_code(self.code),
+            code: self.code.into(),
             message_id: self.message_id,
         }
     }
@@ -202,7 +297,7 @@ impl Header {
         assert_eq!(0xF8 & class_code, 0);
         assert_eq!(0xE0 & detail_code, 0);
 
-        self.code = code_to_class(class_code << 5 | detail_code);
+        self.code = (class_code << 5 | detail_code).into();
     }
 
     pub fn get_code(&self) -> String {
@@ -220,85 +315,6 @@ impl Header {
     }
 }
 
-pub fn class_to_code(class: MessageClass) -> u8 {
-    match class {
-        MessageClass::Empty => 0x00,
-
-        MessageClass::Request(RequestType::Get) => 0x01,
-        MessageClass::Request(RequestType::Post) => 0x02,
-        MessageClass::Request(RequestType::Put) => 0x03,
-        MessageClass::Request(RequestType::Delete) => 0x04,
-
-        MessageClass::Response(ResponseType::Created) => 0x41,
-        MessageClass::Response(ResponseType::Deleted) => 0x42,
-        MessageClass::Response(ResponseType::Valid) => 0x43,
-        MessageClass::Response(ResponseType::Changed) => 0x44,
-        MessageClass::Response(ResponseType::Content) => 0x45,
-        MessageClass::Response(ResponseType::Continue) => 0x5F,
-
-        MessageClass::Response(ResponseType::BadRequest) => 0x80,
-        MessageClass::Response(ResponseType::Unauthorized) => 0x81,
-        MessageClass::Response(ResponseType::BadOption) => 0x82,
-        MessageClass::Response(ResponseType::Forbidden) => 0x83,
-        MessageClass::Response(ResponseType::NotFound) => 0x84,
-        MessageClass::Response(ResponseType::MethodNotAllowed) => 0x85,
-        MessageClass::Response(ResponseType::NotAcceptable) => 0x86,
-        MessageClass::Response(ResponseType::PreconditionFailed) => 0x8C,
-        MessageClass::Response(ResponseType::RequestEntityTooLarge) => 0x8D,
-        MessageClass::Response(ResponseType::UnsupportedContentFormat) => 0x8F,
-        MessageClass::Response(ResponseType::RequestEntityIncomplete) => 0x88,
-        MessageClass::Response(ResponseType::TooManyRequests) => 0x9d,
-
-        MessageClass::Response(ResponseType::InternalServerError) => 0x90,
-        MessageClass::Response(ResponseType::NotImplemented) => 0x91,
-        MessageClass::Response(ResponseType::BadGateway) => 0x92,
-        MessageClass::Response(ResponseType::ServiceUnavailable) => 0x93,
-        MessageClass::Response(ResponseType::GatewayTimeout) => 0x94,
-        MessageClass::Response(ResponseType::ProxyingNotSupported) => 0x95,
-
-        _ => 0xFF,
-    }
-}
-
-pub fn code_to_class(code: u8) -> MessageClass {
-    match code {
-        0x00 => MessageClass::Empty,
-
-        0x01 => MessageClass::Request(RequestType::Get),
-        0x02 => MessageClass::Request(RequestType::Post),
-        0x03 => MessageClass::Request(RequestType::Put),
-        0x04 => MessageClass::Request(RequestType::Delete),
-
-        0x41 => MessageClass::Response(ResponseType::Created),
-        0x42 => MessageClass::Response(ResponseType::Deleted),
-        0x43 => MessageClass::Response(ResponseType::Valid),
-        0x44 => MessageClass::Response(ResponseType::Changed),
-        0x45 => MessageClass::Response(ResponseType::Content),
-        0x5F => MessageClass::Response(ResponseType::Continue),
-
-        0x80 => MessageClass::Response(ResponseType::BadRequest),
-        0x81 => MessageClass::Response(ResponseType::Unauthorized),
-        0x82 => MessageClass::Response(ResponseType::BadOption),
-        0x83 => MessageClass::Response(ResponseType::Forbidden),
-        0x84 => MessageClass::Response(ResponseType::NotFound),
-        0x85 => MessageClass::Response(ResponseType::MethodNotAllowed),
-        0x86 => MessageClass::Response(ResponseType::NotAcceptable),
-        0x8C => MessageClass::Response(ResponseType::PreconditionFailed),
-        0x8D => MessageClass::Response(ResponseType::RequestEntityTooLarge),
-        0x8F => MessageClass::Response(ResponseType::UnsupportedContentFormat),
-        0x88 => MessageClass::Response(ResponseType::RequestEntityIncomplete),
-        0x9d => MessageClass::Response(ResponseType::TooManyRequests),
-
-        0x90 => MessageClass::Response(ResponseType::InternalServerError),
-        0x91 => MessageClass::Response(ResponseType::NotImplemented),
-        0x92 => MessageClass::Response(ResponseType::BadGateway),
-        0x93 => MessageClass::Response(ResponseType::ServiceUnavailable),
-        0x94 => MessageClass::Response(ResponseType::GatewayTimeout),
-        0x95 => MessageClass::Response(ResponseType::ProxyingNotSupported),
-        _ => MessageClass::Reserved,
-    }
-}
-
 pub fn code_to_str(code: u8) -> String {
     let class_code = (0xE0 & code) >> 5;
     let detail_code = 0x1F & code;
@@ -307,7 +323,7 @@ pub fn code_to_str(code: u8) -> String {
 }
 
 pub fn class_to_str(class: MessageClass) -> String {
-    code_to_str(class_to_code(class))
+    code_to_str(class.into())
 }
 
 #[cfg(test)]
@@ -317,14 +333,14 @@ mod test {
     #[test]
     fn test_header_codes() {
         for code in 0..255 {
-            let class = code_to_class(code);
+            let class = code.into();
             let code_str = code_to_str(code);
             let class_str = class_to_str(class);
 
             // Reserved class could technically be many codes
             //   so only check valid items
             if class != MessageClass::Reserved {
-                assert_eq!(class_to_code(class), code);
+                assert_eq!(u8::from(class), code);
                 assert_eq!(code_str, class_str);
             }
         }

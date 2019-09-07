@@ -7,7 +7,4 @@ edition = "2018"
 [lib]
 doctest = false
 
-[features]
-std = [
-    "num-traits/std"
-]
+[dependencies]

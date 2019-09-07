@@ -3,10 +3,11 @@ use alloc::{
     vec::Vec,
 };
 use core::convert::TryFrom;
-use num_derive::FromPrimitive;
-use num_traits::FromPrimitive;
 
-use super::{error::CoapError, header};
+use super::{
+    error::{CoapError, InvalidContentFormat, InvalidObserve, InvalidOption},
+    header,
+};
 
 macro_rules! u8_to_unsigned_be {
     ($src:ident, $start:expr, $end:expr, $t:ty) => ({
@@ -16,54 +17,181 @@ macro_rules! u8_to_unsigned_be {
     })
 }
 
-#[derive(PartialEq, Eq, Debug, FromPrimitive, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub enum CoapOption {
-    IfMatch = 1,
-    UriHost = 3,
-    ETag = 4,
-    IfNoneMatch = 5,
-    Observe = 6,
-    UriPort = 7,
-    LocationPath = 8,
-    Oscore = 9,
-    UriPath = 11,
-    ContentFormat = 12,
-    MaxAge = 14,
-    UriQuery = 15,
-    Accept = 17,
-    LocationQuery = 20,
-    Block2 = 23,
-    Block1 = 27,
-    ProxyUri = 35,
-    ProxyScheme = 39,
-    Size1 = 60,
-    Size2 = 28,
-    NoResponse = 258,
+    IfMatch,
+    UriHost,
+    ETag,
+    IfNoneMatch,
+    Observe,
+    UriPort,
+    LocationPath,
+    Oscore,
+    UriPath,
+    ContentFormat,
+    MaxAge,
+    UriQuery,
+    Accept,
+    LocationQuery,
+    Block2,
+    Block1,
+    ProxyUri,
+    ProxyScheme,
+    Size1,
+    Size2,
+    NoResponse,
 }
 
-#[derive(PartialEq, Eq, Debug, FromPrimitive)]
+impl TryFrom<usize> for CoapOption {
+    type Error = InvalidOption;
+
+    fn try_from(number: usize) -> Result<CoapOption, InvalidOption> {
+        match number {
+            1 => Ok(CoapOption::IfMatch),
+            3 => Ok(CoapOption::UriHost),
+            4 => Ok(CoapOption::ETag),
+            5 => Ok(CoapOption::IfNoneMatch),
+            6 => Ok(CoapOption::Observe),
+            7 => Ok(CoapOption::UriPort),
+            8 => Ok(CoapOption::LocationPath),
+            9 => Ok(CoapOption::Oscore),
+            11 => Ok(CoapOption::UriPath),
+            12 => Ok(CoapOption::ContentFormat),
+            14 => Ok(CoapOption::MaxAge),
+            15 => Ok(CoapOption::UriQuery),
+            17 => Ok(CoapOption::Accept),
+            20 => Ok(CoapOption::LocationQuery),
+            23 => Ok(CoapOption::Block2),
+            27 => Ok(CoapOption::Block1),
+            35 => Ok(CoapOption::ProxyUri),
+            39 => Ok(CoapOption::ProxyScheme),
+            60 => Ok(CoapOption::Size1),
+            28 => Ok(CoapOption::Size2),
+            258 => Ok(CoapOption::NoResponse),
+            _ => Err(InvalidOption),
+        }
+    }
+}
+
+impl From<CoapOption> for usize {
+    fn from(option: CoapOption) -> usize {
+        match option {
+            CoapOption::IfMatch => 1,
+            CoapOption::UriHost => 3,
+            CoapOption::ETag => 4,
+            CoapOption::IfNoneMatch => 5,
+            CoapOption::Observe => 6,
+            CoapOption::UriPort => 7,
+            CoapOption::LocationPath => 8,
+            CoapOption::Oscore => 9,
+            CoapOption::UriPath => 11,
+            CoapOption::ContentFormat => 12,
+            CoapOption::MaxAge => 14,
+            CoapOption::UriQuery => 15,
+            CoapOption::Accept => 17,
+            CoapOption::LocationQuery => 20,
+            CoapOption::Block2 => 23,
+            CoapOption::Block1 => 27,
+            CoapOption::ProxyUri => 35,
+            CoapOption::ProxyScheme => 39,
+            CoapOption::Size1 => 60,
+            CoapOption::Size2 => 28,
+            CoapOption::NoResponse => 258,
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, Debug)]
 pub enum ContentFormat {
-    TextPlain = 0,
-    ApplicationLinkFormat = 40,
-    ApplicationXML = 41,
-    ApplicationOctetStream = 42,
-    ApplicationEXI = 47,
-    ApplicationJSON = 50,
-    ApplicationCBOR = 60,
-    ApplicationSenmlJSON = 110,
-    ApplicationSensmlJSON = 111,
-    ApplicationSenmlCBOR = 112,
-    ApplicationSensmlCBOR = 113,
-    ApplicationSenmlExi = 114,
-    ApplicationSensmlExi = 115,
-    ApplicationSenmlXML = 310,
-    ApplicationSensmlXML = 311,
+    TextPlain,
+    ApplicationLinkFormat,
+    ApplicationXML,
+    ApplicationOctetStream,
+    ApplicationEXI,
+    ApplicationJSON,
+    ApplicationCBOR,
+    ApplicationSenmlJSON,
+    ApplicationSensmlJSON,
+    ApplicationSenmlCBOR,
+    ApplicationSensmlCBOR,
+    ApplicationSenmlExi,
+    ApplicationSensmlExi,
+    ApplicationSenmlXML,
+    ApplicationSensmlXML,
 }
 
-#[derive(PartialEq, Eq, Debug, FromPrimitive)]
+impl TryFrom<usize> for ContentFormat {
+    type Error = InvalidContentFormat;
+
+    fn try_from(number: usize) -> Result<ContentFormat, InvalidContentFormat> {
+        match number {
+            0 => Ok(ContentFormat::TextPlain),
+            40 => Ok(ContentFormat::ApplicationLinkFormat),
+            41 => Ok(ContentFormat::ApplicationXML),
+            42 => Ok(ContentFormat::ApplicationOctetStream),
+            47 => Ok(ContentFormat::ApplicationEXI),
+            50 => Ok(ContentFormat::ApplicationJSON),
+            60 => Ok(ContentFormat::ApplicationCBOR),
+            110 => Ok(ContentFormat::ApplicationSenmlJSON),
+            111 => Ok(ContentFormat::ApplicationSensmlJSON),
+            112 => Ok(ContentFormat::ApplicationSenmlCBOR),
+            113 => Ok(ContentFormat::ApplicationSensmlCBOR),
+            114 => Ok(ContentFormat::ApplicationSenmlExi),
+            115 => Ok(ContentFormat::ApplicationSensmlExi),
+            310 => Ok(ContentFormat::ApplicationSenmlXML),
+            311 => Ok(ContentFormat::ApplicationSensmlXML),
+            _ => Err(InvalidContentFormat),
+        }
+    }
+}
+
+impl From<ContentFormat> for usize {
+    fn from(format: ContentFormat) -> usize {
+        match format {
+            ContentFormat::TextPlain => 0,
+            ContentFormat::ApplicationLinkFormat => 40,
+            ContentFormat::ApplicationXML => 41,
+            ContentFormat::ApplicationOctetStream => 42,
+            ContentFormat::ApplicationEXI => 47,
+            ContentFormat::ApplicationJSON => 50,
+            ContentFormat::ApplicationCBOR => 60,
+            ContentFormat::ApplicationSenmlJSON => 110,
+            ContentFormat::ApplicationSensmlJSON => 111,
+            ContentFormat::ApplicationSenmlCBOR => 112,
+            ContentFormat::ApplicationSensmlCBOR => 113,
+            ContentFormat::ApplicationSenmlExi => 114,
+            ContentFormat::ApplicationSensmlExi => 115,
+            ContentFormat::ApplicationSenmlXML => 310,
+            ContentFormat::ApplicationSensmlXML => 311,
+        }
+    }
+}
+
+#[derive(PartialEq, Eq, Debug)]
 pub enum ObserveOption {
-    Register = 0,
-    Deregister = 1,
+    Register,
+    Deregister,
+}
+
+impl TryFrom<usize> for ObserveOption {
+    type Error = InvalidObserve;
+
+    fn try_from(number: usize) -> Result<ObserveOption, InvalidObserve> {
+        match number {
+            0 => Ok(ObserveOption::Register),
+            1 => Ok(ObserveOption::Deregister),
+            _ => Err(InvalidObserve),
+        }
+    }
+}
+
+impl From<ObserveOption> for usize {
+    fn from(observe: ObserveOption) -> usize {
+        match observe {
+            ObserveOption::Register => 0,
+            ObserveOption::Deregister => 1,
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -101,12 +229,11 @@ impl Packet {
     }
 
     pub fn set_option(&mut self, tp: CoapOption, value: LinkedList<Vec<u8>>) {
-        let num = Self::get_option_number(tp);
-        self.options.insert(num, value);
+        self.options.insert(tp.into(), value);
     }
 
     pub fn set_content_format(&mut self, cf: ContentFormat) {
-        let content_format = cf as u16;
+        let content_format: usize = cf.into();
         let msb = (content_format >> 8) as u8;
         let lsb = (content_format & 0xFF) as u8;
 
@@ -119,7 +246,7 @@ impl Packet {
     }
 
     pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
-        let num = Self::get_option_number(tp);
+        let num = tp.into();
         if let Some(list) = self.options.get_mut(&num) {
             list.push_back(value);
             return;
@@ -131,13 +258,11 @@ impl Packet {
     }
 
     pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
-        let num = Self::get_option_number(tp);
-        self.options.get(&num)
+        self.options.get(&tp.into())
     }
 
     pub fn clear_option(&mut self, tp: CoapOption) {
-        let num = Self::get_option_number(tp);
-        if let Some(list) = self.options.get_mut(&num) {
+        if let Some(list) = self.options.get_mut(&tp.into()) {
             list.clear()
         }
     }
@@ -149,7 +274,7 @@ impl Packet {
                 let lsb = u16::from(vector[1]);
                 let number = (msb << 8) + lsb;
 
-                return ContentFormat::from_u16(number);
+                return ContentFormat::try_from(number as usize).ok();
             }
         }
 
@@ -417,32 +542,6 @@ impl Packet {
                 Ok(buf)
             }
             Err(_) => Err(CoapError::InvalidHeader),
-        }
-    }
-
-    fn get_option_number(tp: CoapOption) -> usize {
-        match tp {
-            CoapOption::IfMatch => 1,
-            CoapOption::UriHost => 3,
-            CoapOption::ETag => 4,
-            CoapOption::IfNoneMatch => 5,
-            CoapOption::Observe => 6,
-            CoapOption::UriPort => 7,
-            CoapOption::LocationPath => 8,
-            CoapOption::Oscore => 9,
-            CoapOption::UriPath => 11,
-            CoapOption::ContentFormat => 12,
-            CoapOption::MaxAge => 14,
-            CoapOption::UriQuery => 15,
-            CoapOption::Accept => 17,
-            CoapOption::LocationQuery => 20,
-            CoapOption::Block2 => 23,
-            CoapOption::Block1 => 27,
-            CoapOption::ProxyUri => 35,
-            CoapOption::ProxyScheme => 39,
-            CoapOption::Size1 => 60,
-            CoapOption::Size2 => 28,
-            CoapOption::NoResponse => 258,
         }
     }
 }

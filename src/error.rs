@@ -32,3 +32,30 @@ impl fmt::Display for CoapError {
         }
     }
 }
+
+#[derive(Debug)]
+pub struct InvalidOption;
+
+impl fmt::Display for InvalidOption {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CoAP error: invalid option number")
+    }
+}
+
+#[derive(Debug)]
+pub struct InvalidContentFormat;
+
+impl fmt::Display for InvalidContentFormat {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CoAP error: invalid content-format number")
+    }
+}
+
+#[derive(Debug)]
+pub struct InvalidObserve;
+
+impl fmt::Display for InvalidObserve {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "CoAP error: invalid observe option number")
+    }
+}
