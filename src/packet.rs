@@ -5,7 +5,9 @@ use alloc::{
 use core::convert::TryFrom;
 
 use super::{
-    error::{MessageError, InvalidContentFormat, InvalidObserve, InvalidOption},
+    error::{
+        InvalidContentFormat, InvalidObserve, InvalidOption, MessageError,
+    },
     header,
 };
 

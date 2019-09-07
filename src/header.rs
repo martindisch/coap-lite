@@ -1,5 +1,8 @@
-use alloc::{string::String, vec::Vec};
-use core::convert::TryFrom;
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
+use core::{convert::TryFrom, fmt};
 
 use super::error::MessageError;
 
@@ -11,7 +14,10 @@ pub struct HeaderRaw {
 }
 
 impl HeaderRaw {
-    pub fn serialize_into(&self, buf: &mut Vec<u8>) -> Result<(), MessageError> {
+    pub fn serialize_into(
+        &self,
+        buf: &mut Vec<u8>,
+    ) -> Result<(), MessageError> {
         if buf.capacity() < 4 {
             return Err(MessageError::InvalidPacketLength);
         }
@@ -164,6 +170,15 @@ impl From<MessageClass> for u8 {
     }
 }
 
+impl fmt::Display for MessageClass {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let code: u8 = (*self).into();
+        let class_code = (0xE0 & code) >> 5;
+        let detail_code = 0x1F & code;
+        write!(f, "{}.{:02}", class_code, detail_code)
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum RequestType {
     Get,
@@ -301,7 +316,7 @@ impl Header {
     }
 
     pub fn get_code(&self) -> String {
-        class_to_str(self.code)
+        self.code.to_string()
     }
 
     #[inline]
@@ -315,17 +330,6 @@ impl Header {
     }
 }
 
-pub fn code_to_str(code: u8) -> String {
-    let class_code = (0xE0 & code) >> 5;
-    let detail_code = 0x1F & code;
-
-    return format!("{}.{:02}", class_code, detail_code);
-}
-
-pub fn class_to_str(class: MessageClass) -> String {
-    code_to_str(class.into())
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -333,15 +337,17 @@ mod test {
     #[test]
     fn test_header_codes() {
         for code in 0..255 {
-            let class = code.into();
-            let code_str = code_to_str(code);
-            let class_str = class_to_str(class);
+            let class: MessageClass = code.into();
+            let code_str = class.to_string();
+
+            let mut header = Header::new();
+            header.set_code(&code_str);
 
             // Reserved class could technically be many codes
             //   so only check valid items
             if class != MessageClass::Reserved {
                 assert_eq!(u8::from(class), code);
-                assert_eq!(code_str, class_str);
+                assert_eq!(class, header.code);
             }
         }
     }
