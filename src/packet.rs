@@ -196,7 +196,7 @@ impl From<ObserveOption> for usize {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Packet {
     pub header: Header,
     token: Vec<u8>,
@@ -209,12 +209,7 @@ pub type Options<'a> =
 
 impl Packet {
     pub fn new() -> Packet {
-        Packet {
-            header: Header::new(),
-            token: Vec::new(),
-            options: BTreeMap::new(),
-            payload: Vec::new(),
-        }
+        Default::default()
     }
 
     pub fn options(&self) -> Options {

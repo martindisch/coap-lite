@@ -31,6 +31,16 @@ impl HeaderRaw {
     }
 }
 
+impl Default for HeaderRaw {
+    fn default() -> HeaderRaw {
+        HeaderRaw {
+            ver_type_tkl: 0x40, // version: 1, type: Confirmable, TKL: 0
+            code: 0x01,         // GET
+            message_id: 0,
+        }
+    }
+}
+
 impl TryFrom<&[u8]> for HeaderRaw {
     type Error = MessageError;
 
@@ -48,23 +58,6 @@ impl TryFrom<&[u8]> for HeaderRaw {
             message_id: u16::from_be_bytes(id_bytes),
         })
     }
-}
-
-impl Default for HeaderRaw {
-    fn default() -> HeaderRaw {
-        HeaderRaw {
-            ver_type_tkl: 0x40, // version: 1, type: Confirmable, TKL: 0
-            code: 0x01,         // GET
-            message_id: 0,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Header {
-    ver_type_tkl: u8,
-    pub code: MessageClass,
-    message_id: u16,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -232,9 +225,22 @@ pub enum MessageType {
     Invalid,
 }
 
+#[derive(Debug, Clone)]
+pub struct Header {
+    ver_type_tkl: u8,
+    pub code: MessageClass,
+    message_id: u16,
+}
+
+impl Default for Header {
+    fn default() -> Header {
+        Header::from_raw(&HeaderRaw::default())
+    }
+}
+
 impl Header {
     pub fn new() -> Header {
-        Header::from_raw(&HeaderRaw::default())
+        Default::default()
     }
 
     pub fn from_raw(raw: &HeaderRaw) -> Header {
