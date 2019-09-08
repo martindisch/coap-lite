@@ -1,4 +1,8 @@
 # coap-lite
+[![Latest version](https://img.shields.io/crates/v/coap-lite)](https://crates.io/crates/coap-lite)
+[![Documentation](https://docs.rs/coap-lite/badge.svg)](https://docs.rs/coap-lite)
+[![License](https://img.shields.io/crates/l/coap-lite)](https://github.com/martindisch/coap-lite#license)
+
 <!-- cargo-sync-readme start -->
 
 A lightweight, `#![no_std]` CoAP message manipulation crate, ideal for
