@@ -676,22 +676,61 @@ mod test {
         assert!(packet.get_content_format().is_none());
     }
 
-    // #[test]
-    // fn test_malicious_packet() {
-    //     use quickcheck::{QuickCheck, StdThreadGen, TestResult};
+    #[test]
+    fn option() {
+        for i in 0..512 {
+            match CoapOption::try_from(i) {
+                Ok(o) => assert_eq!(i, o.into()),
+                _ => (),
+            }
+        }
+    }
 
-    //     fn run(x: Vec<u8>) -> TestResult {
-    //         match Packet::from_bytes(&x[..]) {
-    //             Ok(packet) => TestResult::from_bool(
-    //                 packet.get_token().len()
-    //                     == packet.header.get_token_length() as usize,
-    //             ),
-    //             Err(_) => TestResult::passed(),
-    //         }
-    //     }
-    //     QuickCheck::new()
-    //         .tests(10000)
-    //         .gen(StdThreadGen::new(1500))
-    //         .quickcheck(run as fn(Vec<u8>) -> TestResult)
-    // }
+    #[test]
+    fn content_format() {
+        for i in 0..512 {
+            match ContentFormat::try_from(i) {
+                Ok(o) => assert_eq!(i, o.into()),
+                _ => (),
+            }
+        }
+    }
+
+    #[test]
+    fn observe_option() {
+        for i in 0..8 {
+            match ObserveOption::try_from(i) {
+                Ok(o) => assert_eq!(i, o.into()),
+                _ => (),
+            }
+        }
+    }
+
+    #[test]
+    fn options() {
+        let mut p = Packet::new();
+        p.add_option(CoapOption::UriHost, vec![0]);
+        p.add_option(CoapOption::UriPath, vec![1]);
+        p.add_option(CoapOption::ETag, vec![2]);
+        p.clear_option(CoapOption::ETag);
+        assert_eq!(3, p.options().len());
+
+        let bytes = p.to_bytes().unwrap();
+        let mut pp = Packet::from_bytes(&bytes).unwrap();
+        assert_eq!(2, pp.options().len());
+
+        let mut values = LinkedList::new();
+        values.push_back(vec![3]);
+        values.push_back(vec![4]);
+        pp.set_option(CoapOption::Oscore, values);
+        assert_eq!(3, pp.options().len());
+    }
+
+    #[test]
+    fn observe() {
+        let mut p = Packet::new();
+        assert_eq!(None, p.get_observe());
+        p.set_observe(vec![0]);
+        assert_eq!(Some(&vec![0]), p.get_observe());
+    }
 }

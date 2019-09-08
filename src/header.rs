@@ -229,7 +229,6 @@ pub enum MessageType {
     NonConfirmable,
     Acknowledgement,
     Reset,
-    Invalid,
 }
 
 /// The message header.
@@ -291,7 +290,6 @@ impl Header {
             MessageType::NonConfirmable => 1,
             MessageType::Acknowledgement => 2,
             MessageType::Reset => 3,
-            _ => unreachable!(),
         };
 
         let ver_tkl = 0xCF & self.ver_type_tkl;
@@ -307,7 +305,7 @@ impl Header {
             1 => MessageType::NonConfirmable,
             2 => MessageType::Acknowledgement,
             3 => MessageType::Reset,
-            _ => MessageType::Invalid,
+            _ => unreachable!(),
         }
     }
 
@@ -358,12 +356,45 @@ mod test {
             let mut header = Header::new();
             header.set_code(&code_str);
 
-            // Reserved class could technically be many codes
-            //   so only check valid items
+            // Reserved class could technically be many codes, so only check
+            // valid items
             if class != MessageClass::Reserved {
                 assert_eq!(u8::from(class), code);
                 assert_eq!(class, header.code);
+                assert_eq!(code_str, header.get_code());
             }
         }
+    }
+
+    #[test]
+    fn serialize_raw_fail() {
+        let h = HeaderRaw::default();
+        let mut buf = Vec::with_capacity(3);
+        assert_eq!(
+            MessageError::InvalidPacketLength,
+            h.serialize_into(&mut buf).unwrap_err()
+        );
+    }
+
+    #[test]
+    fn from_bytes_fail() {
+        let b: &[u8] = &[1, 2, 3];
+        assert_eq!(
+            MessageError::InvalidPacketLength,
+            HeaderRaw::try_from(b).unwrap_err()
+        );
+    }
+
+    #[test]
+    fn types() {
+        let mut h = Header::new();
+        h.set_type(MessageType::Acknowledgement);
+        assert_eq!(MessageType::Acknowledgement, h.get_type());
+        h.set_type(MessageType::Confirmable);
+        assert_eq!(MessageType::Confirmable, h.get_type());
+        h.set_type(MessageType::NonConfirmable);
+        assert_eq!(MessageType::NonConfirmable, h.get_type());
+        h.set_type(MessageType::Reset);
+        assert_eq!(MessageType::Reset, h.get_type());
     }
 }
