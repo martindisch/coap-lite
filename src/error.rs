@@ -2,6 +2,7 @@
 
 use core::fmt;
 
+/// The errors that can occur when encoding/decoding packets.
 #[derive(Debug)]
 pub enum MessageError {
     InvalidHeader,
@@ -33,6 +34,7 @@ impl fmt::Display for MessageError {
     }
 }
 
+/// The error that can occur when parsing an option.
 #[derive(Debug)]
 pub struct InvalidOption;
 
@@ -42,6 +44,7 @@ impl fmt::Display for InvalidOption {
     }
 }
 
+/// The error that can occur when parsing a content-format.
 #[derive(Debug)]
 pub struct InvalidContentFormat;
 
@@ -51,6 +54,7 @@ impl fmt::Display for InvalidContentFormat {
     }
 }
 
+/// The error that can occur when parsing an observe option value.
 #[derive(Debug)]
 pub struct InvalidObserve;
 

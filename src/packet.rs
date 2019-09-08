@@ -19,6 +19,7 @@ macro_rules! u8_to_unsigned_be {
     })
 }
 
+/// The CoAP options.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum CoapOption {
     IfMatch,
@@ -103,6 +104,7 @@ impl From<CoapOption> for usize {
     }
 }
 
+/// The content formats.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ContentFormat {
     TextPlain,
@@ -169,6 +171,7 @@ impl From<ContentFormat> for usize {
     }
 }
 
+/// The values of the observe option.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ObserveOption {
     Register,
@@ -196,6 +199,7 @@ impl From<ObserveOption> for usize {
     }
 }
 
+/// The CoAP packet.
 #[derive(Debug, Clone, Default)]
 pub struct Packet {
     pub header: Header,
@@ -204,35 +208,43 @@ pub struct Packet {
     pub payload: Vec<u8>,
 }
 
+/// An iterator over the options of a packet.
 pub type Options<'a> =
     alloc::collections::btree_map::Iter<'a, usize, LinkedList<Vec<u8>>>;
 
 impl Packet {
+    /// Creates a new packet.
     pub fn new() -> Packet {
         Default::default()
     }
 
+    /// Returns an iterator over the options of the packet.
     pub fn options(&self) -> Options {
         self.options.iter()
     }
 
+    /// Sets the token.
     pub fn set_token(&mut self, token: Vec<u8>) {
         self.header.set_token_length(token.len() as u8);
         self.token = token;
     }
 
+    /// Returns the token.
     pub fn get_token(&self) -> &Vec<u8> {
         &self.token
     }
 
+    /// Sets an option's values.
     pub fn set_option(&mut self, tp: CoapOption, value: LinkedList<Vec<u8>>) {
         self.options.insert(tp.into(), value);
     }
 
+    /// Returns an option's values.
     pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
         self.options.get(&tp.into())
     }
 
+    /// Adds an option value.
     pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
         let num = tp.into();
         if let Some(list) = self.options.get_mut(&num) {
@@ -245,12 +257,14 @@ impl Packet {
         self.options.insert(num, list);
     }
 
+    /// Removes an option.
     pub fn clear_option(&mut self, tp: CoapOption) {
         if let Some(list) = self.options.get_mut(&tp.into()) {
             list.clear()
         }
     }
 
+    /// Sets the content-format.
     pub fn set_content_format(&mut self, cf: ContentFormat) {
         let content_format: usize = cf.into();
         let msb = (content_format >> 8) as u8;
@@ -260,6 +274,7 @@ impl Packet {
         self.add_option(CoapOption::ContentFormat, content_format);
     }
 
+    /// Returns the content-format.
     pub fn get_content_format(&self) -> Option<ContentFormat> {
         if let Some(list) = self.get_option(CoapOption::ContentFormat) {
             if let Some(vector) = list.front() {
@@ -274,11 +289,13 @@ impl Packet {
         None
     }
 
+    /// Sets the value of the observe option.
     pub fn set_observe(&mut self, value: Vec<u8>) {
         self.clear_option(CoapOption::Observe);
         self.add_option(CoapOption::Observe, value);
     }
 
+    /// Returns the value of the observe option.
     pub fn get_observe(&self) -> Option<&Vec<u8>> {
         if let Some(list) = self.get_option(CoapOption::Observe) {
             if let Some(flag) = list.front() {
@@ -289,7 +306,7 @@ impl Packet {
         None
     }
 
-    /// Decodes a byte slice and construct the equivalent Packet.
+    /// Decodes a byte slice and constructs the equivalent packet.
     pub fn from_bytes(buf: &[u8]) -> Result<Packet, MessageError> {
         let header_result = HeaderRaw::try_from(buf);
         match header_result {

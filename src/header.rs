@@ -6,6 +6,7 @@ use core::{convert::TryFrom, fmt};
 
 use super::error::MessageError;
 
+/// The raw byte header representation, useful for encoding/decoding directly.
 #[derive(Debug, Clone)]
 pub struct HeaderRaw {
     ver_type_tkl: u8,
@@ -14,6 +15,8 @@ pub struct HeaderRaw {
 }
 
 impl HeaderRaw {
+    /// Writes the header into the given buffer, which must have a capacity of
+    /// at least 4.
     pub fn serialize_into(
         &self,
         buf: &mut Vec<u8>,
@@ -60,6 +63,7 @@ impl TryFrom<&[u8]> for HeaderRaw {
     }
 }
 
+/// The detailed class (request/response) of a message with the code.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MessageClass {
     Empty,
@@ -172,6 +176,7 @@ impl fmt::Display for MessageClass {
     }
 }
 
+/// The request codes.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RequestType {
     Get,
@@ -181,6 +186,7 @@ pub enum RequestType {
     UnKnown,
 }
 
+/// The response codes.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ResponseType {
     // 200 Codes
@@ -216,6 +222,7 @@ pub enum ResponseType {
     UnKnown,
 }
 
+/// The message types.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MessageType {
     Confirmable,
@@ -225,6 +232,7 @@ pub enum MessageType {
     Invalid,
 }
 
+/// The message header.
 #[derive(Debug, Clone)]
 pub struct Header {
     ver_type_tkl: u8,
@@ -239,10 +247,12 @@ impl Default for Header {
 }
 
 impl Header {
+    /// Creates a new header.
     pub fn new() -> Header {
         Default::default()
     }
 
+    /// Creates a new header from a raw header.
     pub fn from_raw(raw: &HeaderRaw) -> Header {
         Header {
             ver_type_tkl: raw.ver_type_tkl,
@@ -251,6 +261,7 @@ impl Header {
         }
     }
 
+    /// Returns the raw header.
     pub fn to_raw(&self) -> HeaderRaw {
         HeaderRaw {
             ver_type_tkl: self.ver_type_tkl,
@@ -259,17 +270,20 @@ impl Header {
         }
     }
 
+    /// Sets the version.
     #[inline]
     pub fn set_version(&mut self, v: u8) {
         let type_tkl = 0x3F & self.ver_type_tkl;
         self.ver_type_tkl = v << 6 | type_tkl;
     }
 
+    /// Returns the version.
     #[inline]
     pub fn get_version(&self) -> u8 {
         self.ver_type_tkl >> 6
     }
 
+    /// Sets the message type.
     #[inline]
     pub fn set_type(&mut self, t: MessageType) {
         let tn = match t {
@@ -284,6 +298,7 @@ impl Header {
         self.ver_type_tkl = tn << 4 | ver_tkl;
     }
 
+    /// Returns the message type.
     #[inline]
     pub fn get_type(&self) -> MessageType {
         let tn = (0x30 & self.ver_type_tkl) >> 4;
@@ -296,6 +311,7 @@ impl Header {
         }
     }
 
+    /// Sets the token length.
     #[inline]
     pub fn set_token_length(&mut self, tkl: u8) {
         assert_eq!(0xF0 & tkl, 0);
@@ -304,11 +320,13 @@ impl Header {
         self.ver_type_tkl = tkl | ver_type;
     }
 
+    /// Returns the token length.
     #[inline]
     pub fn get_token_length(&self) -> u8 {
         0x0F & self.ver_type_tkl
     }
 
+    /// Sets the message code from a string.
     pub fn set_code(&mut self, code: &str) {
         let code_vec: Vec<&str> = code.split('.').collect();
         assert_eq!(code_vec.len(), 2);
@@ -321,6 +339,7 @@ impl Header {
         self.code = (class_code << 5 | detail_code).into();
     }
 
+    /// Returns the message code as a string.
     pub fn get_code(&self) -> String {
         self.code.to_string()
     }
