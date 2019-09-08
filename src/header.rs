@@ -229,7 +229,7 @@ pub enum MessageType {
 pub struct Header {
     ver_type_tkl: u8,
     pub code: MessageClass,
-    message_id: u16,
+    pub message_id: u16,
 }
 
 impl Default for Header {
@@ -323,16 +323,6 @@ impl Header {
 
     pub fn get_code(&self) -> String {
         self.code.to_string()
-    }
-
-    #[inline]
-    pub fn set_message_id(&mut self, message_id: u16) {
-        self.message_id = message_id;
-    }
-
-    #[inline]
-    pub fn get_message_id(&self) -> u16 {
-        self.message_id
     }
 }
 

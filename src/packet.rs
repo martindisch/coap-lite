@@ -229,17 +229,8 @@ impl Packet {
         self.options.insert(tp.into(), value);
     }
 
-    pub fn set_content_format(&mut self, cf: ContentFormat) {
-        let content_format: usize = cf.into();
-        let msb = (content_format >> 8) as u8;
-        let lsb = (content_format & 0xFF) as u8;
-
-        let content_format: Vec<u8> = vec![msb, lsb];
-        self.add_option(CoapOption::ContentFormat, content_format);
-    }
-
-    pub fn set_payload(&mut self, payload: Vec<u8>) {
-        self.payload = payload;
+    pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
+        self.options.get(&tp.into())
     }
 
     pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
@@ -254,14 +245,19 @@ impl Packet {
         self.options.insert(num, list);
     }
 
-    pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
-        self.options.get(&tp.into())
-    }
-
     pub fn clear_option(&mut self, tp: CoapOption) {
         if let Some(list) = self.options.get_mut(&tp.into()) {
             list.clear()
         }
+    }
+
+    pub fn set_content_format(&mut self, cf: ContentFormat) {
+        let content_format: usize = cf.into();
+        let msb = (content_format >> 8) as u8;
+        let lsb = (content_format & 0xFF) as u8;
+
+        let content_format: Vec<u8> = vec![msb, lsb];
+        self.add_option(CoapOption::ContentFormat, content_format);
     }
 
     pub fn get_content_format(&self) -> Option<ContentFormat> {
@@ -563,7 +559,7 @@ mod test {
             packet.header.code,
             header::MessageClass::Request(header::RequestType::Get)
         );
-        assert_eq!(packet.header.get_message_id(), 33950);
+        assert_eq!(packet.header.message_id, 33950);
         assert_eq!(*packet.get_token(), vec![0x51, 0x55, 0x77, 0xE8]);
         assert_eq!(packet.options.len(), 2);
 
@@ -602,7 +598,7 @@ mod test {
             packet.header.code,
             header::MessageClass::Response(header::ResponseType::Content)
         );
-        assert_eq!(packet.header.get_message_id(), 5117);
+        assert_eq!(packet.header.message_id, 5117);
         assert_eq!(*packet.get_token(), vec![0xD0, 0xE2, 0x4D, 0xAC]);
         assert_eq!(packet.payload, "Hello".as_bytes().to_vec());
     }
@@ -614,7 +610,7 @@ mod test {
         packet.header.set_type(header::MessageType::Confirmable);
         packet.header.code =
             header::MessageClass::Request(header::RequestType::Get);
-        packet.header.set_message_id(33950);
+        packet.header.message_id = 33950;
         packet.set_token(vec![0x51, 0x55, 0x77, 0xE8]);
         packet.add_option(CoapOption::UriPath, b"Hi".to_vec());
         packet.add_option(CoapOption::UriPath, b"Test".to_vec());
@@ -635,7 +631,7 @@ mod test {
         packet.header.set_type(header::MessageType::Acknowledgement);
         packet.header.code =
             header::MessageClass::Response(header::ResponseType::Content);
-        packet.header.set_message_id(5117);
+        packet.header.message_id = 5117;
         packet.set_token(vec![0xD0, 0xE2, 0x4D, 0xAC]);
         packet.payload = "Hello".as_bytes().to_vec();
         assert_eq!(
