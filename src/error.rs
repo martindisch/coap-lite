@@ -1,6 +1,8 @@
 //! The errors of the `coap` module.
 
 use core::fmt;
+#[cfg(feature = "std")]
+use std::error;
 
 /// The errors that can occur when encoding/decoding packets.
 #[derive(Debug, PartialEq)]
@@ -34,6 +36,13 @@ impl fmt::Display for MessageError {
     }
 }
 
+#[cfg(feature = "std")]
+impl error::Error for MessageError {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        None
+    }
+}
+
 /// The error that can occur when parsing an option.
 #[derive(Debug, PartialEq)]
 pub struct InvalidOption;
@@ -41,6 +50,13 @@ pub struct InvalidOption;
 impl fmt::Display for InvalidOption {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "CoAP error: invalid option number")
+    }
+}
+
+#[cfg(feature = "std")]
+impl error::Error for InvalidOption {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        None
     }
 }
 
@@ -54,6 +70,13 @@ impl fmt::Display for InvalidContentFormat {
     }
 }
 
+#[cfg(feature = "std")]
+impl error::Error for InvalidContentFormat {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        None
+    }
+}
+
 /// The error that can occur when parsing an observe option value.
 #[derive(Debug, PartialEq)]
 pub struct InvalidObserve;
@@ -61,5 +84,12 @@ pub struct InvalidObserve;
 impl fmt::Display for InvalidObserve {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "CoAP error: invalid observe option number")
+    }
+}
+
+#[cfg(feature = "std")]
+impl error::Error for InvalidObserve {
+    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
+        None
     }
 }

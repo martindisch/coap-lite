@@ -17,5 +17,9 @@ doctest = false
 
 [dependencies]
 
+[features]
+default = ["std"]
+std = []
+
 [badges]
 maintenance = { status = "passively-maintained" }
