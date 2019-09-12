@@ -5,9 +5,7 @@ use alloc::{
 use core::convert::TryFrom;
 
 use super::{
-    error::{
-        InvalidContentFormat, InvalidObserve, InvalidOption, MessageError,
-    },
+    error::{InvalidContentFormat, InvalidObserve, MessageError},
     header::{Header, HeaderRaw, MessageClass},
 };
 
@@ -43,35 +41,34 @@ pub enum CoapOption {
     Size1,
     Size2,
     NoResponse,
+    Unknown(usize),
 }
 
-impl TryFrom<usize> for CoapOption {
-    type Error = InvalidOption;
-
-    fn try_from(number: usize) -> Result<CoapOption, InvalidOption> {
+impl From<usize> for CoapOption {
+    fn from(number: usize) -> CoapOption {
         match number {
-            1 => Ok(CoapOption::IfMatch),
-            3 => Ok(CoapOption::UriHost),
-            4 => Ok(CoapOption::ETag),
-            5 => Ok(CoapOption::IfNoneMatch),
-            6 => Ok(CoapOption::Observe),
-            7 => Ok(CoapOption::UriPort),
-            8 => Ok(CoapOption::LocationPath),
-            9 => Ok(CoapOption::Oscore),
-            11 => Ok(CoapOption::UriPath),
-            12 => Ok(CoapOption::ContentFormat),
-            14 => Ok(CoapOption::MaxAge),
-            15 => Ok(CoapOption::UriQuery),
-            17 => Ok(CoapOption::Accept),
-            20 => Ok(CoapOption::LocationQuery),
-            23 => Ok(CoapOption::Block2),
-            27 => Ok(CoapOption::Block1),
-            35 => Ok(CoapOption::ProxyUri),
-            39 => Ok(CoapOption::ProxyScheme),
-            60 => Ok(CoapOption::Size1),
-            28 => Ok(CoapOption::Size2),
-            258 => Ok(CoapOption::NoResponse),
-            _ => Err(InvalidOption),
+            1 => CoapOption::IfMatch,
+            3 => CoapOption::UriHost,
+            4 => CoapOption::ETag,
+            5 => CoapOption::IfNoneMatch,
+            6 => CoapOption::Observe,
+            7 => CoapOption::UriPort,
+            8 => CoapOption::LocationPath,
+            9 => CoapOption::Oscore,
+            11 => CoapOption::UriPath,
+            12 => CoapOption::ContentFormat,
+            14 => CoapOption::MaxAge,
+            15 => CoapOption::UriQuery,
+            17 => CoapOption::Accept,
+            20 => CoapOption::LocationQuery,
+            23 => CoapOption::Block2,
+            27 => CoapOption::Block1,
+            35 => CoapOption::ProxyUri,
+            39 => CoapOption::ProxyScheme,
+            60 => CoapOption::Size1,
+            28 => CoapOption::Size2,
+            258 => CoapOption::NoResponse,
+            _ => CoapOption::Unknown(number),
         }
     }
 }
@@ -100,6 +97,7 @@ impl From<CoapOption> for usize {
             CoapOption::Size1 => 60,
             CoapOption::Size2 => 28,
             CoapOption::NoResponse => 258,
+            CoapOption::Unknown(number) => number,
         }
     }
 }

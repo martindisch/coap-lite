@@ -43,23 +43,6 @@ impl error::Error for MessageError {
     }
 }
 
-/// The error that can occur when parsing an option.
-#[derive(Debug, PartialEq)]
-pub struct InvalidOption;
-
-impl fmt::Display for InvalidOption {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "CoAP error: invalid option number")
-    }
-}
-
-#[cfg(feature = "std")]
-impl error::Error for InvalidOption {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
-}
-
 /// The error that can occur when parsing a content-format.
 #[derive(Debug, PartialEq)]
 pub struct InvalidContentFormat;
