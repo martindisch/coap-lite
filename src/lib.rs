@@ -59,8 +59,10 @@ pub mod error;
 
 mod header;
 mod packet;
+mod request;
+mod response;
 
-pub use header::{
-    Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
-};
+pub use header::{Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType};
 pub use packet::{CoapOption, ContentFormat, Packet};
+pub use request::CoapRequest;
+pub use response::CoapResponse;

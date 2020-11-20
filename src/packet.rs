@@ -207,8 +207,7 @@ pub struct Packet {
 }
 
 /// An iterator over the options of a packet.
-pub type Options<'a> =
-    alloc::collections::btree_map::Iter<'a, usize, LinkedList<Vec<u8>>>;
+pub type Options<'a> = alloc::collections::btree_map::Iter<'a, usize, LinkedList<Vec<u8>>>;
 
 impl Packet {
     /// Creates a new packet.
@@ -260,6 +259,10 @@ impl Packet {
         if let Some(list) = self.options.get_mut(&tp.into()) {
             list.clear()
         }
+    }
+
+    pub fn set_payload(&mut self, payload: Vec<u8>) {
+        self.payload = payload;
     }
 
     /// Sets the content-format.
@@ -325,8 +328,7 @@ impl Packet {
 
                 let mut idx = options_start;
                 let mut options_number = 0;
-                let mut options: BTreeMap<usize, LinkedList<Vec<u8>>> =
-                    BTreeMap::new();
+                let mut options: BTreeMap<usize, LinkedList<Vec<u8>>> = BTreeMap::new();
                 while idx < buf.len() {
                     let byte = buf[idx];
 
@@ -353,12 +355,7 @@ impl Packet {
                                 return Err(MessageError::InvalidOptionLength);
                             }
 
-                            delta = (u16::from_be(u8_to_unsigned_be!(
-                                buf,
-                                idx,
-                                idx + 1,
-                                u16
-                            )) + 269)
+                            delta = (u16::from_be(u8_to_unsigned_be!(buf, idx, idx + 1, u16)) + 269)
                                 as usize;
                             idx += 2;
                         }
@@ -383,13 +380,8 @@ impl Packet {
                                 return Err(MessageError::InvalidOptionLength);
                             }
 
-                            length = (u16::from_be(u8_to_unsigned_be!(
-                                buf,
-                                idx,
-                                idx + 1,
-                                u16
-                            )) + 269)
-                                as usize;
+                            length = (u16::from_be(u8_to_unsigned_be!(buf, idx, idx + 1, u16))
+                                + 269) as usize;
                             idx += 2;
                         }
                         15 => {
@@ -489,15 +481,13 @@ impl Packet {
                         options_bytes.as_mut_ptr().add(buf_len + header.len()),
                         value.len(),
                     );
-                    options_bytes
-                        .set_len(buf_len + header.len() + value.len());
+                    options_bytes.set_len(buf_len + header.len() + value.len());
                 }
             }
         }
 
         let mut buf_length = 4 + self.payload.len() + self.token.len();
-        if self.header.code != MessageClass::Empty && !self.payload.is_empty()
-        {
+        if self.header.code != MessageClass::Empty && !self.payload.is_empty() {
             buf_length += 1;
         }
         buf_length += options_bytes.len();
@@ -525,14 +515,10 @@ impl Packet {
                         buf.as_mut_ptr().add(buf_len + self.token.len()),
                         options_bytes.len(),
                     );
-                    buf.set_len(
-                        buf_len + self.token.len() + options_bytes.len(),
-                    );
+                    buf.set_len(buf_len + self.token.len() + options_bytes.len());
                 }
 
-                if self.header.code != MessageClass::Empty
-                    && !self.payload.is_empty()
-                {
+                if self.header.code != MessageClass::Empty && !self.payload.is_empty() {
                     buf.push(0xFF);
                     buf.reserve(self.payload.len());
                     unsafe {
@@ -561,8 +547,8 @@ mod test {
     #[test]
     fn test_decode_packet_with_options() {
         let buf = [
-            0x44, 0x01, 0x84, 0x9e, 0x51, 0x55, 0x77, 0xe8, 0xb2, 0x48, 0x69,
-            0x04, 0x54, 0x65, 0x73, 0x74, 0x43, 0x61, 0x3d, 0x31,
+            0x44, 0x01, 0x84, 0x9e, 0x51, 0x55, 0x77, 0xe8, 0xb2, 0x48, 0x69, 0x04, 0x54, 0x65,
+            0x73, 0x74, 0x43, 0x61, 0x3d, 0x31,
         ];
         let packet = Packet::from_bytes(&buf);
         assert!(packet.is_ok());
@@ -597,8 +583,7 @@ mod test {
     #[test]
     fn test_decode_packet_with_payload() {
         let buf = [
-            0x64, 0x45, 0x13, 0xFD, 0xD0, 0xE2, 0x4D, 0xAC, 0xFF, 0x48, 0x65,
-            0x6C, 0x6C, 0x6F,
+            0x64, 0x45, 0x13, 0xFD, 0xD0, 0xE2, 0x4D, 0xAC, 0xFF, 0x48, 0x65, 0x6C, 0x6C, 0x6F,
         ];
         let packet = Packet::from_bytes(&buf);
         assert!(packet.is_ok());
@@ -623,8 +608,7 @@ mod test {
         let mut packet = Packet::new();
         packet.header.set_version(1);
         packet.header.set_type(header::MessageType::Confirmable);
-        packet.header.code =
-            header::MessageClass::Request(header::RequestType::Get);
+        packet.header.code = header::MessageClass::Request(header::RequestType::Get);
         packet.header.message_id = 33950;
         packet.set_token(vec![0x51, 0x55, 0x77, 0xE8]);
         packet.add_option(CoapOption::UriPath, b"Hi".to_vec());
@@ -633,8 +617,8 @@ mod test {
         assert_eq!(
             packet.to_bytes().unwrap(),
             vec![
-                0x44, 0x01, 0x84, 0x9e, 0x51, 0x55, 0x77, 0xe8, 0xb2, 0x48,
-                0x69, 0x04, 0x54, 0x65, 0x73, 0x74, 0x43, 0x61, 0x3d, 0x31
+                0x44, 0x01, 0x84, 0x9e, 0x51, 0x55, 0x77, 0xe8, 0xb2, 0x48, 0x69, 0x04, 0x54, 0x65,
+                0x73, 0x74, 0x43, 0x61, 0x3d, 0x31
             ]
         );
     }
@@ -644,16 +628,14 @@ mod test {
         let mut packet = Packet::new();
         packet.header.set_version(1);
         packet.header.set_type(header::MessageType::Acknowledgement);
-        packet.header.code =
-            header::MessageClass::Response(header::ResponseType::Content);
+        packet.header.code = header::MessageClass::Response(header::ResponseType::Content);
         packet.header.message_id = 5117;
         packet.set_token(vec![0xD0, 0xE2, 0x4D, 0xAC]);
         packet.payload = "Hello".as_bytes().to_vec();
         assert_eq!(
             packet.to_bytes().unwrap(),
             vec![
-                0x64, 0x45, 0x13, 0xFD, 0xD0, 0xE2, 0x4D, 0xAC, 0xFF, 0x48,
-                0x65, 0x6C, 0x6C, 0x6F
+                0x64, 0x45, 0x13, 0xFD, 0xD0, 0xE2, 0x4D, 0xAC, 0xFF, 0x48, 0x65, 0x6C, 0x6C, 0x6F
             ]
         );
     }
