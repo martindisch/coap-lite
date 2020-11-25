@@ -4,6 +4,7 @@ use super::response::CoapResponse;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
 
+/// The CoAP request.
 #[derive(Clone, Debug)]
 pub struct CoapRequest<Endpoint> {
     pub message: Packet,
@@ -12,6 +13,7 @@ pub struct CoapRequest<Endpoint> {
 }
 
 impl<Endpoint> CoapRequest<Endpoint> {
+    /// Creates a new request.
     pub fn new() -> CoapRequest<Endpoint> {
         CoapRequest {
             response: None,
@@ -20,6 +22,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Creates a request from a packet.
     pub fn from_packet(
         packet: Packet,
         source: Endpoint,
@@ -31,10 +34,12 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Sets the method.
     pub fn set_method(&mut self, method: Method) {
         self.message.header.code = MessageClass::Request(method);
     }
 
+    /// Returns the method.
     pub fn get_method(&self) -> &Method {
         match self.message.header.code {
             MessageClass::Request(Method::Get) => &Method::Get,
@@ -45,6 +50,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Sets the path.
     pub fn set_path(&mut self, path: &str) {
         self.message.clear_option(CoapOption::UriPath);
 
@@ -59,6 +65,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Returns the path.
     pub fn get_path(&self) -> String {
         match self.message.get_option(CoapOption::UriPath) {
             Some(options) => {

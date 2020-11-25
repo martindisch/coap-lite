@@ -1,12 +1,14 @@
 use super::header::{MessageClass, MessageType, ResponseType as Status};
 use super::packet::Packet;
 
+/// The CoAP response.
 #[derive(Clone, Debug)]
 pub struct CoapResponse {
     pub message: Packet,
 }
 
 impl CoapResponse {
+    /// Creates a new response.
     pub fn new(request: &Packet) -> Option<CoapResponse> {
         let mut packet = Packet::new();
 
@@ -26,10 +28,12 @@ impl CoapResponse {
         Some(CoapResponse { message: packet })
     }
 
+    /// Sets the status.
     pub fn set_status(&mut self, status: Status) {
         self.message.header.code = MessageClass::Response(status);
     }
 
+    /// Returns the status.
     pub fn get_status(&self) -> &Status {
         match self.message.header.code {
             MessageClass::Response(Status::Created) => &Status::Created,
