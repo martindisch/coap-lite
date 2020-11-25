@@ -17,7 +17,10 @@ pub struct HeaderRaw {
 impl HeaderRaw {
     /// Writes the header into the given buffer, which must have a capacity of
     /// at least 4.
-    pub fn serialize_into(&self, buf: &mut Vec<u8>) -> Result<(), MessageError> {
+    pub fn serialize_into(
+        &self,
+        buf: &mut Vec<u8>,
+    ) -> Result<(), MessageError> {
         if buf.capacity() < 4 {
             return Err(MessageError::InvalidPacketLength);
         }
@@ -94,9 +97,15 @@ impl From<u8> for MessageClass {
             0x85 => MessageClass::Response(ResponseType::MethodNotAllowed),
             0x86 => MessageClass::Response(ResponseType::NotAcceptable),
             0x8C => MessageClass::Response(ResponseType::PreconditionFailed),
-            0x8D => MessageClass::Response(ResponseType::RequestEntityTooLarge),
-            0x8F => MessageClass::Response(ResponseType::UnsupportedContentFormat),
-            0x88 => MessageClass::Response(ResponseType::RequestEntityIncomplete),
+            0x8D => {
+                MessageClass::Response(ResponseType::RequestEntityTooLarge)
+            }
+            0x8F => {
+                MessageClass::Response(ResponseType::UnsupportedContentFormat)
+            }
+            0x88 => {
+                MessageClass::Response(ResponseType::RequestEntityIncomplete)
+            }
             0x9d => MessageClass::Response(ResponseType::TooManyRequests),
 
             0x90 => MessageClass::Response(ResponseType::InternalServerError),
@@ -135,9 +144,15 @@ impl From<MessageClass> for u8 {
             MessageClass::Response(ResponseType::MethodNotAllowed) => 0x85,
             MessageClass::Response(ResponseType::NotAcceptable) => 0x86,
             MessageClass::Response(ResponseType::PreconditionFailed) => 0x8C,
-            MessageClass::Response(ResponseType::RequestEntityTooLarge) => 0x8D,
-            MessageClass::Response(ResponseType::UnsupportedContentFormat) => 0x8F,
-            MessageClass::Response(ResponseType::RequestEntityIncomplete) => 0x88,
+            MessageClass::Response(ResponseType::RequestEntityTooLarge) => {
+                0x8D
+            }
+            MessageClass::Response(ResponseType::UnsupportedContentFormat) => {
+                0x8F
+            }
+            MessageClass::Response(ResponseType::RequestEntityIncomplete) => {
+                0x88
+            }
             MessageClass::Response(ResponseType::TooManyRequests) => 0x9d,
 
             MessageClass::Response(ResponseType::InternalServerError) => 0x90,

@@ -20,7 +20,10 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
-    pub fn from_packet(packet: Packet, source: Endpoint) -> CoapRequest<Endpoint> {
+    pub fn from_packet(
+        packet: Packet,
+        source: Endpoint,
+    ) -> CoapRequest<Endpoint> {
         CoapRequest {
             response: CoapResponse::new(&packet),
             message: packet,
