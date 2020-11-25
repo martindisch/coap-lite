@@ -18,9 +18,7 @@ impl CoapResponse {
         };
         packet.header.set_type(response_type);
         packet.header.code = MessageClass::Response(Status::Content);
-        packet
-            .header
-            .set_message_id(request.header.get_message_id());
+        packet.header.message_id = request.header.message_id;
         packet.set_token(request.get_token().clone());
 
         packet.payload = request.payload.clone();

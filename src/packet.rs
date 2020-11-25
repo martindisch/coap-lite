@@ -262,10 +262,6 @@ impl Packet {
         }
     }
 
-    pub fn set_payload(&mut self, payload: Vec<u8>) {
-        self.payload = payload;
-    }
-
     /// Sets the content-format.
     pub fn set_content_format(&mut self, cf: ContentFormat) {
         let content_format: usize = cf.into();
