@@ -43,45 +43,52 @@ impl CoapResponse {
             MessageClass::Response(Status::Content) => &Status::Content,
 
             MessageClass::Response(Status::BadRequest) => &Status::BadRequest,
-            MessageClass::Response(Status::Unauthorized) => {
-                &Status::Unauthorized
-            }
+            MessageClass::Response(Status::Unauthorized) => &Status::Unauthorized,
             MessageClass::Response(Status::BadOption) => &Status::BadOption,
             MessageClass::Response(Status::Forbidden) => &Status::Forbidden,
             MessageClass::Response(Status::NotFound) => &Status::NotFound,
-            MessageClass::Response(Status::MethodNotAllowed) => {
-                &Status::MethodNotAllowed
-            }
-            MessageClass::Response(Status::NotAcceptable) => {
-                &Status::NotAcceptable
-            }
-            MessageClass::Response(Status::PreconditionFailed) => {
-                &Status::PreconditionFailed
-            }
-            MessageClass::Response(Status::RequestEntityTooLarge) => {
-                &Status::RequestEntityTooLarge
-            }
+            MessageClass::Response(Status::MethodNotAllowed) => &Status::MethodNotAllowed,
+            MessageClass::Response(Status::NotAcceptable) => &Status::NotAcceptable,
+            MessageClass::Response(Status::PreconditionFailed) => &Status::PreconditionFailed,
+            MessageClass::Response(Status::RequestEntityTooLarge) => &Status::RequestEntityTooLarge,
             MessageClass::Response(Status::UnsupportedContentFormat) => {
                 &Status::UnsupportedContentFormat
             }
 
-            MessageClass::Response(Status::InternalServerError) => {
-                &Status::InternalServerError
-            }
-            MessageClass::Response(Status::NotImplemented) => {
-                &Status::NotImplemented
-            }
+            MessageClass::Response(Status::InternalServerError) => &Status::InternalServerError,
+            MessageClass::Response(Status::NotImplemented) => &Status::NotImplemented,
             MessageClass::Response(Status::BadGateway) => &Status::BadGateway,
-            MessageClass::Response(Status::ServiceUnavailable) => {
-                &Status::ServiceUnavailable
-            }
-            MessageClass::Response(Status::GatewayTimeout) => {
-                &Status::GatewayTimeout
-            }
-            MessageClass::Response(Status::ProxyingNotSupported) => {
-                &Status::ProxyingNotSupported
-            }
+            MessageClass::Response(Status::ServiceUnavailable) => &Status::ServiceUnavailable,
+            MessageClass::Response(Status::GatewayTimeout) => &Status::GatewayTimeout,
+            MessageClass::Response(Status::ProxyingNotSupported) => &Status::ProxyingNotSupported,
             _ => &Status::UnKnown,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::super::header::MessageType;
+    use super::super::packet::Packet;
+    use super::*;
+
+    #[test]
+    fn test_new_response_valid() {
+        for mtyp in vec![MessageType::Confirmable, MessageType::NonConfirmable] {
+            let mut packet = Packet::new();
+            packet.header.set_type(mtyp);
+            let opt_resp = CoapResponse::new(&packet);
+            assert!(opt_resp.is_some());
+
+            let response = opt_resp.unwrap();
+            assert_eq!(packet.payload, response.message.payload);
+        }
+    }
+
+    #[test]
+    fn test_new_response_invalid() {
+        let mut packet = Packet::new();
+        packet.header.set_type(MessageType::Acknowledgement);
+        assert!(CoapResponse::new(&packet).is_none());
     }
 }
