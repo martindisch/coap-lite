@@ -1,5 +1,6 @@
-use super::header::{MessageClass, RequestType as Method};
-use super::packet::{CoapOption, Packet};
+use super::header::MessageClass;
+use super::header::RequestType as Method;
+use super::packet::{CoapOption, ObserveOption, Packet};
 use super::response::CoapResponse;
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
@@ -76,6 +77,16 @@ impl<Endpoint> CoapRequest<Endpoint> {
             }
             _ => "".to_string(),
         }
+    }
+
+    pub fn get_observe(&self) -> Option<ObserveOption> {
+        self.message
+            .get_observe()
+            .and_then(|option| match option[0] {
+                x if x == ObserveOption::Register as u8 => Some(ObserveOption::Register),
+                x if x == ObserveOption::Deregister as u8 => Some(ObserveOption::Deregister),
+                _ => None,
+            })
     }
 }
 

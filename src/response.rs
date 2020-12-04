@@ -1,5 +1,6 @@
-use super::header::{MessageClass, MessageType, ResponseType as Status};
-use super::packet::Packet;
+pub use super::header::ResponseType as Status;
+use super::header::{MessageClass, MessageType};
+use super::packet::{ObserveOption, Packet};
 
 /// The CoAP response.
 #[derive(Clone, Debug)]
@@ -63,6 +64,10 @@ impl CoapResponse {
             MessageClass::Response(Status::ProxyingNotSupported) => &Status::ProxyingNotSupported,
             _ => &Status::UnKnown,
         }
+    }
+
+    pub fn set_observe(&mut self, value: ObserveOption) {
+        self.message.set_observe(alloc::vec![value as u8]);
     }
 }
 
