@@ -9,17 +9,20 @@ const DEFAULT_UNACKNOWLEDGED_LIMIT: u8 = 10;
 
 type ResourcePath = String;
 
+/// An Observer client
 pub struct Observer<Endpoint: Display> {
     pub endpoint: Endpoint,
     pub token: Vec<u8>,
     unacknowledged_messages: u8,
 }
 
+/// An observed Resource
 pub struct Resource<Endpoint: Display> {
     pub observers: Vec<Observer<Endpoint>>,
     pub sequence: u32,
 }
 
+/// Keeps track of the state of the observed Resources
 pub struct Subject<Endpoint: Display + PartialEq> {
     resources: BTreeMap<ResourcePath, Resource<Endpoint>>,
     unacknowledged_limit: u8,
@@ -27,13 +30,11 @@ pub struct Subject<Endpoint: Display + PartialEq> {
 }
 
 impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
+    /// Register an observer interested in a resource
     pub fn register(&mut self, request: &CoapRequest<Endpoint>) {
         let observer_endpoint = request.source.as_ref().unwrap();
         let resource_path = request.get_path();
         let token = request.message.get_token();
-
-        #[cfg(test)]
-        println!("register {} {}", observer_endpoint, resource_path);
 
         let observer = Observer {
             endpoint: observer_endpoint.clone(),
@@ -57,13 +58,11 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         }
     }
 
+    // Remove an observer from the interested resource
     pub fn deregister(&mut self, request: &CoapRequest<Endpoint>) {
         let observer_endpoint = request.source.as_ref().unwrap();
         let resource_path = request.get_path();
         let token = request.message.get_token();
-
-        #[cfg(test)]
-        println!("deregister {} {}", observer_endpoint, resource_path);
 
         if let Some(resource) = self.resources.get_mut(&resource_path) {
             let position = resource
@@ -77,11 +76,10 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         }
     }
 
+    /// Update the resource information after having notified the observers. It increments the resource
+    /// sequence and counter of unacknowledged updates.
     pub fn resource_changed(&mut self, resource: &str) {
         let unacknowledged_limit = self.unacknowledged_limit;
-
-        #[cfg(test)]
-        println!("Resource changed {}", resource);
 
         self.resources
             .entry(resource.to_string())
@@ -98,6 +96,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
             });
     }
 
+    /// Reset the counter of unacknowledged updates for a resource observer
     pub fn acknowledge(&mut self, request: &CoapRequest<Endpoint>) {
         let observer_endpoint = request.source.as_ref().unwrap();
         let resource_path = request.get_path();
@@ -115,16 +114,19 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         }
     }
 
+    /// Get the tracked resources
     pub fn get_resource(&self, resource: &str) -> Option<&Resource<Endpoint>> {
         self.resources.get(resource)
     }
 
+    /// Get the observers of a resource
     pub fn get_resource_observers(&self, resource: &str) -> Option<Vec<&Observer<Endpoint>>> {
         self.resources
             .get(resource)
             .map(|resource| resource.observers.iter().collect())
     }
 
+    /// Set the limit of unacknowledged updates before removing an observer
     pub fn set_unacknowledged_limit(&mut self, limit: u8) {
         self.unacknowledged_limit = limit;
     }
