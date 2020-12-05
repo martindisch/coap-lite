@@ -66,8 +66,13 @@ impl CoapResponse {
         }
     }
 
-    pub fn set_observe(&mut self, value: ObserveOption) {
-        self.message.set_observe(alloc::vec![value as u8]);
+    // Set the Observe flag
+    pub fn set_observe_flag(&mut self, value: ObserveOption) {
+        let value = match value {
+            ObserveOption::Register => alloc::vec![], // Value is not present if Register
+            ObserveOption::Deregister => alloc::vec![value as u8],
+        };
+        self.message.set_observe(value);
     }
 }
 

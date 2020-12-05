@@ -79,13 +79,15 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
-    pub fn get_observe(&self) -> Option<ObserveOption> {
+    /// Returns the flag in the Observe option
+    pub fn get_observe_flag(&self) -> Option<ObserveOption> {
         self.message
             .get_observe()
-            .and_then(|option| match option[0] {
-                x if x == ObserveOption::Register as u8 => Some(ObserveOption::Register),
-                x if x == ObserveOption::Deregister as u8 => Some(ObserveOption::Deregister),
-                _ => None,
+            .and_then(|option| match option.get(0) {
+                Some(&x) if x == ObserveOption::Register as u8 => Some(ObserveOption::Register),
+                Some(&x) if x == ObserveOption::Deregister as u8 => Some(ObserveOption::Deregister),
+                Some(_) => None,
+                None => Some(ObserveOption::Register), // Value is Register by default if not present
             })
     }
 }
