@@ -1,9 +1,13 @@
-use super::header::MessageClass;
-use super::header::RequestType as Method;
-use super::packet::{CoapOption, ObserveOption, Packet};
-use super::response::CoapResponse;
-use alloc::string::{String, ToString};
-use alloc::vec::Vec;
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
+
+use super::{
+    header::{MessageClass, RequestType as Method},
+    packet::{CoapOption, ObserveOption, Packet},
+    response::CoapResponse,
+};
 
 /// The CoAP request.
 #[derive(Clone, Debug)]
@@ -102,10 +106,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
 
 #[cfg(test)]
 mod test {
-    use super::super::header::MessageType;
-    use super::super::packet::{CoapOption, Packet};
-    use super::*;
-    use alloc::string::String;
+    use super::{super::header::MessageType, *};
 
     struct Endpoint(String);
 

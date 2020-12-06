@@ -1,9 +1,11 @@
+use alloc::{
+    collections::BTreeMap,
+    string::{String, ToString},
+    vec::Vec,
+};
+use core::{fmt::Display, marker::PhantomData};
+
 use super::request::CoapRequest;
-use alloc::collections::BTreeMap;
-use alloc::string::{String, ToString};
-use alloc::vec::Vec;
-use core::fmt::Display;
-use core::marker::PhantomData;
 
 const DEFAULT_UNACKNOWLEDGED_LIMIT: u8 = 10;
 
@@ -148,9 +150,13 @@ impl<Endpoint: Display + PartialEq + Clone> Default for Subject<Endpoint> {
 
 #[cfg(test)]
 mod test {
-    use super::super::{RequestType as Method, ResponseType as Status, *};
-    use super::*;
-    use alloc::vec;
+    use super::{
+        super::{
+            header::{MessageType, RequestType as Method},
+            packet::ObserveOption,
+        },
+        *,
+    };
 
     type Endpoint = String;
 

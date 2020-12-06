@@ -1,6 +1,7 @@
-pub use super::header::ResponseType as Status;
-use super::header::{MessageClass, MessageType};
-use super::packet::{ObserveOption, Packet};
+use super::{
+    header::{MessageClass, MessageType, ResponseType as Status},
+    packet::{ObserveOption, Packet},
+};
 
 /// The CoAP response.
 #[derive(Clone, Debug)]
@@ -98,8 +99,6 @@ impl CoapResponse {
 
 #[cfg(test)]
 mod test {
-    use super::super::header::MessageType;
-    use super::super::packet::Packet;
     use super::*;
 
     #[test]
