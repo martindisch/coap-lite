@@ -63,7 +63,9 @@ mod packet;
 mod request;
 mod response;
 
-pub use header::{Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType};
+pub use header::{
+    Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
+};
 pub use observe::Subject;
 pub use packet::{CoapOption, ContentFormat, ObserveOption, Packet};
 pub use request::CoapRequest;

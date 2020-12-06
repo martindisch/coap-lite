@@ -24,7 +24,10 @@ impl<Endpoint> CoapRequest<Endpoint> {
     }
 
     /// Creates a request from a packet.
-    pub fn from_packet(packet: Packet, source: Endpoint) -> CoapRequest<Endpoint> {
+    pub fn from_packet(
+        packet: Packet,
+        source: Endpoint,
+    ) -> CoapRequest<Endpoint> {
         CoapRequest {
             response: CoapResponse::new(&packet),
             message: packet,
@@ -84,8 +87,12 @@ impl<Endpoint> CoapRequest<Endpoint> {
         self.message
             .get_observe()
             .and_then(|option| match option.get(0) {
-                Some(&x) if x == ObserveOption::Register as u8 => Some(ObserveOption::Register),
-                Some(&x) if x == ObserveOption::Deregister as u8 => Some(ObserveOption::Deregister),
+                Some(&x) if x == ObserveOption::Register as u8 => {
+                    Some(ObserveOption::Register)
+                }
+                Some(&x) if x == ObserveOption::Deregister as u8 => {
+                    Some(ObserveOption::Deregister)
+                }
                 Some(_) => None,
                 None => Some(ObserveOption::Register), // Value is Register by default if not present
             })

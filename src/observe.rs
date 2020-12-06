@@ -42,10 +42,11 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
             unacknowledged_messages: 0,
         };
 
-        let resource = self.resources.entry(resource_path).or_insert(Resource {
-            observers: Vec::new(),
-            sequence: 0,
-        });
+        let resource =
+            self.resources.entry(resource_path).or_insert(Resource {
+                observers: Vec::new(),
+                sequence: 0,
+            });
 
         if let Some(position) = resource
             .observers
@@ -65,10 +66,9 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         let token = request.message.get_token();
 
         if let Some(resource) = self.resources.get_mut(&resource_path) {
-            let position = resource
-                .observers
-                .iter()
-                .position(|x| x.endpoint == *observer_endpoint && x.token == *token);
+            let position = resource.observers.iter().position(|x| {
+                x.endpoint == *observer_endpoint && x.token == *token
+            });
 
             if let Some(position) = position {
                 resource.observers.remove(position);
@@ -90,9 +90,9 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
                     observer.unacknowledged_messages += 1;
                 });
 
-                resource
-                    .observers
-                    .retain(|observer| observer.unacknowledged_messages <= unacknowledged_limit);
+                resource.observers.retain(|observer| {
+                    observer.unacknowledged_messages <= unacknowledged_limit
+                });
             });
     }
 
@@ -103,10 +103,9 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         let token = request.message.get_token();
 
         if let Some(resource) = self.resources.get_mut(&resource_path) {
-            let observer = resource
-                .observers
-                .iter_mut()
-                .find(|x| x.endpoint == *observer_endpoint && x.token == *token);
+            let observer = resource.observers.iter_mut().find(|x| {
+                x.endpoint == *observer_endpoint && x.token == *token
+            });
 
             if let Some(observer) = observer {
                 observer.unacknowledged_messages = 0;
@@ -120,7 +119,10 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
     }
 
     /// Get the observers of a resource
-    pub fn get_resource_observers(&self, resource: &str) -> Option<Vec<&Observer<Endpoint>>> {
+    pub fn get_resource_observers(
+        &self,
+        resource: &str,
+    ) -> Option<Vec<&Observer<Endpoint>>> {
         self.resources
             .get(resource)
             .map(|resource| resource.observers.iter().collect())
