@@ -82,7 +82,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
-    /// Returns the flag in the Observe option
+    /// Returns the flag in the Observe option.
     pub fn get_observe_flag(&self) -> Option<ObserveOption> {
         self.message
             .get_observe()
@@ -94,7 +94,8 @@ impl<Endpoint> CoapRequest<Endpoint> {
                     Some(ObserveOption::Deregister)
                 }
                 Some(_) => None,
-                None => Some(ObserveOption::Register), // Value is Register by default if not present
+                // Value is Register by default if not present
+                None => Some(ObserveOption::Register),
             })
     }
 }

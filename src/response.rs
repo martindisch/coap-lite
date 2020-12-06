@@ -86,7 +86,7 @@ impl CoapResponse {
         }
     }
 
-    // Set the Observe flag
+    // Sets the Observe flag.
     pub fn set_observe_flag(&mut self, value: ObserveOption) {
         let value = match value {
             ObserveOption::Register => alloc::vec![], // Value is not present if Register
