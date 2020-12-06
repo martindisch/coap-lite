@@ -555,8 +555,7 @@ impl Packet {
 
 #[cfg(test)]
 mod test {
-    use super::super::header;
-    use super::*;
+    use super::{super::header, *};
 
     #[test]
     fn test_decode_packet_with_options() {

@@ -1,5 +1,7 @@
-use super::header::{MessageClass, MessageType, ResponseType as Status};
-use super::packet::Packet;
+use super::{
+    header::{MessageClass, MessageType, ResponseType as Status},
+    packet::{ObserveOption, Packet},
+};
 
 /// The CoAP response.
 #[derive(Clone, Debug)]
@@ -83,5 +85,40 @@ impl CoapResponse {
             }
             _ => &Status::UnKnown,
         }
+    }
+
+    // Sets the Observe flag.
+    pub fn set_observe_flag(&mut self, value: ObserveOption) {
+        let value = match value {
+            ObserveOption::Register => alloc::vec![], // Value is not present if Register
+            ObserveOption::Deregister => alloc::vec![value as u8],
+        };
+        self.message.set_observe(value);
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_new_response_valid() {
+        for mtyp in vec![MessageType::Confirmable, MessageType::NonConfirmable]
+        {
+            let mut packet = Packet::new();
+            packet.header.set_type(mtyp);
+            let opt_resp = CoapResponse::new(&packet);
+            assert!(opt_resp.is_some());
+
+            let response = opt_resp.unwrap();
+            assert_eq!(packet.payload, response.message.payload);
+        }
+    }
+
+    #[test]
+    fn test_new_response_invalid() {
+        let mut packet = Packet::new();
+        packet.header.set_type(MessageType::Acknowledgement);
+        assert!(CoapResponse::new(&packet).is_none());
     }
 }

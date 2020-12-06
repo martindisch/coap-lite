@@ -58,6 +58,7 @@ extern crate alloc;
 pub mod error;
 
 mod header;
+mod observe;
 mod packet;
 mod request;
 mod response;
@@ -65,6 +66,7 @@ mod response;
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
 };
-pub use packet::{CoapOption, ContentFormat, Packet};
+pub use observe::Subject;
+pub use packet::{CoapOption, ContentFormat, ObserveOption, Packet};
 pub use request::CoapRequest;
 pub use response::CoapResponse;
