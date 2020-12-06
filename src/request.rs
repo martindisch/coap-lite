@@ -20,11 +20,7 @@ pub struct CoapRequest<Endpoint> {
 impl<Endpoint> CoapRequest<Endpoint> {
     /// Creates a new request.
     pub fn new() -> CoapRequest<Endpoint> {
-        CoapRequest {
-            response: None,
-            message: Packet::new(),
-            source: None,
-        }
+        Default::default()
     }
 
     /// Creates a request from a packet.
@@ -101,6 +97,16 @@ impl<Endpoint> CoapRequest<Endpoint> {
                 // Value is Register by default if not present
                 None => Some(ObserveOption::Register),
             })
+    }
+}
+
+impl<Endpoint> Default for CoapRequest<Endpoint> {
+    fn default() -> Self {
+        CoapRequest {
+            response: None,
+            message: Packet::new(),
+            source: None,
+        }
     }
 }
 
