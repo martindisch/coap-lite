@@ -58,6 +58,7 @@ extern crate alloc;
 pub mod error;
 
 mod header;
+pub mod link_format;
 mod observe;
 mod packet;
 mod request;
