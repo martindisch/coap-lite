@@ -15,7 +15,8 @@
 
 // Modifications copyright (C) 2021 Jiayi Hu
 
-//! Mechanisms and constants for encoding and decoding [IETF-RFC6690 CoAP link-formats].
+//! Mechanisms and constants for encoding and decoding [IETF-RFC6690 CoAP
+//! link-formats].
 //!
 //! [IETF-RFC6690 CoAP link-formats]: https://tools.ietf.org/html/rfc6690
 
@@ -66,18 +67,20 @@ pub const LINK_ATTR_REL: &'static str = "rel";
 /// Anchor attribute.
 ///
 /// Provides an override of the document context URI when parsing relative URIs
-/// in the links. The value itself may be a relative URI, which is evaluated against the document
-/// context URI.
+/// in the links. The value itself may be a relative URI, which is evaluated
+/// against the document context URI.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.2">RFC8288, Section 3.2</a>
 pub const LINK_ATTR_ANCHOR: &'static str = "anchor";
 
-/// A hint indicating what the language of the result of dereferencing the link should be.
+/// A hint indicating what the language of the result of dereferencing the link
+/// should be.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 pub const LINK_ATTR_HREFLANG: &'static str = "hreflang";
 
-/// Media Attribute. Used to indicate intended destination medium or media for style information.
+/// Media Attribute. Used to indicate intended destination medium or media for
+/// style information.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 pub const LINK_ATTR_MEDIA: &'static str = "media";
@@ -87,16 +90,18 @@ pub const LINK_ATTR_MEDIA: &'static str = "media";
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 pub const LINK_ATTR_TITLE: &'static str = "title";
 
-/// Human-readable label describing the resource, along with language information.
+/// Human-readable label describing the resource, along with language
+/// information.
 ///
-/// Is is typically formatted as `"utf-8'<LANG_CODE&>'<TITLE_TEXT>"`. For example:
+/// Is is typically formatted as `"utf-8'<LANG_CODE&>'<TITLE_TEXT>"`. For
+/// example:
 ///
 /// * `"utf-8'en'£ rates"`</code>
 ///
-/// Note that since <a href="https://tools.ietf.org/html/rfc6690">RFC6690</a> requires the link
-/// format serialization to always be in UTF-8 format, the value of this attribute MUST ALWAYS
-/// start with either the string <code>utf-8</code> or <code>UTF-8</code> and MUST NOT be
-/// percent-encoded.
+/// Note that since <a href="https://tools.ietf.org/html/rfc6690">RFC6690</a>
+/// requires the link format serialization to always be in UTF-8 format, the
+/// value of this attribute MUST ALWAYS start with either the string
+/// <code>utf-8</code> or <code>UTF-8</code> and MUST NOT be percent-encoded.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 /// * <a href="https://tools.ietf.org/html/rfc8187">RFC8187</a>
@@ -112,18 +117,19 @@ pub const LINK_ATTR_TYPE: &'static str = "type";
 
 /// Resource Type Attribute.
 ///
-/// The Resource Type `rt` attribute is an opaque string used to assign
-/// an application-specific semantic type to a resource. One can think of this as a noun
-/// describing the resource.
+/// The Resource Type `rt` attribute is an opaque string used to assign an
+/// application-specific semantic type to a resource. One can think of this as
+/// a noun describing the resource.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.1">RFC6690, Section 3.1</a>
 pub const LINK_ATTR_RESOURCE_TYPE: &'static str = "rt";
 
 /// Interface Description Attribute.
 ///
-/// The Interface Description `if` attribute is an opaque string
-/// used to provide a name or URI indicating a specific interface definition used to interact
-/// with the target resource. One can think of this as describing verbs usable on a resource.
+/// The Interface Description `if` attribute is an opaque string used to
+/// provide a name or URI indicating a specific interface definition used to
+/// interact with the target resource. One can think of this as describing
+/// verbs usable on a resource.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.2">RFC6690, Section 3.2</a>
 ///
@@ -131,17 +137,19 @@ pub const LINK_ATTR_INTERFACE_DESCRIPTION: &'static str = "if";
 
 /// The estimated maximum size of the fetched resource.
 ///
-/// The maximum size estimate attribute `sz`
-/// gives an indication of the maximum size of the resource representation returned by performing
-/// a GET on the target URI. For links to CoAP resources, this attribute is not expected to be
-/// included for small resources that can comfortably be carried in a single Maximum Transmission
-/// Unit (MTU) but SHOULD be included for resources larger than that. The maximum size estimate
-/// attribute MUST NOT appear more than once in a link.
+/// The maximum size estimate attribute `sz` gives an indication of the maximum
+/// size of the resource representation returned by performing a GET on the
+/// target URI. For links to CoAP resources, this attribute is not expected to
+/// be included for small resources that can comfortably be carried in a single
+/// Maximum Transmission Unit (MTU) but SHOULD be included for resources larger
+/// than that. The maximum size estimate attribute MUST NOT appear more than
+/// once in a link.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.3">RFC6690, Section 3.3</a>
 pub const LINK_ATTR_MAXIMUM_SIZE_ESTIMATE: &'static str = "sz";
 
-/// The value of this resource expressed as a human-readable string. Must be less than 63 bytes.
+/// The value of this resource expressed as a human-readable string. Must
+/// beless than 63 bytes.
 pub const LINK_ATTR_VALUE: &'static str = "v";
 
 /// Content-Format Code(s).
@@ -162,7 +170,8 @@ pub const LINK_ATTR_OBSERVABLE: &'static str = "obs";
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
 pub const LINK_ATTR_ENDPOINT_NAME: &'static str = "ep";
 
-/// Lifetime of the registration in seconds. Valid values are between 60-4294967295, inclusive.
+/// Lifetime of the registration in seconds. Valid values are between
+/// 60-4294967295, inclusive.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
 pub const LINK_ATTR_REGISTRATION_LIFETIME: &'static str = "lt";
@@ -200,13 +209,16 @@ const QUOTE_ESCAPE_CHAR: char = '\\';
 const ATTR_SEPARATOR_CHAR: char = ';';
 const LINK_SEPARATOR_CHAR: char = ',';
 
-/// Parsing iterator which parses a string formatted as an [IETF-RFC6690 CoAP link-format].
+/// Parsing iterator which parses a string formatted as an [IETF-RFC6690 CoAP
+/// link-format].
 ///
-/// As successful parsing is performed, this iterator emits a tuple inside of a `Result::Ok`.
-/// The tuple contains a string slice for the link and a [`LinkAttributeParser`] to provide
-/// access to the link attributes for that link.
+/// As successful parsing is performed, this iterator emits a tuple inside of a
+/// `Result::Ok`. The tuple contains a string slice for the link and a
+/// [`LinkAttributeParser`] to provide access to the link attributes for that
+/// link.
 ///
-/// Parsing errors are emitted as a `Result::Err` and are of the error type [`ErrorLinkFormat`].
+/// Parsing errors are emitted as a `Result::Err` and are of the error type
+/// [`ErrorLinkFormat`].
 ///
 /// [IETF-RFC6690 CoAP link-format]: https://tools.ietf.org/html/rfc6690
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -215,7 +227,8 @@ pub struct LinkFormatParser<'a> {
 }
 
 impl<'a> LinkFormatParser<'a> {
-    /// Creates a new instance of `LinkFormatParser` for the given string slice.
+    /// Creates a new instance of `LinkFormatParser` for the given string
+    /// slice.
     pub fn new(inner: &'a str) -> LinkFormatParser<'a> {
         LinkFormatParser { inner }
     }
@@ -258,7 +271,8 @@ impl<'a> Iterator for LinkFormatParser<'a> {
             }
         }
 
-        let link_len = iter.as_str().as_ptr() as usize - link_ref.as_ptr() as usize;
+        let link_len =
+            iter.as_str().as_ptr() as usize - link_ref.as_ptr() as usize;
 
         let link_ref = (&link_ref[..link_len]).trim_end_matches('>');
 
@@ -290,8 +304,10 @@ impl<'a> Iterator for LinkFormatParser<'a> {
             }
         }
 
-        let attr_len = iter.as_str().as_ptr() as usize - attr_keys.as_ptr() as usize;
-        attr_keys = (&attr_keys[..attr_len]).trim_end_matches(LINK_SEPARATOR_CHAR);
+        let attr_len =
+            iter.as_str().as_ptr() as usize - attr_keys.as_ptr() as usize;
+        attr_keys =
+            (&attr_keys[..attr_len]).trim_end_matches(LINK_SEPARATOR_CHAR);
 
         self.inner = iter.as_str();
         return Some(Ok((
@@ -303,16 +319,18 @@ impl<'a> Iterator for LinkFormatParser<'a> {
     }
 }
 
-/// Parsing iterator which parses link attributes for [IETF-RFC6690 CoAP link-format] processing.
+/// Parsing iterator which parses link attributes for [IETF-RFC6690 CoAP
+/// link-format] processing.
 ///
-/// This iterator is emitted by [`LinkFormatParser`] while parsing a CoAP link-format. It emits
-/// a tuple for each attribute, with the first item being a string slice for the attribute key
-/// and the second item being an [`Unquote`] iterator for obtaining the value. A `String` or
-/// `Cow<str>` version of the value can be easily obtained by calling `to_string()` or `to_cow()`
-/// on the [`Unquote`] instance.
+/// This iterator is emitted by [`LinkFormatParser`] while parsing a CoAP
+/// link-format. It emits a tuple for each attribute, with the first item being
+/// a string slice for the attribute key and the second item being an
+/// [`Unquote`] iterator for obtaining the value. A `String` or `Cow<str>`
+/// version of the value can be easily obtained by calling `to_string()` or
+/// `to_cow()` on the [`Unquote`] instance.
 ///
-/// This iterator is permissive and makes a best-effort to parse the link attributes and does not
-/// emit errors while parsing.
+/// This iterator is permissive and makes a best-effort to parse the link
+/// attributes and does not emit errors while parsing.
 ///
 /// [IETF-RFC6690 CoAP link-format]: https://tools.ietf.org/html/rfc6690
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -356,7 +374,8 @@ impl<'a> Iterator for LinkAttributeParser<'a> {
             }
         }
 
-        let attr_len = iter.as_str().as_ptr() as usize - self.inner.as_ptr() as usize;
+        let attr_len =
+            iter.as_str().as_ptr() as usize - self.inner.as_ptr() as usize;
         let attr_str = &self.inner[..attr_len];
 
         self.inner = iter.as_str();
@@ -445,7 +464,8 @@ impl<'a> Unquote<'a> {
         }
     }
 
-    /// Converts a fresh, unused instance of `Unquote` into the underlying raw string slice.
+    /// Converts a fresh, unused instance of `Unquote` into the underlying raw
+    /// string slice.
     ///
     /// Calling this method will panic if `next()` has been called.
     pub fn into_raw_str(self) -> &'a str {
@@ -500,8 +520,8 @@ impl<'a> Iterator for Unquote<'a> {
                 UnquoteState::NotQuoted => self.inner.next(),
                 UnquoteState::Quoted => match self.inner.next() {
                     Some('"') => {
-                        // We are finished.
-                        // Make ourselves empty so we can call ourselves "Fused"
+                        // We are finished. Make ourselves empty so we can call
+                        // ourselves "Fused"
                         self.inner = "".chars();
                         None
                     }
@@ -513,8 +533,8 @@ impl<'a> Iterator for Unquote<'a> {
     }
 }
 
-/// Helper for writing [IETF-RFC6690 CoAP link-formats] to anything implementing
-/// [`core::fmt::Write`].
+/// Helper for writing [IETF-RFC6690 CoAP link-formats] to anything
+/// implementing [`core::fmt::Write`].
 ///
 /// ## Example
 ///
@@ -545,8 +565,8 @@ pub struct LinkFormatWrite<'a, T: ?Sized> {
 }
 
 impl<'a, T: Write + ?Sized> LinkFormatWrite<'a, T> {
-    /// Creates a new instance of `LinkFormatWriter` for a given instance that implements
-    /// [`core::fmt::Write`].
+    /// Creates a new instance of `LinkFormatWriter` for a given instance that
+    /// implements [`core::fmt::Write`].
     pub fn new(write: &'a mut T) -> LinkFormatWrite<'a, T> {
         LinkFormatWrite {
             write,
@@ -556,17 +576,20 @@ impl<'a, T: Write + ?Sized> LinkFormatWrite<'a, T> {
         }
     }
 
-    /// Sets whether newlines should be added or not between links, possibly improving
-    /// human readability an the expense of a few extra bytes.
+    /// Sets whether newlines should be added or not between links, possibly
+    /// improving human readability an the expense of a few extra bytes.
     pub fn set_add_newlines(&mut self, add_newlines: bool) {
         self.add_newlines = add_newlines;
     }
 
     /// Adds a link to the link format and returns [`LinkAttributeWrite`].
     ///
-    /// The returned [`LinkAttributeWrite`] instance can then be used to associate
-    /// attributes to the link.
-    pub fn link<'b>(&'b mut self, link: &str) -> LinkAttributeWrite<'a, 'b, T> {
+    /// The returned [`LinkAttributeWrite`] instance can then be used to
+    /// associate attributes to the link.
+    pub fn link<'b>(
+        &'b mut self,
+        link: &str,
+    ) -> LinkAttributeWrite<'a, 'b, T> {
         if self.is_first {
             self.is_first = false;
         } else if self.error.is_none() {
@@ -602,9 +625,12 @@ impl<'a, T: Write + ?Sized> LinkFormatWrite<'a, T> {
     }
 }
 
-/// Helper for writing link format attributes; created by calling [`LinkFormatWrite::link`].
+/// Helper for writing link format attributes; created by calling
+/// [`LinkFormatWrite::link`].
 #[derive(Debug)]
-pub struct LinkAttributeWrite<'a, 'b, T: ?Sized>(&'b mut LinkFormatWrite<'a, T>);
+pub struct LinkAttributeWrite<'a, 'b, T: ?Sized>(
+    &'b mut LinkFormatWrite<'a, T>,
+);
 
 impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
     /// Prints just the key and an equals sign, prefixed with ';'
@@ -668,7 +694,8 @@ impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
 
         for c in value.chars() {
             if (c == '"' || c == '\\') && self.0.error.is_none() {
-                self.0.error = self.0.write.write_char(QUOTE_ESCAPE_CHAR).err();
+                self.0.error =
+                    self.0.write.write_char(QUOTE_ESCAPE_CHAR).err();
             }
 
             if self.0.error.is_none() {
@@ -790,7 +817,9 @@ mod test {
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("ct", r#"40"#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -816,7 +845,9 @@ mod test {
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/temp");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("if", r#""sensor""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -831,7 +862,9 @@ mod test {
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/light");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("if", r#""sensor""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -859,11 +892,15 @@ mod test {
             Some(Ok((link, mut attr_iter))) => {
                 assert_eq!(link, "/sensors");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("ct", r#"40"#))
                 );
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("title", r#""Sensor Index""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -877,11 +914,15 @@ mod test {
             Some(Ok((link, mut attr_iter))) => {
                 assert_eq!(link, "/sensors/temp");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("rt", r#""temperature-c""#))
                 );
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("if", r#""sensor""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -895,11 +936,15 @@ mod test {
             Some(Ok((link, mut attr_iter))) => {
                 assert_eq!(link, "/sensors/light");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("rt", r#""light-lux""#))
                 );
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("if", r#""sensor""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -913,11 +958,15 @@ mod test {
             Some(Ok((link, mut attr_iter))) => {
                 assert_eq!(link, "http://www.example.com/sensors/t123");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("anchor", r#""/sensors/temp""#))
                 );
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("rel", r#""describedby""#))
                 );
                 assert_eq!(attr_iter.next(), None);
@@ -931,11 +980,15 @@ mod test {
             Some(Ok((link, mut attr_iter))) => {
                 assert_eq!(link, "/t");
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("anchor", r#""/sensors/temp""#))
                 );
                 assert_eq!(
-                    attr_iter.next().map(|attr| (attr.0, attr.1.into_raw_str())),
+                    attr_iter
+                        .next()
+                        .map(|attr| (attr.0, attr.1.into_raw_str())),
                     Some(("rel", r#""alternate""#))
                 );
                 assert_eq!(attr_iter.next(), None);
