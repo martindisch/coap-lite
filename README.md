@@ -9,7 +9,8 @@ A lightweight, `#![no_std]` CoAP message manipulation crate, ideal for
 embedded environments.
 
 It's based on the improved low-level message handling code from the [coap]
-crate, made to work in bare metal environments.
+crate as well as [rust-async-coap], made to work in bare metal
+environments.
 
 ## Overview
 This crate provides several types that can be used to build, modify and
@@ -55,6 +56,7 @@ assert_eq!(b"Hello World!", &response.payload[..]);
 ```
 
 [coap]: https://github.com/covertness/coap-rs
+[rust-async-coap]: https://github.com/google/rust-async-coap
 
 <!-- cargo-sync-readme end -->
 

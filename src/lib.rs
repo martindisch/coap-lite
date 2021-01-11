@@ -2,7 +2,8 @@
 //! embedded environments.
 //!
 //! It's based on the improved low-level message handling code from the [coap]
-//! crate, made to work in bare metal environments.
+//! crate as well as [rust-async-coap], made to work in bare metal
+//! environments.
 //!
 //! ## Overview
 //! This crate provides several types that can be used to build, modify and
@@ -48,6 +49,7 @@
 //! ```
 //!
 //! [coap]: https://github.com/covertness/coap-rs
+//! [rust-async-coap]: https://github.com/google/rust-async-coap
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
