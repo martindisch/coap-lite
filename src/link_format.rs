@@ -21,7 +21,7 @@
 //! [IETF-RFC6690 CoAP link-formats]: https://tools.ietf.org/html/rfc6690
 
 use super::*;
-use alloc::borrow::Cow;
+use alloc::{borrow::Cow, string::ToString};
 use core::fmt::{Display, Write};
 use core::iter::FusedIterator;
 
@@ -418,7 +418,7 @@ impl<'a> Iterator for LinkAttributeParser<'a> {
 /// [`quoted-string`]: https://tools.ietf.org/html/rfc2616#section-2.2
 #[derive(Clone, Debug)]
 pub struct Unquote<'a> {
-    inner: std::str::Chars<'a>,
+    inner: core::str::Chars<'a>,
     state: UnquoteState,
 }
 
@@ -724,6 +724,7 @@ impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use alloc::string::{String, ToString};
 
     #[test]
     fn link_format_write_1() {
@@ -814,6 +815,7 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
+                #[cfg(std)]
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors");
                 assert_eq!(
@@ -842,6 +844,7 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
+                #[cfg(std)]
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/temp");
                 assert_eq!(
@@ -859,6 +862,7 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
+                #[cfg(std)]
                 eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/light");
                 assert_eq!(
