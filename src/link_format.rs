@@ -815,8 +815,6 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
-                #[cfg(std)]
-                eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors");
                 assert_eq!(
                     attr_iter
@@ -844,8 +842,6 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
-                #[cfg(std)]
-                eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/temp");
                 assert_eq!(
                     attr_iter
@@ -862,8 +858,6 @@ mod test {
 
         match parser.next() {
             Some(Ok((link, mut attr_iter))) => {
-                #[cfg(std)]
-                eprintln!("attr_iter: {:?}", attr_iter);
                 assert_eq!(link, "/sensors/light");
                 assert_eq!(
                     attr_iter
