@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-// Modifications copyright (C) 2021 Jiayi Hu
+// Modifications copyright (c) 2021 Jiayi Hu
 
 //! Mechanisms and constants for encoding and decoding [IETF-RFC6690 CoAP
 //! link-formats].

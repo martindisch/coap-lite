@@ -69,8 +69,8 @@ Licensed under either of
 at your option.
 
 This is a modification of the [coap](https://github.com/covertness/coap-rs)
-crate, its license is in
-[LICENSE-3RD-PARTY](LICENSE-3RD-PARTY).
+and [rust-async-coap](https://github.com/google/rust-async-coap) crates, their
+licenses are in [LICENSE-3RD-PARTY](LICENSE-3RD-PARTY).
 
 ### Contribution
 
