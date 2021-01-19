@@ -13,7 +13,7 @@
 // limitations under the License.
 //
 
-// Modifications copyright (c) 2021 Jiayi Hu
+// Modifications copyright (c) 2021 Jiayi Hu, Martin Disch
 
 //! Mechanisms and constants for encoding and decoding [IETF-RFC6690 CoAP
 //! link-formats].
@@ -634,7 +634,7 @@ pub struct LinkAttributeWrite<'a, 'b, T: ?Sized>(
 
 impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
     /// Prints just the key and an equals sign, prefixed with ';'
-    fn internal_attr_key_eq(&mut self, key: &'static str) {
+    fn internal_attr_key_eq(&mut self, key: &str) {
         debug_assert!(key
             .find(|c: char| c.is_ascii_whitespace() || c == '=')
             .is_none());
@@ -654,7 +654,7 @@ impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
 
     /// Adds an attribute to the link, only quoting the value if it contains
     /// non-ascii-alphanumeric characters.
-    pub fn attr(mut self, key: &'static str, value: &str) -> Self {
+    pub fn attr(mut self, key: &str, value: &str) -> Self {
         if value.find(|c: char| !c.is_ascii_alphanumeric()).is_some() {
             return self.attr_quoted(key, value);
         }
@@ -669,7 +669,7 @@ impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
     }
 
     /// Adds an attribute to the link that has u32 value.
-    pub fn attr_u32(mut self, key: &'static str, value: u32) -> Self {
+    pub fn attr_u32(mut self, key: &str, value: u32) -> Self {
         self.internal_attr_key_eq(key);
 
         if self.0.error.is_none() {
@@ -680,12 +680,12 @@ impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
     }
 
     /// Adds an attribute to the link that has u16 value.
-    pub fn attr_u16(self, key: &'static str, value: u16) -> Self {
+    pub fn attr_u16(self, key: &str, value: u16) -> Self {
         self.attr_u32(key, value as u32)
     }
 
     /// Adds an attribute to the link, unconditionally quoting the value.
-    pub fn attr_quoted(mut self, key: &'static str, value: &str) -> Self {
+    pub fn attr_quoted(mut self, key: &str, value: &str) -> Self {
         self.internal_attr_key_eq(key);
 
         if self.0.error.is_none() {
