@@ -5,21 +5,89 @@
 
 <!-- cargo-sync-readme start -->
 
-A lightweight, `#![no_std]` CoAP message manipulation crate, ideal for
-embedded environments.
+A lightweight low-level CoAP message manipulation crate.
 
-It's based on the improved low-level message handling code from the [coap]
-crate as well as [rust-async-coap], made to work in bare metal
+Its goal is to be compliant with the CoAP standards and to provide a building
+block for libraries (e.g. [coap](https://github.com/Covertness/coap-rs)) and
+applications.
+
+`coap-lite` supports `#![no_std]` and is ideal also for embedded environments.
+
+It was originally based on the improved low-level message handling code from
+the [coap] crate as well as [rust-async-coap], made to work in bare metal
 environments.
 
-## Overview
+## Supported RFCs
+
+- CoAP [RFC 7252](https://tools.ietf.org/html/rfc7252)
+- CoAP Observe Option [RFC 7641](https://tools.ietf.org/html/rfc7641)
+- Too Many Requests Response Code [RFC 8516](https://tools.ietf.org/html/rfc8516)
+- Constrained RESTful Environments (CoRE) Link Format [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
+
+## Usage
+
 This crate provides several types that can be used to build, modify and
 encode/decode CoAP messages to/from their byte representation.
 
-It does require allocation, so you might have to set a global allocator
-depending on your target.
+**NOTE for no_std users**: it does require allocation, so you might have to
+set a global allocator depending on your target.
 
-## Usage
+### Client
+
+The following example uses `std::net::UdpSocket` to send the UDP packet but
+you can use anything, e.g. [smoltcp](https://github.com/smoltcp-rs/smoltcp)
+for embedded.
+
+```rust
+use coap_lite::{
+    CoapRequest, RequestType as Method
+};
+use std::net::{SocketAddr, UdpSocket};
+
+fn main() {
+    let mut request: CoapRequest<SocketAddr> = CoapRequest::new();
+    
+    request.set_method(Method::Get);
+    request.set_path("/test");
+
+    let socket = UdpSocket::bind("127.0.0.1:0").unwrap();
+
+    let packet = request.message.to_bytes().unwrap();
+    socket.send_to(&packet[..], "127.0.0.1:5683").expect("Could not send the data");
+}
+```
+
+### Server
+
+```rust
+use coap_lite::{CoapRequest, Packet};
+use std::net::{UdpSocket};
+
+fn main() {
+    let socket = UdpSocket::bind("127.0.0.1:5683").unwrap();
+    let mut buf = [0; 100];
+    let (size, src) = socket.recv_from(&mut buf).expect("Didn't receive data");
+
+    println!("Payload {:x?}", &buf[..size]);
+
+    let packet = Packet::from_bytes(&buf[..size]).unwrap();
+    let request = CoapRequest::from_packet(packet, src);
+
+    let method = request.get_method().clone();
+    let path = request.get_path();
+
+    println!("Received CoAP request '{:?} {}' from {}", method, path, src);
+
+    let mut response = request.response.unwrap();
+    response.message.payload = b"OK".to_vec();
+
+    let packet = response.message.to_bytes().unwrap();
+    socket.send_to(&packet[..], &src).expect("Could not send the data");
+}
+```
+
+### Low-level binary conversion
+
 ```rust
 use coap_lite::{
     CoapOption, MessageClass, MessageType,
