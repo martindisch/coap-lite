@@ -62,7 +62,7 @@ use core::iter::FusedIterator;
 /// [IETF-RFC8288]: https://tools.ietf.org/html/rfc8288
 /// [Section 3.3]: https://tools.ietf.org/html/rfc8288#section-3.3
 /// [IETF-RFC6690]: https://tools.ietf.org/html/rfc6690
-pub const LINK_ATTR_REL: &'static str = "rel";
+pub const LINK_ATTR_REL: &str = "rel";
 
 /// Anchor attribute.
 ///
@@ -71,24 +71,24 @@ pub const LINK_ATTR_REL: &'static str = "rel";
 /// against the document context URI.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.2">RFC8288, Section 3.2</a>
-pub const LINK_ATTR_ANCHOR: &'static str = "anchor";
+pub const LINK_ATTR_ANCHOR: &str = "anchor";
 
 /// A hint indicating what the language of the result of dereferencing the link
 /// should be.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
-pub const LINK_ATTR_HREFLANG: &'static str = "hreflang";
+pub const LINK_ATTR_HREFLANG: &str = "hreflang";
 
 /// Media Attribute. Used to indicate intended destination medium or media for
 /// style information.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
-pub const LINK_ATTR_MEDIA: &'static str = "media";
+pub const LINK_ATTR_MEDIA: &str = "media";
 
 /// Human-readable label describing the resource.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
-pub const LINK_ATTR_TITLE: &'static str = "title";
+pub const LINK_ATTR_TITLE: &str = "title";
 
 /// Human-readable label describing the resource, along with language
 /// information.
@@ -105,7 +105,7 @@ pub const LINK_ATTR_TITLE: &'static str = "title";
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 /// * <a href="https://tools.ietf.org/html/rfc8187">RFC8187</a>
-pub const LINK_ATTR_TITLE_STAR: &'static str = "title*";
+pub const LINK_ATTR_TITLE_STAR: &str = "title*";
 
 /// MIME content type attribute.
 ///
@@ -113,7 +113,7 @@ pub const LINK_ATTR_TITLE_STAR: &'static str = "title*";
 ///
 /// * <a href="https://tools.ietf.org/html/rfc8288#section-3.4.1">RFC8288, Section 3.4.1</a>
 #[doc(hidden)]
-pub const LINK_ATTR_TYPE: &'static str = "type";
+pub const LINK_ATTR_TYPE: &str = "type";
 
 /// Resource Type Attribute.
 ///
@@ -122,7 +122,7 @@ pub const LINK_ATTR_TYPE: &'static str = "type";
 /// a noun describing the resource.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.1">RFC6690, Section 3.1</a>
-pub const LINK_ATTR_RESOURCE_TYPE: &'static str = "rt";
+pub const LINK_ATTR_RESOURCE_TYPE: &str = "rt";
 
 /// Interface Description Attribute.
 ///
@@ -133,7 +133,7 @@ pub const LINK_ATTR_RESOURCE_TYPE: &'static str = "rt";
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.2">RFC6690, Section 3.2</a>
 ///
-pub const LINK_ATTR_INTERFACE_DESCRIPTION: &'static str = "if";
+pub const LINK_ATTR_INTERFACE_DESCRIPTION: &str = "if";
 
 /// The estimated maximum size of the fetched resource.
 ///
@@ -146,11 +146,11 @@ pub const LINK_ATTR_INTERFACE_DESCRIPTION: &'static str = "if";
 /// once in a link.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc6690#section-3.3">RFC6690, Section 3.3</a>
-pub const LINK_ATTR_MAXIMUM_SIZE_ESTIMATE: &'static str = "sz";
+pub const LINK_ATTR_MAXIMUM_SIZE_ESTIMATE: &str = "sz";
 
 /// The value of this resource expressed as a human-readable string. Must
 /// beless than 63 bytes.
-pub const LINK_ATTR_VALUE: &'static str = "v";
+pub const LINK_ATTR_VALUE: &str = "v";
 
 /// Content-Format Code(s).
 ///
@@ -158,45 +158,45 @@ pub const LINK_ATTR_VALUE: &'static str = "v";
 /// specified in an Accept option.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc7252#section-7.2.1">RFC7252, Section 7.2.1</a>
-pub const LINK_ATTR_CONTENT_FORMAT: &'static str = "ct";
+pub const LINK_ATTR_CONTENT_FORMAT: &str = "ct";
 
 /// Identifies this resource as observable if present.
 ///
 /// * <a href="https://tools.ietf.org/html/rfc7641#section-6">RFC7641, Section 6</a>
-pub const LINK_ATTR_OBSERVABLE: &'static str = "obs";
+pub const LINK_ATTR_OBSERVABLE: &str = "obs";
 
 /// Name of the endpoint, max 63 bytes.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_ENDPOINT_NAME: &'static str = "ep";
+pub const LINK_ATTR_ENDPOINT_NAME: &str = "ep";
 
 /// Lifetime of the registration in seconds. Valid values are between
 /// 60-4294967295, inclusive.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_REGISTRATION_LIFETIME: &'static str = "lt";
+pub const LINK_ATTR_REGISTRATION_LIFETIME: &str = "lt";
 
 /// Sector to which this endpoint belongs. Must be less than 63 bytes.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_SECTOR: &'static str = "d";
+pub const LINK_ATTR_SECTOR: &str = "d";
 
 /// The scheme, address and point and path at which this server is available.
 ///
 /// MUST be a valid URI.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-5.3">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_REGISTRATION_BASE_URI: &'static str = "base";
+pub const LINK_ATTR_REGISTRATION_BASE_URI: &str = "base";
 
 /// Name of a group in this RD. Must be less than 63 bytes.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-6.1">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_GROUP_NAME: &'static str = "gp";
+pub const LINK_ATTR_GROUP_NAME: &str = "gp";
 
 /// Semantic name of the endpoint. Must be less than 63 bytes.
 ///
 /// * <a href="https://goo.gl/6e2s7C#section-10.3.1">draft-ietf-core-resource-directory-14</a>
-pub const LINK_ATTR_ENDPOINT_TYPE: &'static str = "et";
+pub const LINK_ATTR_ENDPOINT_TYPE: &str = "et";
 
 /// Error type for parsing a link format.
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
