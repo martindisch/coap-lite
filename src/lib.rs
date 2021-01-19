@@ -1,28 +1,29 @@
 //! A lightweight low-level CoAP message manipulation crate.
 //!
-//! Its goal is to be compliant with the CoAP standards and to provide a building
-//! block for libraries (e.g. [coap](https://github.com/Covertness/coap-rs)) and
-//! applications.
+//! Its goal is to be compliant with the CoAP standards and to provide a
+//! building block for libraries (e.g.
+//! [coap](https://github.com/Covertness/coap-rs)) and applications.
 //!
-//! `coap-lite` supports `#![no_std]` and is ideal also for embedded environments.
+//! `coap-lite` supports `#![no_std]` and embedded environments.
 //!
-//! It was originally based on the improved low-level message handling code from
-//! the [coap] crate as well as [rust-async-coap], made to work in bare metal
-//! environments.
+//! It was originally based on the improved low-level message handling code
+//! from the [coap] crate as well as [rust-async-coap], made to work in bare
+//! metal environments.
 //!
 //! ## Supported RFCs
 //!
 //! - CoAP [RFC 7252](https://tools.ietf.org/html/rfc7252)
 //! - CoAP Observe Option [RFC 7641](https://tools.ietf.org/html/rfc7641)
 //! - Too Many Requests Response Code [RFC 8516](https://tools.ietf.org/html/rfc8516)
-//! - Constrained RESTful Environments (CoRE) Link Format [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
+//! - Constrained RESTful Environments (CoRE) Link Format
+//!   [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
 //!
 //! ## Usage
 //!
 //! This crate provides several types that can be used to build, modify and
 //! encode/decode CoAP messages to/from their byte representation.
 //!
-//! **NOTE for no_std users**: it does require allocation, so you might have to
+//! **Note for no_std users**: it does require allocation, so you might have to
 //! set a global allocator depending on your target.
 //!
 //! ### Client
@@ -39,7 +40,7 @@
 //!
 //! fn main() {
 //!     let mut request: CoapRequest<SocketAddr> = CoapRequest::new();
-//!     
+//!
 //!     request.set_method(Method::Get);
 //!     request.set_path("/test");
 //!
