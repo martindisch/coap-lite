@@ -104,6 +104,10 @@ impl MutableWritableMessage for Packet {
     fn payload_mut(&mut self) -> &mut [u8] {
         &mut self.payload
     }
+    fn payload_mut_with_len(&mut self, len: usize) -> &mut [u8] {
+        self.payload.resize(len, 0);
+        &mut self.payload
+    }
     fn truncate(&mut self, length: usize) {
         self.payload.truncate(length)
     }
