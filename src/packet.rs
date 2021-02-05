@@ -41,11 +41,11 @@ pub enum CoapOption {
     Size1,
     Size2,
     NoResponse,
-    Unknown(usize),
+    Unknown(u16),
 }
 
-impl From<usize> for CoapOption {
-    fn from(number: usize) -> CoapOption {
+impl From<u16> for CoapOption {
+    fn from(number: u16) -> CoapOption {
         match number {
             1 => CoapOption::IfMatch,
             3 => CoapOption::UriHost,
@@ -73,8 +73,8 @@ impl From<usize> for CoapOption {
     }
 }
 
-impl From<CoapOption> for usize {
-    fn from(option: CoapOption) -> usize {
+impl From<CoapOption> for u16 {
+    fn from(option: CoapOption) -> u16 {
         match option {
             CoapOption::IfMatch => 1,
             CoapOption::UriHost => 3,
@@ -202,13 +202,13 @@ impl From<ObserveOption> for usize {
 pub struct Packet {
     pub header: Header,
     token: Vec<u8>,
-    options: BTreeMap<usize, LinkedList<Vec<u8>>>,
+    options: BTreeMap<u16, LinkedList<Vec<u8>>>,
     pub payload: Vec<u8>,
 }
 
 /// An iterator over the options of a packet.
 pub type Options<'a> =
-    alloc::collections::btree_map::Iter<'a, usize, LinkedList<Vec<u8>>>;
+    alloc::collections::btree_map::Iter<'a, u16, LinkedList<Vec<u8>>>;
 
 impl Packet {
     /// Creates a new packet.
@@ -325,7 +325,7 @@ impl Packet {
 
                 let mut idx = options_start;
                 let mut options_number = 0;
-                let mut options: BTreeMap<usize, LinkedList<Vec<u8>>> =
+                let mut options: BTreeMap<u16, LinkedList<Vec<u8>>> =
                     BTreeMap::new();
                 while idx < buf.len() {
                     let byte = buf[idx];
@@ -334,7 +334,7 @@ impl Packet {
                         break;
                     }
 
-                    let mut delta = (byte >> 4) as usize;
+                    let mut delta = (byte >> 4) as u16;
                     let mut length = (byte & 0xF) as usize;
 
                     idx += 1;
@@ -345,7 +345,7 @@ impl Packet {
                             if idx >= buf.len() {
                                 return Err(MessageError::InvalidOptionLength);
                             }
-                            delta = buf[idx] as usize + 13;
+                            delta = (buf[idx] + 13).into();
                             idx += 1;
                         }
                         14 => {
@@ -353,13 +353,12 @@ impl Packet {
                                 return Err(MessageError::InvalidOptionLength);
                             }
 
-                            delta = (u16::from_be(u8_to_unsigned_be!(
+                            delta = u16::from_be(u8_to_unsigned_be!(
                                 buf,
                                 idx,
                                 idx + 1,
                                 u16
-                            )) + 269)
-                                as usize;
+                            )) + 269;
                             idx += 2;
                         }
                         15 => {
