@@ -1,6 +1,6 @@
 use coap_message::{
     Code, MinimalWritableMessage, MutableWritableMessage, OptionNumber,
-    ReadableMessage,
+    ReadableMessage, SeekWritableMessage, WithSortedOptions,
 };
 
 use crate::{CoapOption, MessageClass, Packet};
@@ -76,6 +76,8 @@ impl<'a> ReadableMessage<'a> for Packet {
     }
 }
 
+impl<'a> WithSortedOptions<'a> for Packet {}
+
 impl OptionNumber for CoapOption {}
 
 impl MinimalWritableMessage for Packet {
@@ -116,3 +118,5 @@ impl MutableWritableMessage for Packet {
         }
     }
 }
+
+impl SeekWritableMessage for Packet {}
