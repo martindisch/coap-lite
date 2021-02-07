@@ -3,9 +3,12 @@
 use coap_lite::{CoapRequest, Packet};
 use std::net::UdpSocket;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use coap_handler::implementations::{HandlerBuilder, TypedStaticResponse, SimpleCBORWrapper, SimpleCBORHandler, SimpleRenderable};
+use coap_handler::implementations::{
+    HandlerBuilder, SimpleCBORHandler, SimpleCBORWrapper, SimpleRenderable,
+    TypedStaticResponse,
+};
 use coap_handler::Handler as _;
 
 use coap_numbers;
@@ -17,11 +20,15 @@ fn main() {
 
     impl SimpleRenderable for Time {
         fn render<W: core::fmt::Write>(&mut self, writer: &mut W) {
-            write!(writer, "It's {} seconds past epoch.",
-                   std::time::SystemTime::now().duration_since(std::time::SystemTime::UNIX_EPOCH)
-                       .unwrap()
-                       .as_secs()
-                   ).unwrap();
+            write!(
+                writer,
+                "It's {} seconds past epoch.",
+                std::time::SystemTime::now()
+                    .duration_since(std::time::SystemTime::UNIX_EPOCH)
+                    .unwrap()
+                    .as_secs()
+            )
+            .unwrap();
         }
 
         fn content_format(&self) -> Option<u16> {
@@ -109,4 +116,3 @@ impl SimpleCBORHandler for &mut StoredCBOR {
         coap_numbers::code::METHOD_NOT_ALLOWED
     }
 }
-

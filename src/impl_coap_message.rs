@@ -9,8 +9,8 @@ impl Code for MessageClass {
     // Conveniently, it already satisfies the requirements
 }
 
-// pub only in name: We don't expose this whole module, so all users will know is that this is a
-// suitable iterator.
+// pub only in name: We don't expose this whole module, so all users will know
+// is that this is a suitable iterator.
 pub struct MessageOptionAdapter<'a> {
     head: Option<(u16, alloc::collections::linked_list::Iter<'a, Vec<u8>>)>,
     // right from Packet::options -- fortunately that doesn't say that it returns an impl Iterator
@@ -21,8 +21,8 @@ pub struct MessageOptionAdapter<'a> {
     >,
 }
 
-// pub only in name: We don't expose this whole module, so all users will know is that this
-// implements coap_message::MessageOption
+// pub only in name: We don't expose this whole module, so all users will know
+// is that this implements coap_message::MessageOption
 pub struct MessageOption<'a> {
     number: u16,
     value: &'a [u8],
