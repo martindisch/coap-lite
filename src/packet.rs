@@ -202,7 +202,7 @@ impl From<ObserveOption> for usize {
 pub struct Packet {
     pub header: Header,
     token: Vec<u8>,
-    options: BTreeMap<u16, LinkedList<Vec<u8>>>,
+    pub(crate) options: BTreeMap<u16, LinkedList<Vec<u8>>>,
     pub payload: Vec<u8>,
 }
 

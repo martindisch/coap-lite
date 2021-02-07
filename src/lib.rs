@@ -136,6 +136,9 @@ mod packet;
 mod request;
 mod response;
 
+#[cfg(feature = "with-coap-message")]
+mod impl_coap_message;
+
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
 };
