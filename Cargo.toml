@@ -16,10 +16,24 @@ edition = "2018"
 doctest = false
 
 [dependencies]
+coap-message = { version = "0.1.1", optional = true }
+
+# actually they are dev-dependencies, but those can't be optional
+coap-handler = { version = "0.0.2", optional = true }
+serde = { version = "*", default-features = false, features = [ "alloc" ], optional = true }
+coap-numbers = { version = "^0.1", optional = true }
 
 [features]
 default = ["std"]
 std = []
 
+with-coap-message = [ "coap-message" ]
+
+example-server_coaphandler = [ "with-coap-message", "coap-handler", "serde", "coap-numbers" ]
+
 [badges]
 maintenance = { status = "passively-maintained" }
+
+[[example]]
+name = "server_coaphandler"
+required-features = [ "example-server_coaphandler" ]
