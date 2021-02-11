@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use coap_handler::implementations::{
     HandlerBuilder, SimpleCBORHandler, SimpleCBORWrapper, SimpleRenderable,
-    TypedStaticResponse,
+    SimpleRendered, TypedStaticResponse,
 };
 use coap_handler::Handler as _;
 
@@ -44,8 +44,8 @@ fn main() {
                 contentformat: &[40],
             },
         )
-        .at(&[], "Welcome to the Demo server")
-        .at(&["time"], Time)
+        .at(&[], SimpleRendered("Welcome to the Demo server"))
+        .at(&["time"], SimpleRendered(Time))
         .at(&["cbor"], SimpleCBORWrapper::new(&mut value_at_cbor));
 
     let socket = UdpSocket::bind("127.0.0.1:5683").unwrap();
