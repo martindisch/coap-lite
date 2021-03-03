@@ -143,7 +143,7 @@ mod impl_coap_message;
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
 };
-pub use observe::Subject;
+pub use observe::{create_notification, Subject};
 pub use packet::{CoapOption, ContentFormat, ObserveOption, Packet};
 pub use request::CoapRequest;
 pub use response::CoapResponse;
