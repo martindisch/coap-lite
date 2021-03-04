@@ -132,6 +132,8 @@ pub mod error;
 
 mod header;
 pub mod link_format;
+#[macro_use]
+mod log;
 mod observe;
 mod packet;
 mod request;

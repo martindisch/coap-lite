@@ -50,6 +50,12 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
             message_id: None,
         };
 
+        coap_info!(
+            "Registering observer {} for resource {}",
+            observer_endpoint,
+            resource_path
+        );
+
         let resource =
             self.resources.entry(resource_path).or_insert(Resource {
                 observers: Vec::new(),
@@ -79,6 +85,12 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
             });
 
             if let Some(position) = position {
+                coap_info!(
+                    "Deregistering observer {} for resource {}",
+                    observer_endpoint,
+                    resource_path
+                );
+
                 resource.observers.remove(position);
             }
         }
@@ -114,7 +126,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         let observer_endpoint = request.source.as_ref().unwrap();
         let message_id = request.message.header.message_id;
 
-        for (_resource_path, resource) in self.resources.iter_mut() {
+        for (resource_path, resource) in self.resources.iter_mut() {
             let observer = resource.observers.iter_mut().find(|x| {
                 if let Some(observe_msg_id) = x.message_id {
                     // Unacknowledgement doesn't officially require the token to be passed in the ACK
@@ -127,6 +139,8 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
             });
 
             if let Some(observer) = observer {
+                coap_debug!("Received ack for resource {}", resource_path);
+
                 observer.unacknowledged_messages = 0;
                 observer.message_id = None;
             }
