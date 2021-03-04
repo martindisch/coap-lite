@@ -102,6 +102,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
     /// updates.
     pub fn resource_changed(&mut self, resource: &str, message_id: u16) {
         let unacknowledged_limit = self.unacknowledged_limit;
+        coap_debug!("Resource changed");
 
         self.resources
             .entry(resource.to_string())
@@ -114,9 +115,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
                 });
 
                 resource.observers.retain(|observer| {
-                    observer.message_id.is_some()
-                        && observer.unacknowledged_messages
-                            <= unacknowledged_limit
+                    observer.unacknowledged_messages <= unacknowledged_limit
                 });
             });
     }
