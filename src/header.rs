@@ -108,12 +108,12 @@ impl From<u8> for MessageClass {
             }
             0x9d => MessageClass::Response(ResponseType::TooManyRequests),
 
-            0x90 => MessageClass::Response(ResponseType::InternalServerError),
-            0x91 => MessageClass::Response(ResponseType::NotImplemented),
-            0x92 => MessageClass::Response(ResponseType::BadGateway),
-            0x93 => MessageClass::Response(ResponseType::ServiceUnavailable),
-            0x94 => MessageClass::Response(ResponseType::GatewayTimeout),
-            0x95 => MessageClass::Response(ResponseType::ProxyingNotSupported),
+            0xA0 => MessageClass::Response(ResponseType::InternalServerError),
+            0xA1 => MessageClass::Response(ResponseType::NotImplemented),
+            0xA2 => MessageClass::Response(ResponseType::BadGateway),
+            0xA3 => MessageClass::Response(ResponseType::ServiceUnavailable),
+            0xA4 => MessageClass::Response(ResponseType::GatewayTimeout),
+            0xA5 => MessageClass::Response(ResponseType::ProxyingNotSupported),
             _ => MessageClass::Reserved,
         }
     }
@@ -155,12 +155,12 @@ impl From<MessageClass> for u8 {
             }
             MessageClass::Response(ResponseType::TooManyRequests) => 0x9d,
 
-            MessageClass::Response(ResponseType::InternalServerError) => 0x90,
-            MessageClass::Response(ResponseType::NotImplemented) => 0x91,
-            MessageClass::Response(ResponseType::BadGateway) => 0x92,
-            MessageClass::Response(ResponseType::ServiceUnavailable) => 0x93,
-            MessageClass::Response(ResponseType::GatewayTimeout) => 0x94,
-            MessageClass::Response(ResponseType::ProxyingNotSupported) => 0x95,
+            MessageClass::Response(ResponseType::InternalServerError) => 0xA0,
+            MessageClass::Response(ResponseType::NotImplemented) => 0xA1,
+            MessageClass::Response(ResponseType::BadGateway) => 0xA2,
+            MessageClass::Response(ResponseType::ServiceUnavailable) => 0xA3,
+            MessageClass::Response(ResponseType::GatewayTimeout) => 0xA4,
+            MessageClass::Response(ResponseType::ProxyingNotSupported) => 0xA5,
 
             _ => 0xFF,
         }
