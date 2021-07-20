@@ -56,11 +56,11 @@ impl<'a> coap_message::MessageOption for MessageOption<'a> {
     }
 }
 
-impl<'a> ReadableMessage<'a> for Packet {
+impl ReadableMessage for Packet {
     type Code = MessageClass;
 
-    type MessageOption = MessageOption<'a>;
-    type OptionsIter = MessageOptionAdapter<'a>;
+    type MessageOption<'a> = MessageOption<'a>;
+    type OptionsIter<'a> = MessageOptionAdapter<'a>;
 
     fn code(&self) -> Self::Code {
         self.header.code
@@ -68,15 +68,15 @@ impl<'a> ReadableMessage<'a> for Packet {
     fn payload(&self) -> &[u8] {
         &self.payload
     }
-    fn options(&'a self) -> Self::OptionsIter {
+    fn options<'a>(&'a self) -> Self::OptionsIter<'a> {
         MessageOptionAdapter {
-            raw_iter: self.options(),
+            raw_iter: (&self.options).iter(),
             head: None,
         }
     }
 }
 
-impl<'a> WithSortedOptions<'a> for Packet {}
+impl<'a> WithSortedOptions for Packet {}
 
 impl OptionNumber for CoapOption {}
 
