@@ -20,15 +20,13 @@ coap-message = { version = "^0.2.0-alpha.0", optional = true }
 
 # actually they are dev-dependencies, but those can't be optional
 coap-handler = { version = "^0.1.0-alpha.0", optional = true }
-serde = { version = "1.0.123", default-features = false, features = ["alloc"], optional = true }
-coap-numbers = { version = "^0.1", optional = true }
 
 [features]
 default = ["std"]
 std = []
 with-coap-message = ["coap-message"]
 
-example-server_coaphandler = ["with-coap-message", "coap-handler", "serde", "coap-numbers"]
+example-server_coaphandler = ["with-coap-message", "coap-handler"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
