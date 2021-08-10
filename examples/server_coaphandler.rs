@@ -1,11 +1,11 @@
 /// This is a very simple example using the coap_message/_handler abstractions.
 ///
 /// For an example that shows more advanced resources, see
-/// <https://gitlab.com/chrysn/coap-message-demos>, which has a coaplite example of its own, and
-/// features a much larger variety of interactive resources.
+/// <https://gitlab.com/chrysn/coap-message-demos>, which has a coaplite
+/// example of its own, and features a much larger variety of interactive
+/// resources.
 ///
 /// Note that this example requires nightly due to coap_handler's requirements.
-
 use coap_lite::{CoapRequest, Packet};
 use std::net::UdpSocket;
 
