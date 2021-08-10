@@ -268,7 +268,9 @@ impl Packet {
         let msb = (content_format >> 8) as u8;
         let lsb = (content_format & 0xFF) as u8;
 
-        let content_format: Vec<u8> = vec![msb, lsb];
+        let content_format: Vec<u8> =
+            if msb == 0 { vec![lsb] } else { vec![msb, lsb] };
+
         self.add_option(CoapOption::ContentFormat, content_format);
     }
 
@@ -276,9 +278,12 @@ impl Packet {
     pub fn get_content_format(&self) -> Option<ContentFormat> {
         if let Some(list) = self.get_option(CoapOption::ContentFormat) {
             if let Some(vector) = list.front() {
-                let msb = u16::from(vector[0]);
-                let lsb = u16::from(vector[1]);
-                let number = (msb << 8) + lsb;
+                if vector.len() == 0 {
+                    return None;
+                }
+
+                let number =
+                    vector.iter().fold(0, |acc, &b| (acc << 8) + b as u16);
 
                 return ContentFormat::try_from(number as usize).ok();
             }
@@ -659,9 +664,29 @@ mod test {
     #[test]
     fn test_encode_decode_content_format() {
         let mut packet = Packet::new();
+        packet.set_content_format(ContentFormat::TextPlain);
+        assert_eq!(
+            ContentFormat::TextPlain,
+            packet.get_content_format().unwrap()
+        )
+    }
+
+    #[test]
+    fn test_encode_decode_content_format_without_msb() {
+        let mut packet = Packet::new();
         packet.set_content_format(ContentFormat::ApplicationJSON);
         assert_eq!(
             ContentFormat::ApplicationJSON,
+            packet.get_content_format().unwrap()
+        )
+    }
+
+    #[test]
+    fn test_encode_decode_content_format_with_msb() {
+        let mut packet = Packet::new();
+        packet.set_content_format(ContentFormat::ApplicationSensmlXML);
+        assert_eq!(
+            ContentFormat::ApplicationSensmlXML,
             packet.get_content_format().unwrap()
         )
     }
