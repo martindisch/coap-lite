@@ -119,6 +119,7 @@ impl From<u8> for MessageClass {
             0xA3 => MessageClass::Response(ResponseType::ServiceUnavailable),
             0xA4 => MessageClass::Response(ResponseType::GatewayTimeout),
             0xA5 => MessageClass::Response(ResponseType::ProxyingNotSupported),
+            0xA8 => MessageClass::Response(ResponseType::HopLimitReached),
             _ => MessageClass::Reserved,
         }
     }
@@ -171,6 +172,7 @@ impl From<MessageClass> for u8 {
             MessageClass::Response(ResponseType::ServiceUnavailable) => 0xA3,
             MessageClass::Response(ResponseType::GatewayTimeout) => 0xA4,
             MessageClass::Response(ResponseType::ProxyingNotSupported) => 0xA5,
+            MessageClass::Response(ResponseType::HopLimitReached) => 0xA8,
 
             _ => 0xFF,
         }
@@ -233,6 +235,7 @@ pub enum ResponseType {
     ServiceUnavailable,
     GatewayTimeout,
     ProxyingNotSupported,
+    HopLimitReached,
 
     UnKnown,
 }
