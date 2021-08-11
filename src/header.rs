@@ -81,6 +81,9 @@ impl From<u8> for MessageClass {
             0x02 => MessageClass::Request(RequestType::Post),
             0x03 => MessageClass::Request(RequestType::Put),
             0x04 => MessageClass::Request(RequestType::Delete),
+            0x05 => MessageClass::Request(RequestType::Fetch),
+            0x06 => MessageClass::Request(RequestType::Patch),
+            0x07 => MessageClass::Request(RequestType::IPatch),
 
             0x41 => MessageClass::Response(ResponseType::Created),
             0x42 => MessageClass::Response(ResponseType::Deleted),
@@ -96,6 +99,7 @@ impl From<u8> for MessageClass {
             0x84 => MessageClass::Response(ResponseType::NotFound),
             0x85 => MessageClass::Response(ResponseType::MethodNotAllowed),
             0x86 => MessageClass::Response(ResponseType::NotAcceptable),
+            0x89 => MessageClass::Response(ResponseType::Conflict),
             0x8C => MessageClass::Response(ResponseType::PreconditionFailed),
             0x8D => {
                 MessageClass::Response(ResponseType::RequestEntityTooLarge)
@@ -106,6 +110,7 @@ impl From<u8> for MessageClass {
             0x88 => {
                 MessageClass::Response(ResponseType::RequestEntityIncomplete)
             }
+            0x96 => MessageClass::Response(ResponseType::UnprocessableEntity),
             0x9d => MessageClass::Response(ResponseType::TooManyRequests),
 
             0xA0 => MessageClass::Response(ResponseType::InternalServerError),
@@ -128,6 +133,9 @@ impl From<MessageClass> for u8 {
             MessageClass::Request(RequestType::Post) => 0x02,
             MessageClass::Request(RequestType::Put) => 0x03,
             MessageClass::Request(RequestType::Delete) => 0x04,
+            MessageClass::Request(RequestType::Fetch) => 0x05,
+            MessageClass::Request(RequestType::Patch) => 0x06,
+            MessageClass::Request(RequestType::IPatch) => 0x07,
 
             MessageClass::Response(ResponseType::Created) => 0x41,
             MessageClass::Response(ResponseType::Deleted) => 0x42,
@@ -143,6 +151,7 @@ impl From<MessageClass> for u8 {
             MessageClass::Response(ResponseType::NotFound) => 0x84,
             MessageClass::Response(ResponseType::MethodNotAllowed) => 0x85,
             MessageClass::Response(ResponseType::NotAcceptable) => 0x86,
+            MessageClass::Response(ResponseType::Conflict) => 0x89,
             MessageClass::Response(ResponseType::PreconditionFailed) => 0x8C,
             MessageClass::Response(ResponseType::RequestEntityTooLarge) => {
                 0x8D
@@ -153,6 +162,7 @@ impl From<MessageClass> for u8 {
             MessageClass::Response(ResponseType::RequestEntityIncomplete) => {
                 0x88
             }
+            MessageClass::Response(ResponseType::UnprocessableEntity) => 0x96,
             MessageClass::Response(ResponseType::TooManyRequests) => 0x9d,
 
             MessageClass::Response(ResponseType::InternalServerError) => 0xA0,
@@ -183,6 +193,9 @@ pub enum RequestType {
     Post,
     Put,
     Delete,
+    Fetch,
+    Patch,
+    IPatch,
     UnKnown,
 }
 
@@ -205,10 +218,12 @@ pub enum ResponseType {
     NotFound,
     MethodNotAllowed,
     NotAcceptable,
+    Conflict,
     PreconditionFailed,
     RequestEntityTooLarge,
     UnsupportedContentFormat,
     RequestEntityIncomplete,
+    UnprocessableEntity,
     TooManyRequests,
 
     // 500 Codes

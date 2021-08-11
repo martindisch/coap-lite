@@ -47,6 +47,9 @@ impl<Endpoint> CoapRequest<Endpoint> {
             MessageClass::Request(Method::Post) => &Method::Post,
             MessageClass::Request(Method::Put) => &Method::Put,
             MessageClass::Request(Method::Delete) => &Method::Delete,
+            MessageClass::Request(Method::Fetch) => &Method::Fetch,
+            MessageClass::Request(Method::Patch) => &Method::Patch,
+            MessageClass::Request(Method::IPatch) => &Method::IPatch,
             _ => &Method::UnKnown,
         }
     }
@@ -166,6 +169,9 @@ mod test {
         request.message.header.set_code("0.04");
         assert_eq!(&Method::Delete, request.get_method());
 
+        request.message.header.set_code("0.06");
+        assert_eq!(&Method::Patch, request.get_method());
+
         request.set_method(Method::Get);
         assert_eq!("0.01", request.message.header.get_code());
 
@@ -177,6 +183,9 @@ mod test {
 
         request.set_method(Method::Delete);
         assert_eq!("0.04", request.message.header.get_code());
+
+        request.set_method(Method::IPatch);
+        assert_eq!("0.07", request.message.header.get_code());
     }
 
     #[test]
