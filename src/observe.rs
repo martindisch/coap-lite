@@ -30,7 +30,8 @@ pub struct Resource<Endpoint: Display> {
 pub struct Subject<Endpoint: Display + PartialEq> {
     resources: BTreeMap<ResourcePath, Resource<Endpoint>>,
     unacknowledged_limit: u8,
-    // The Endpoint generic is needed internally for CoapRequest, but not for this struct fields
+    // The Endpoint generic is needed internally for CoapRequest, but not as an
+    // actual field for this struct
     phantom: PhantomData<Endpoint>,
 }
 
@@ -165,6 +166,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
     }
 }
 
+/// Creates a notification response for notifying observers about an update.
 pub fn create_notification(
     message_id: u16,
     token: Vec<u8>,
