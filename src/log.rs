@@ -5,7 +5,6 @@ macro_rules! coap_log {
 }
 
 #[cfg(not(feature = "log"))]
-#[macro_use]
 macro_rules! coap_log {
     ($level:ident, $($arg:expr),*) => { $( let _ = $arg; )* }
 }
