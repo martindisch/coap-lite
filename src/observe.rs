@@ -5,9 +5,7 @@ use alloc::{
 };
 use core::{fmt::Display, marker::PhantomData};
 
-use crate::{MessageClass, MessageType, Packet};
-
-use super::request::CoapRequest;
+use super::{request::CoapRequest, MessageClass, MessageType, Packet};
 
 const DEFAULT_UNACKNOWLEDGED_LIMIT: u8 = 10;
 
