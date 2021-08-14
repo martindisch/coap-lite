@@ -133,7 +133,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
                         && observe_msg_id == message_id;
                 }
 
-                return false;
+                false
             });
 
             if let Some(observer) = observer {
