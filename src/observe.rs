@@ -44,7 +44,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
 
         let observer = Observer {
             endpoint: observer_endpoint.clone(),
-            token: token.clone(),
+            token: token.to_vec(),
             unacknowledged_messages: 0,
             message_id: None,
         };

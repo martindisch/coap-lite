@@ -232,7 +232,7 @@ impl Packet {
     }
 
     /// Returns the token.
-    pub fn get_token(&self) -> &Vec<u8> {
+    pub fn get_token(&self) -> &[u8] {
         &self.token
     }
 
