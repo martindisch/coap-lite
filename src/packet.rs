@@ -4,6 +4,9 @@ use alloc::{
 };
 use core::convert::TryFrom;
 
+use crate::error::IncompatibleOptionValueFormat;
+use crate::option_value::{OptionValueType, OptionValueU16, OptionValueU32};
+
 use super::{
     error::{InvalidContentFormat, InvalidObserve, MessageError},
     header::{Header, HeaderRaw, MessageClass},
@@ -237,6 +240,11 @@ impl Packet {
         self.options.insert(tp.into(), value);
     }
 
+    /// Returns an option's first value as a convenience when only one is expected.
+    pub fn get_first_option(&self, tp: CoapOption) -> Option<&Vec<u8>> {
+        self.options.get(&tp.into()).and_then(|options| options.front())
+    }
+
     /// Returns an option's values.
     pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
         self.options.get(&tp.into())
@@ -262,51 +270,73 @@ impl Packet {
         }
     }
 
+    /// Sets an option's values using a structured option value format.
+    pub fn set_option_as<T: OptionValueType>(&mut self, tp: CoapOption, value: LinkedList<T>) {
+        let raw_value: LinkedList<Vec<u8>> = value.into_iter().map(|x| x.into()).collect();
+        self.set_option(tp, raw_value);
+    }
+
+    /// Returns an option's first value as a convenience when only one is expected.
+    pub fn get_first_option_as<T: OptionValueType>(&self, tp: CoapOption) -> Option<Result<T, IncompatibleOptionValueFormat>> {
+        // TODO: We only need a clone() of the value for string and opaque types but it's not clear to me how
+        // to express this in OptionValueType
+        self.get_first_option(tp).map(|value| T::try_from(value.clone()))
+    }
+
+    /// Returns an option's values all decoded using the specified structured option value format.
+    pub fn get_options_as<T: OptionValueType>(&self, tp: CoapOption) -> Option<LinkedList<Result<T, IncompatibleOptionValueFormat>>> {
+        self.get_option(tp)
+            .map(|options| {
+                options
+                    .iter()
+                    .map(|raw_value| T::try_from(raw_value.clone()))
+                    .collect::<LinkedList<_>>()
+            })
+    }
+
+    /// Adds an option value using a structured option value format.
+    pub fn add_option_as<T: OptionValueType>(&mut self, tp: CoapOption, value: T) {
+        self.add_option(tp, value.into());
+    }
+
     /// Sets the content-format.
     pub fn set_content_format(&mut self, cf: ContentFormat) {
-        let content_format: usize = cf.into();
-        let msb = (content_format >> 8) as u8;
-        let lsb = (content_format & 0xFF) as u8;
-
-        let content_format: Vec<u8> =
-            if msb == 0 { vec![lsb] } else { vec![msb, lsb] };
-
-        self.add_option(CoapOption::ContentFormat, content_format);
+        let content_format: u16 = u16::try_from(usize::from(cf)).unwrap();
+        self.add_option_as(CoapOption::ContentFormat, OptionValueU16(content_format));
     }
 
     /// Returns the content-format.
     pub fn get_content_format(&self) -> Option<ContentFormat> {
-        if let Some(list) = self.get_option(CoapOption::ContentFormat) {
-            if let Some(vector) = list.front() {
-                if vector.len() == 0 {
-                    return None;
-                }
-
-                let number =
-                    vector.iter().fold(0, |acc, &b| (acc << 8) + b as u16);
-
-                return ContentFormat::try_from(number as usize).ok();
-            }
-        }
-
-        None
+        self.get_first_option_as::<OptionValueU16>(CoapOption::ContentFormat)
+            .and_then(|option| option.ok())
+            .map(|value| usize::try_from(value.0).unwrap())
+            .and_then(|value| ContentFormat::try_from(value).ok())
     }
 
-    /// Sets the value of the observe option.
+    #[deprecated(note = "please use `set_observe_value` instead")]
     pub fn set_observe(&mut self, value: Vec<u8>) {
         self.clear_option(CoapOption::Observe);
         self.add_option(CoapOption::Observe, value);
     }
 
-    /// Returns the value of the observe option.
+    #[deprecated(note = "please use `get_observe_value` instead")]
     pub fn get_observe(&self) -> Option<&Vec<u8>> {
-        if let Some(list) = self.get_option(CoapOption::Observe) {
-            if let Some(flag) = list.front() {
-                return Some(flag);
-            }
-        }
+        self.get_option(CoapOption::Observe)
+            .and_then(|options| options.front())
+    }
 
-        None
+    /// Sets the value of the observe option.
+    pub fn set_observe_value(&mut self, value: u32) {
+        self.clear_option(CoapOption::Observe);
+        self.add_option_as(CoapOption::Observe, OptionValueU32(value));
+    }
+
+    /// Returns the value of the observe option.
+    pub fn get_observe_value(&self) -> Option<Result<u32, IncompatibleOptionValueFormat>> {
+        self.get_first_option_as::<OptionValueU32>(CoapOption::Observe)
+            .map(|option| {
+                option.map(|value| value.0)
+            })
     }
 
     /// Decodes a byte slice and constructs the equivalent packet.
@@ -559,7 +589,8 @@ impl Packet {
 
 #[cfg(test)]
 mod test {
-    use super::{super::header, *};
+    use crate::option_value::OptionValueString;
+    use super::{*, super::header};
 
     #[test]
     fn test_decode_packet_with_options() {
@@ -748,10 +779,40 @@ mod test {
     }
 
     #[test]
+    fn test_option_u32_format() {
+        let mut p = Packet::new();
+        let option_key = CoapOption::Observe;
+        let values = vec![0, 100, 1000, 10000, u32::MAX];
+        for &value in &values {
+            p.add_option_as(option_key, OptionValueU32(value));
+        }
+        let expected = values.iter()
+            .map(|&x| Ok(OptionValueU32(x)))
+            .collect::<LinkedList<_>>();
+        let actual = p.get_options_as::<OptionValueU32>(option_key);
+        assert_eq!(actual, Some(expected));
+    }
+
+    #[test]
+    fn test_option_utf8_format() {
+        let mut p = Packet::new();
+        let option_key = CoapOption::UriPath;
+        let values = vec!["", "simple", "unicode 😁 stuff" ];
+        for &value in &values {
+            p.add_option_as(option_key, OptionValueString(value.to_owned()));
+        }
+        let expected = values.iter()
+            .map(|&x| Ok(OptionValueString(x.to_owned())))
+            .collect::<LinkedList<_>>();
+        let actual = p.get_options_as::<OptionValueString>(option_key);
+        assert_eq!(actual, Some(expected));
+    }
+
+    #[test]
     fn observe() {
         let mut p = Packet::new();
-        assert_eq!(None, p.get_observe());
-        p.set_observe(vec![0]);
-        assert_eq!(Some(&vec![0]), p.get_observe());
+        assert_eq!(None, p.get_observe_value());
+        p.set_observe_value(0);
+        assert_eq!(Some(Ok(0)), p.get_observe_value());
     }
 }

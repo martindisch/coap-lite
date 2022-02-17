@@ -136,6 +136,7 @@ pub mod link_format;
 mod log;
 mod observe;
 mod packet;
+mod option_value;
 mod request;
 mod response;
 

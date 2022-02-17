@@ -76,3 +76,14 @@ impl error::Error for InvalidObserve {
         None
     }
 }
+
+#[derive(Debug, PartialEq)]
+pub struct IncompatibleOptionValueFormat {
+    pub(crate) message: String,
+}
+
+impl fmt::Display for IncompatibleOptionValueFormat {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Incompatible option value: {}", self.message)
+    }
+}

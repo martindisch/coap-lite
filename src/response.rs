@@ -1,6 +1,8 @@
+use core::convert::TryFrom;
+use crate::ObserveOption;
 use super::{
     header::{MessageClass, MessageType, ResponseType as Status},
-    packet::{ObserveOption, Packet},
+    packet::Packet,
 };
 
 /// The CoAP response.
@@ -87,13 +89,10 @@ impl CoapResponse {
         }
     }
 
-    // Sets the Observe flag.
+    #[deprecated(note = "responses must not have observe flag set, use `Packet::set_observe_value` instead")]
     pub fn set_observe_flag(&mut self, value: ObserveOption) {
-        let value = match value {
-            ObserveOption::Register => alloc::vec![], // Value is not present if Register
-            ObserveOption::Deregister => alloc::vec![value as u8],
-        };
-        self.message.set_observe(value);
+        let value = u32::try_from(usize::from(value)).unwrap();
+        self.message.set_observe_value(value);
     }
 }
 
