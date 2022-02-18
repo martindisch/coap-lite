@@ -1,4 +1,8 @@
 use crate::error::IncompatibleOptionValueFormat;
+use alloc::{
+    string::{String, ToString},
+    vec::Vec,
+};
 use core::convert::TryFrom;
 
 pub trait OptionValueType:

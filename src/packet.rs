@@ -612,6 +612,8 @@ impl Packet {
 
 #[cfg(test)]
 mod test {
+    use alloc::borrow::ToOwned;
+
     use super::{super::header, *};
     use crate::option_value::OptionValueString;
 

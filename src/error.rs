@@ -1,5 +1,6 @@
 //! The errors of the `coap` module.
 
+use alloc::string::String;
 use core::fmt;
 #[cfg(feature = "std")]
 use std::error;
