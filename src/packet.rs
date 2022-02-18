@@ -246,8 +246,7 @@ impl Packet {
         tp: CoapOption,
         value: LinkedList<T>,
     ) {
-        let raw_value: LinkedList<Vec<u8>> =
-            value.into_iter().map(|x| x.into()).collect();
+        let raw_value = value.into_iter().map(|x| x.into()).collect();
         self.set_option(tp, raw_value);
     }
 
@@ -266,7 +265,7 @@ impl Packet {
             options
                 .iter()
                 .map(|raw_value| T::try_from(raw_value.clone()))
-                .collect::<LinkedList<_>>()
+                .collect()
         })
     }
 
@@ -810,10 +809,7 @@ mod test {
         for &value in &values {
             p.add_option_as(option_key, OptionValueU32(value));
         }
-        let expected = values
-            .iter()
-            .map(|&x| Ok(OptionValueU32(x)))
-            .collect::<LinkedList<_>>();
+        let expected = values.iter().map(|&x| Ok(OptionValueU32(x))).collect();
         let actual = p.get_options_as::<OptionValueU32>(option_key);
         assert_eq!(actual, Some(expected));
     }
@@ -829,7 +825,7 @@ mod test {
         let expected = values
             .iter()
             .map(|&x| Ok(OptionValueString(x.to_owned())))
-            .collect::<LinkedList<_>>();
+            .collect();
         let actual = p.get_options_as::<OptionValueString>(option_key);
         assert_eq!(actual, Some(expected));
     }
