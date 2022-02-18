@@ -1,7 +1,9 @@
-use core::convert::TryFrom;
 use crate::error::IncompatibleOptionValueFormat;
+use core::convert::TryFrom;
 
-pub trait OptionValueType: Into<Vec<u8>> + TryFrom<Vec<u8>, Error=IncompatibleOptionValueFormat> {
+pub trait OptionValueType:
+    Into<Vec<u8>> + TryFrom<Vec<u8>, Error = IncompatibleOptionValueFormat>
+{
 }
 
 macro_rules! option_value_uint_impl {
@@ -25,9 +27,8 @@ macro_rules! option_value_uint_impl {
             }
         }
 
-        impl OptionValueType for $struct_name {
-        }
-    }
+        impl OptionValueType for $struct_name {}
+    };
 }
 
 fn option_from_uint(value_as_u64: u64, value_size: usize) -> Vec<u8> {
@@ -54,10 +55,17 @@ fn option_from_uint(value_as_u64: u64, value_size: usize) -> Vec<u8> {
     }
 }
 
-fn option_to_uint(encoded: &Vec<u8>, value_size: usize) -> Result<u64, IncompatibleOptionValueFormat> {
+fn option_to_uint(
+    encoded: &Vec<u8>,
+    value_size: usize,
+) -> Result<u64, IncompatibleOptionValueFormat> {
     if encoded.len() > value_size {
         Err(IncompatibleOptionValueFormat {
-            message: format!("overflow: got {} bytes, expected {}", encoded.len(), value_size)
+            message: format!(
+                "overflow: got {} bytes, expected {}",
+                encoded.len(),
+                value_size
+            ),
         })
     } else {
         Ok(encoded.iter().fold(0, |acc, &b| (acc << 8) + b as u64))
@@ -84,9 +92,10 @@ impl TryFrom<Vec<u8>> for OptionValueString {
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
         String::from_utf8(value)
             .map(|s| OptionValueString(s))
-            .map_err(|e| IncompatibleOptionValueFormat { message: e.to_string() })
+            .map_err(|e| IncompatibleOptionValueFormat {
+                message: e.to_string(),
+            })
     }
 }
 
-impl OptionValueType for OptionValueString {
-}
+impl OptionValueType for OptionValueString {}

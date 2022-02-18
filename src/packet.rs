@@ -242,7 +242,9 @@ impl Packet {
 
     /// Returns an option's first value as a convenience when only one is expected.
     pub fn get_first_option(&self, tp: CoapOption) -> Option<&Vec<u8>> {
-        self.options.get(&tp.into()).and_then(|options| options.front())
+        self.options
+            .get(&tp.into())
+            .and_then(|options| options.front())
     }
 
     /// Returns an option's values.
@@ -271,38 +273,56 @@ impl Packet {
     }
 
     /// Sets an option's values using a structured option value format.
-    pub fn set_option_as<T: OptionValueType>(&mut self, tp: CoapOption, value: LinkedList<T>) {
-        let raw_value: LinkedList<Vec<u8>> = value.into_iter().map(|x| x.into()).collect();
+    pub fn set_option_as<T: OptionValueType>(
+        &mut self,
+        tp: CoapOption,
+        value: LinkedList<T>,
+    ) {
+        let raw_value: LinkedList<Vec<u8>> =
+            value.into_iter().map(|x| x.into()).collect();
         self.set_option(tp, raw_value);
     }
 
     /// Returns an option's first value as a convenience when only one is expected.
-    pub fn get_first_option_as<T: OptionValueType>(&self, tp: CoapOption) -> Option<Result<T, IncompatibleOptionValueFormat>> {
+    pub fn get_first_option_as<T: OptionValueType>(
+        &self,
+        tp: CoapOption,
+    ) -> Option<Result<T, IncompatibleOptionValueFormat>> {
         // TODO: We only need a clone() of the value for string and opaque types but it's not clear to me how
         // to express this in OptionValueType
-        self.get_first_option(tp).map(|value| T::try_from(value.clone()))
+        self.get_first_option(tp)
+            .map(|value| T::try_from(value.clone()))
     }
 
     /// Returns an option's values all decoded using the specified structured option value format.
-    pub fn get_options_as<T: OptionValueType>(&self, tp: CoapOption) -> Option<LinkedList<Result<T, IncompatibleOptionValueFormat>>> {
-        self.get_option(tp)
-            .map(|options| {
-                options
-                    .iter()
-                    .map(|raw_value| T::try_from(raw_value.clone()))
-                    .collect::<LinkedList<_>>()
-            })
+    pub fn get_options_as<T: OptionValueType>(
+        &self,
+        tp: CoapOption,
+    ) -> Option<LinkedList<Result<T, IncompatibleOptionValueFormat>>> {
+        self.get_option(tp).map(|options| {
+            options
+                .iter()
+                .map(|raw_value| T::try_from(raw_value.clone()))
+                .collect::<LinkedList<_>>()
+        })
     }
 
     /// Adds an option value using a structured option value format.
-    pub fn add_option_as<T: OptionValueType>(&mut self, tp: CoapOption, value: T) {
+    pub fn add_option_as<T: OptionValueType>(
+        &mut self,
+        tp: CoapOption,
+        value: T,
+    ) {
         self.add_option(tp, value.into());
     }
 
     /// Sets the content-format.
     pub fn set_content_format(&mut self, cf: ContentFormat) {
         let content_format: u16 = u16::try_from(usize::from(cf)).unwrap();
-        self.add_option_as(CoapOption::ContentFormat, OptionValueU16(content_format));
+        self.add_option_as(
+            CoapOption::ContentFormat,
+            OptionValueU16(content_format),
+        );
     }
 
     /// Returns the content-format.
@@ -332,11 +352,11 @@ impl Packet {
     }
 
     /// Returns the value of the observe option.
-    pub fn get_observe_value(&self) -> Option<Result<u32, IncompatibleOptionValueFormat>> {
+    pub fn get_observe_value(
+        &self,
+    ) -> Option<Result<u32, IncompatibleOptionValueFormat>> {
         self.get_first_option_as::<OptionValueU32>(CoapOption::Observe)
-            .map(|option| {
-                option.map(|value| value.0)
-            })
+            .map(|option| option.map(|value| value.0))
     }
 
     /// Decodes a byte slice and constructs the equivalent packet.
@@ -589,8 +609,8 @@ impl Packet {
 
 #[cfg(test)]
 mod test {
+    use super::{super::header, *};
     use crate::option_value::OptionValueString;
-    use super::{*, super::header};
 
     #[test]
     fn test_decode_packet_with_options() {
@@ -786,7 +806,8 @@ mod test {
         for &value in &values {
             p.add_option_as(option_key, OptionValueU32(value));
         }
-        let expected = values.iter()
+        let expected = values
+            .iter()
             .map(|&x| Ok(OptionValueU32(x)))
             .collect::<LinkedList<_>>();
         let actual = p.get_options_as::<OptionValueU32>(option_key);
@@ -797,11 +818,12 @@ mod test {
     fn test_option_utf8_format() {
         let mut p = Packet::new();
         let option_key = CoapOption::UriPath;
-        let values = vec!["", "simple", "unicode 😁 stuff" ];
+        let values = vec!["", "simple", "unicode 😁 stuff"];
         for &value in &values {
             p.add_option_as(option_key, OptionValueString(value.to_owned()));
         }
-        let expected = values.iter()
+        let expected = values
+            .iter()
             .map(|&x| Ok(OptionValueString(x.to_owned())))
             .collect::<LinkedList<_>>();
         let actual = p.get_options_as::<OptionValueString>(option_key);

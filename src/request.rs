@@ -1,10 +1,10 @@
 use core::convert::TryFrom;
 
+use crate::error::InvalidObserve;
 use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
-use crate::error::InvalidObserve;
 
 use super::{
     header::{MessageClass, RequestType as Method},
@@ -95,13 +95,16 @@ impl<Endpoint> CoapRequest<Endpoint> {
 
     /// Returns the flag in the Observe option or InvalidObserve if the flag was provided
     /// but not understood.
-    pub fn try_get_observe_flag(&self) -> Option<Result<ObserveOption, InvalidObserve>> {
-        self.message.get_observe_value()
-            .map(|observe| {
-                observe
-                    .map(|value| usize::try_from(value).unwrap())
-                    .map_or(Err(InvalidObserve), |value| ObserveOption::try_from(value))
-            })
+    pub fn try_get_observe_flag(
+        &self,
+    ) -> Option<Result<ObserveOption, InvalidObserve>> {
+        self.message.get_observe_value().map(|observe| {
+            observe
+                .map(|value| usize::try_from(value).unwrap())
+                .map_or(Err(InvalidObserve), |value| {
+                    ObserveOption::try_from(value)
+                })
+        })
     }
 
     /// Sets the flag in the Observe option.
@@ -248,7 +251,9 @@ mod test {
     fn test_garbage_in_observe_field() {
         let mut request: CoapRequest<Endpoint> = CoapRequest::new();
 
-        request.message.add_option(CoapOption::Observe, b"bunch of nonsense".to_vec());
+        request
+            .message
+            .add_option(CoapOption::Observe, b"bunch of nonsense".to_vec());
         let expected = Some(Err(InvalidObserve));
         let actual = request.try_get_observe_flag();
         assert_eq!(actual, expected);
