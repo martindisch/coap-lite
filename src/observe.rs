@@ -127,8 +127,8 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         for (resource_path, resource) in self.resources.iter_mut() {
             let observer = resource.observers.iter_mut().find(|x| {
                 if let Some(observe_msg_id) = x.message_id {
-                    // Unacknowledgement doesn't officially require the token to be passed in the ACK
-                    // so it's not checked
+                    // Unacknowledgement doesn't officially require the token
+                    // to be passed in the ACK so it's not checked
                     return x.endpoint == *observer_endpoint
                         && observe_msg_id == message_id;
                 }

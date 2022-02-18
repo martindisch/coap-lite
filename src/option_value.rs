@@ -22,7 +22,8 @@ macro_rules! option_value_uint_impl {
 
             fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
                 option_to_uint(&value, $bytes)
-                    // Safe because option_to_uint will yield error if the size would overflow
+                    // Safe because option_to_uint will yield error if the size
+                    // would overflow
                     .map(|value_as_u64| $struct_name(value_as_u64 as $type))
             }
         }
@@ -48,7 +49,8 @@ fn option_from_uint(value_as_u64: u64, value_size: usize) -> Vec<u8> {
             draining_value >>= 8;
         }
 
-        // Output is in little endian, flip it to big endian (network order) as required
+        // Output is in little endian, flip it to big endian (network order) as
+        // required
         output.reverse();
 
         output

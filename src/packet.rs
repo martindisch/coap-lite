@@ -256,7 +256,8 @@ impl Packet {
         self.options.get(&tp.into())
     }
 
-    /// Returns an option's values all decoded using the specified structured option value format.
+    /// Returns an option's values all decoded using the specified structured
+    /// option value format.
     pub fn get_options_as<T: OptionValueType>(
         &self,
         tp: CoapOption,
@@ -269,20 +270,23 @@ impl Packet {
         })
     }
 
-    /// Returns an option's first value as a convenience when only one is expected.
+    /// Returns an option's first value as a convenience when only one is
+    /// expected.
     pub fn get_first_option(&self, tp: CoapOption) -> Option<&Vec<u8>> {
         self.options
             .get(&tp.into())
             .and_then(|options| options.front())
     }
 
-    /// Returns an option's first value as a convenience when only one is expected.
+    /// Returns an option's first value as a convenience when only one is
+    /// expected.
     pub fn get_first_option_as<T: OptionValueType>(
         &self,
         tp: CoapOption,
     ) -> Option<Result<T, IncompatibleOptionValueFormat>> {
-        // TODO: We only need a clone() of the value for string and opaque types but it's not clear to me how
-        // to express this in OptionValueType
+        // TODO: We only need a clone() of the value for string and opaque
+        // types but it's not clear to me how to express this in
+        // OptionValueType
         self.get_first_option(tp)
             .map(|value| T::try_from(value.clone()))
     }

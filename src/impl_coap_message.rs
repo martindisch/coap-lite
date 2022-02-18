@@ -13,7 +13,8 @@ impl Code for MessageClass {
 // is that this is a suitable iterator.
 pub struct MessageOptionAdapter<'a> {
     head: Option<(u16, alloc::collections::linked_list::Iter<'a, Vec<u8>>)>,
-    // right from Packet::options -- fortunately that doesn't say that it returns an impl Iterator
+    // right from Packet::options -- fortunately that doesn't say that it
+    // returns an impl Iterator
     raw_iter: alloc::collections::btree_map::Iter<
         'a,
         u16,

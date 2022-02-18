@@ -94,8 +94,8 @@ impl<Endpoint> CoapRequest<Endpoint> {
             .and_then(|maybe_flag| maybe_flag.ok())
     }
 
-    /// Returns the flag in the Observe option or InvalidObserve if the flag was provided
-    /// but not understood.
+    /// Returns the flag in the Observe option or InvalidObserve if the flag
+    /// was provided but not understood.
     pub fn try_get_observe_flag(
         &self,
     ) -> Option<Result<ObserveOption, InvalidObserve>> {
