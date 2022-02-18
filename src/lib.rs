@@ -135,7 +135,7 @@ pub mod link_format;
 #[macro_use]
 mod log;
 mod observe;
-mod option_value;
+pub mod option_value;
 mod packet;
 mod request;
 mod response;

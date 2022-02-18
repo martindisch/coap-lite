@@ -1,3 +1,5 @@
+//! Convenience types for option values.
+
 use crate::error::IncompatibleOptionValueFormat;
 use alloc::{
     string::{String, ToString},
@@ -5,6 +7,7 @@ use alloc::{
 };
 use core::convert::TryFrom;
 
+/// Supertrait for types that can be used as option values.
 pub trait OptionValueType:
     Into<Vec<u8>> + TryFrom<Vec<u8>, Error = IncompatibleOptionValueFormat>
 {
