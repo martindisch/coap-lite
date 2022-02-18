@@ -88,6 +88,7 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Returns the flag in the Observe option.
     pub fn get_observe_flag(&self) -> Option<ObserveOption> {
         self.try_get_observe_flag()
             .and_then(|maybe_flag| maybe_flag.ok())
