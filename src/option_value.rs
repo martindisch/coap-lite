@@ -15,9 +15,9 @@ macro_rules! option_value_uint_impl {
         #[derive(Debug, Clone, PartialEq)]
         pub struct $struct_name(pub $type);
 
-        impl Into<Vec<u8>> for $struct_name {
-            fn into(self) -> Vec<u8> {
-                option_from_uint(self.0.into(), $bytes)
+        impl From<$struct_name> for Vec<u8> {
+            fn from(value: $struct_name) -> Self {
+                option_from_uint(value.0.into(), $bytes)
             }
         }
 
@@ -62,7 +62,7 @@ fn option_from_uint(value_as_u64: u64, value_size: usize) -> Vec<u8> {
 }
 
 fn option_to_uint(
-    encoded: &Vec<u8>,
+    encoded: &[u8],
     value_size: usize,
 ) -> Result<u64, IncompatibleOptionValueFormat> {
     if encoded.len() > value_size {
@@ -86,9 +86,9 @@ option_value_uint_impl!(OptionValueU64, u64, 8);
 #[derive(Debug, Clone, PartialEq)]
 pub struct OptionValueString(pub String);
 
-impl Into<Vec<u8>> for OptionValueString {
-    fn into(self) -> Vec<u8> {
-        self.0.into_bytes()
+impl From<OptionValueString> for Vec<u8> {
+    fn from(option_value: OptionValueString) -> Self {
+        option_value.0.into_bytes()
     }
 }
 
@@ -97,7 +97,7 @@ impl TryFrom<Vec<u8>> for OptionValueString {
 
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
         String::from_utf8(value)
-            .map(|s| OptionValueString(s))
+            .map(OptionValueString)
             .map_err(|e| IncompatibleOptionValueFormat {
                 message: e.to_string(),
             })
