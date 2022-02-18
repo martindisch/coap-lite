@@ -87,3 +87,6 @@ impl fmt::Display for IncompatibleOptionValueFormat {
         write!(f, "Incompatible option value: {}", self.message)
     }
 }
+
+#[cfg(feature = "std")]
+impl error::Error for IncompatibleOptionValueFormat {}
