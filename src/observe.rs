@@ -181,8 +181,8 @@ pub fn create_notification(
     packet.header.message_id = message_id;
     packet.set_token(token);
     packet.payload = payload;
-
     packet.set_observe_value(sequence);
+
     packet
 }
 

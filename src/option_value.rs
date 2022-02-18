@@ -49,6 +49,7 @@ fn option_from_uint(value_as_u64: u64, value_size: usize) -> Vec<u8> {
 
         // Output is in little endian, flip it to big endian (network order) as required
         output.reverse();
+
         output
     }
 }
