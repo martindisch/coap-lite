@@ -240,38 +240,6 @@ impl Packet {
         self.options.insert(tp.into(), value);
     }
 
-    /// Returns an option's first value as a convenience when only one is expected.
-    pub fn get_first_option(&self, tp: CoapOption) -> Option<&Vec<u8>> {
-        self.options
-            .get(&tp.into())
-            .and_then(|options| options.front())
-    }
-
-    /// Returns an option's values.
-    pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
-        self.options.get(&tp.into())
-    }
-
-    /// Adds an option value.
-    pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
-        let num = tp.into();
-        if let Some(list) = self.options.get_mut(&num) {
-            list.push_back(value);
-            return;
-        }
-
-        let mut list = LinkedList::new();
-        list.push_back(value);
-        self.options.insert(num, list);
-    }
-
-    /// Removes an option.
-    pub fn clear_option(&mut self, tp: CoapOption) {
-        if let Some(list) = self.options.get_mut(&tp.into()) {
-            list.clear()
-        }
-    }
-
     /// Sets an option's values using a structured option value format.
     pub fn set_option_as<T: OptionValueType>(
         &mut self,
@@ -283,15 +251,9 @@ impl Packet {
         self.set_option(tp, raw_value);
     }
 
-    /// Returns an option's first value as a convenience when only one is expected.
-    pub fn get_first_option_as<T: OptionValueType>(
-        &self,
-        tp: CoapOption,
-    ) -> Option<Result<T, IncompatibleOptionValueFormat>> {
-        // TODO: We only need a clone() of the value for string and opaque types but it's not clear to me how
-        // to express this in OptionValueType
-        self.get_first_option(tp)
-            .map(|value| T::try_from(value.clone()))
+    /// Returns an option's values.
+    pub fn get_option(&self, tp: CoapOption) -> Option<&LinkedList<Vec<u8>>> {
+        self.options.get(&tp.into())
     }
 
     /// Returns an option's values all decoded using the specified structured option value format.
@@ -307,6 +269,37 @@ impl Packet {
         })
     }
 
+    /// Returns an option's first value as a convenience when only one is expected.
+    pub fn get_first_option(&self, tp: CoapOption) -> Option<&Vec<u8>> {
+        self.options
+            .get(&tp.into())
+            .and_then(|options| options.front())
+    }
+
+    /// Returns an option's first value as a convenience when only one is expected.
+    pub fn get_first_option_as<T: OptionValueType>(
+        &self,
+        tp: CoapOption,
+    ) -> Option<Result<T, IncompatibleOptionValueFormat>> {
+        // TODO: We only need a clone() of the value for string and opaque types but it's not clear to me how
+        // to express this in OptionValueType
+        self.get_first_option(tp)
+            .map(|value| T::try_from(value.clone()))
+    }
+
+    /// Adds an option value.
+    pub fn add_option(&mut self, tp: CoapOption, value: Vec<u8>) {
+        let num = tp.into();
+        if let Some(list) = self.options.get_mut(&num) {
+            list.push_back(value);
+            return;
+        }
+
+        let mut list = LinkedList::new();
+        list.push_back(value);
+        self.options.insert(num, list);
+    }
+
     /// Adds an option value using a structured option value format.
     pub fn add_option_as<T: OptionValueType>(
         &mut self,
@@ -314,6 +307,13 @@ impl Packet {
         value: T,
     ) {
         self.add_option(tp, value.into());
+    }
+
+    /// Removes an option.
+    pub fn clear_option(&mut self, tp: CoapOption) {
+        if let Some(list) = self.options.get_mut(&tp.into()) {
+            list.clear()
+        }
     }
 
     /// Sets the content-format.
