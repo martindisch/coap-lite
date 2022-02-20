@@ -1,5 +1,6 @@
 //! The errors of the `coap` module.
 
+use alloc::string::String;
 use core::fmt;
 #[cfg(feature = "std")]
 use std::error;
@@ -37,11 +38,7 @@ impl fmt::Display for MessageError {
 }
 
 #[cfg(feature = "std")]
-impl error::Error for MessageError {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
-}
+impl error::Error for MessageError {}
 
 /// The error that can occur when parsing a content-format.
 #[derive(Debug, PartialEq)]
@@ -54,11 +51,7 @@ impl fmt::Display for InvalidContentFormat {
 }
 
 #[cfg(feature = "std")]
-impl error::Error for InvalidContentFormat {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
-    }
-}
+impl error::Error for InvalidContentFormat {}
 
 /// The error that can occur when parsing an observe option value.
 #[derive(Debug, PartialEq)]
@@ -71,8 +64,19 @@ impl fmt::Display for InvalidObserve {
 }
 
 #[cfg(feature = "std")]
-impl error::Error for InvalidObserve {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None
+impl error::Error for InvalidObserve {}
+
+/// The error that can occur when parsing an option value.
+#[derive(Debug, PartialEq)]
+pub struct IncompatibleOptionValueFormat {
+    pub(crate) message: String,
+}
+
+impl fmt::Display for IncompatibleOptionValueFormat {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Incompatible option value: {}", self.message)
     }
 }
+
+#[cfg(feature = "std")]
+impl error::Error for IncompatibleOptionValueFormat {}

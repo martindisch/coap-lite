@@ -127,8 +127,8 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         for (resource_path, resource) in self.resources.iter_mut() {
             let observer = resource.observers.iter_mut().find(|x| {
                 if let Some(observe_msg_id) = x.message_id {
-                    // Unacknowledgement doesn't officially require the token to be passed in the ACK
-                    // so it's not checked
+                    // Unacknowledgement doesn't officially require the token
+                    // to be passed in the ACK so it's not checked
                     return x.endpoint == *observer_endpoint
                         && observe_msg_id == message_id;
                 }
@@ -181,14 +181,7 @@ pub fn create_notification(
     packet.header.message_id = message_id;
     packet.set_token(token);
     packet.payload = payload;
-
-    let mut sequence_bytes = sequence.to_be_bytes().to_vec();
-    let first_non_zero = sequence_bytes
-        .iter()
-        .position(|&x| x > 0)
-        .unwrap_or(sequence_bytes.len());
-    sequence_bytes.drain(0..first_non_zero);
-    packet.set_observe(sequence_bytes);
+    packet.set_observe_value(sequence);
 
     packet
 }
@@ -224,9 +217,7 @@ mod test {
         request.set_method(Method::Get);
         request.set_path(resource_path.clone());
         request.message.set_token(vec![0x7d, 0x34]);
-        request
-            .message
-            .set_observe(vec![ObserveOption::Register as u8]);
+        request.set_observe_flag(ObserveOption::Register);
 
         let mut subject: Subject<Endpoint> = Subject::default();
         subject.register(&request);
@@ -247,18 +238,14 @@ mod test {
         request1.set_method(Method::Get);
         request1.set_path(resource_path.clone());
         request1.message.set_token(vec![0x00, 0x00]);
-        request1
-            .message
-            .set_observe(vec![ObserveOption::Register as u8]);
+        request1.set_observe_flag(ObserveOption::Register);
 
         let mut request2 = CoapRequest::new();
         request2.source = Some(String::from("0.0.0.0"));
         request2.set_method(Method::Get);
         request2.set_path(resource_path.clone());
         request2.message.set_token(vec![0xff, 0xff]);
-        request2
-            .message
-            .set_observe(vec![ObserveOption::Register as u8]);
+        request2.set_observe_flag(ObserveOption::Register);
 
         let mut subject: Subject<Endpoint> = Subject::default();
         subject.register(&request1);
@@ -284,9 +271,7 @@ mod test {
         request1.set_method(Method::Get);
         request1.set_path(resource_path.clone());
         request1.message.set_token(vec![0x00, 0x00]);
-        request1
-            .message
-            .set_observe(vec![ObserveOption::Register as u8]);
+        request1.set_observe_flag(ObserveOption::Register);
 
         let mut subject: Subject<Endpoint> = Subject::default();
         subject.register(&request1);
@@ -334,9 +319,7 @@ mod test {
         request1.set_method(Method::Get);
         request1.set_path(resource_path.clone());
         request1.message.set_token(vec![0x00, 0x00]);
-        request1
-            .message
-            .set_observe(vec![ObserveOption::Register as u8]);
+        request1.set_observe_flag(ObserveOption::Register);
 
         let mut subject: Subject<Endpoint> = Subject::default();
         subject.set_unacknowledged_limit(5);
