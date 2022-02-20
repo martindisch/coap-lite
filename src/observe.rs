@@ -72,7 +72,7 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
         }
     }
 
-    // Removes an observer from the interested resource.
+    /// Removes an observer from the interested resource.
     pub fn deregister(&mut self, request: &CoapRequest<Endpoint>) {
         let observer_endpoint = request.source.as_ref().unwrap();
         let resource_path = request.get_path();
