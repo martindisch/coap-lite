@@ -283,9 +283,6 @@ impl Packet {
         &self,
         tp: CoapOption,
     ) -> Option<Result<T, IncompatibleOptionValueFormat>> {
-        // TODO: We only need a clone() of the value for string and opaque
-        // types but it's not clear to me how to express this in
-        // OptionValueType
         self.get_first_option(tp)
             .map(|value| T::try_from(value.clone()))
     }
