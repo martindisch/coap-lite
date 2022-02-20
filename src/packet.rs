@@ -333,18 +333,6 @@ impl Packet {
             .and_then(|value| ContentFormat::try_from(value).ok())
     }
 
-    #[deprecated(note = "please use `set_observe_value` instead")]
-    pub fn set_observe(&mut self, value: Vec<u8>) {
-        self.clear_option(CoapOption::Observe);
-        self.add_option(CoapOption::Observe, value);
-    }
-
-    #[deprecated(note = "please use `get_observe_value` instead")]
-    pub fn get_observe(&self) -> Option<&Vec<u8>> {
-        self.get_option(CoapOption::Observe)
-            .and_then(|options| options.front())
-    }
-
     /// Sets the value of the observe option.
     pub fn set_observe_value(&mut self, value: u32) {
         self.clear_option(CoapOption::Observe);
