@@ -88,15 +88,9 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
-    /// Returns the flag in the Observe option.
-    pub fn get_observe_flag(&self) -> Option<ObserveOption> {
-        self.try_get_observe_flag()
-            .and_then(|maybe_flag| maybe_flag.ok())
-    }
-
     /// Returns the flag in the Observe option or InvalidObserve if the flag
     /// was provided but not understood.
-    pub fn try_get_observe_flag(
+    pub fn get_observe_flag(
         &self,
     ) -> Option<Result<ObserveOption, InvalidObserve>> {
         self.message.get_observe_value().map(|observe| {
@@ -244,7 +238,7 @@ mod test {
 
         request.message.set_observe_value(32);
         let expected = Some(Err(InvalidObserve));
-        let actual = request.try_get_observe_flag();
+        let actual = request.get_observe_flag();
         assert_eq!(actual, expected);
     }
 
@@ -256,7 +250,7 @@ mod test {
             .message
             .add_option(CoapOption::Observe, b"bunch of nonsense".to_vec());
         let expected = Some(Err(InvalidObserve));
-        let actual = request.try_get_observe_flag();
+        let actual = request.get_observe_flag();
         assert_eq!(actual, expected);
     }
 }

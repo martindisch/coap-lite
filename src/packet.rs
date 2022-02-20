@@ -241,7 +241,7 @@ impl Packet {
     }
 
     /// Sets an option's values using a structured option value format.
-    pub fn set_option_as<T: OptionValueType>(
+    pub fn set_options_as<T: OptionValueType>(
         &mut self,
         tp: CoapOption,
         value: LinkedList<T>,
