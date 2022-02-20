@@ -265,7 +265,7 @@ impl<'a> Iterator for LinkFormatParser<'a> {
         let link_ref = iter.as_str();
 
         // Proceed through characters until we get a '>'.
-        while let Some(c) = iter.next() {
+        for c in iter.by_ref() {
             if c == '>' {
                 break;
             }
