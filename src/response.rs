@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     header::{MessageClass, MessageType, ResponseType as Status},
     packet::Packet,
 };

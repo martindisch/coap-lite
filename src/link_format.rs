@@ -20,10 +20,11 @@
 //!
 //! [IETF-RFC6690 CoAP link-formats]: https://tools.ietf.org/html/rfc6690
 
-use super::*;
 use alloc::{borrow::Cow, string::ToString};
-use core::fmt::{Display, Write};
-use core::iter::FusedIterator;
+use core::{
+    fmt::{Display, Write},
+    iter::FusedIterator,
+};
 
 /// Relation Type.
 ///

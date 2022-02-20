@@ -4,7 +4,7 @@ use alloc::{
 };
 use core::{convert::TryFrom, fmt};
 
-use super::error::MessageError;
+use crate::error::MessageError;
 
 /// The raw byte header representation, useful for encoding/decoding directly.
 #[derive(Debug, Clone)]

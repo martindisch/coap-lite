@@ -4,12 +4,13 @@ use alloc::{
 };
 use core::convert::TryFrom;
 
-use crate::error::IncompatibleOptionValueFormat;
-use crate::option_value::{OptionValueType, OptionValueU16, OptionValueU32};
-
-use super::{
-    error::{InvalidContentFormat, InvalidObserve, MessageError},
+use crate::{
+    error::{
+        IncompatibleOptionValueFormat, InvalidContentFormat, InvalidObserve,
+        MessageError,
+    },
     header::{Header, HeaderRaw, MessageClass},
+    option_value::{OptionValueType, OptionValueU16, OptionValueU32},
 };
 
 macro_rules! u8_to_unsigned_be {
@@ -597,10 +598,9 @@ impl Packet {
 
 #[cfg(test)]
 mod test {
+    use super::*;
+    use crate::{header, option_value::OptionValueString};
     use alloc::borrow::ToOwned;
-
-    use super::{super::header, *};
-    use crate::option_value::OptionValueString;
 
     #[test]
     fn test_decode_packet_with_options() {

@@ -1,12 +1,11 @@
-use core::convert::TryFrom;
-
-use crate::error::InvalidObserve;
 use alloc::{
     string::{String, ToString},
     vec::Vec,
 };
+use core::convert::TryFrom;
 
-use super::{
+use crate::{
+    error::InvalidObserve,
     header::{MessageClass, RequestType as Method},
     packet::{CoapOption, ObserveOption, Packet},
     response::CoapResponse,
@@ -121,7 +120,8 @@ impl<Endpoint> Default for CoapRequest<Endpoint> {
 
 #[cfg(test)]
 mod test {
-    use super::{super::header::MessageType, *};
+    use super::*;
+    use crate::header::MessageType;
 
     struct Endpoint(String);
 

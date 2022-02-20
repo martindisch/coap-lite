@@ -5,7 +5,7 @@ use alloc::{
 };
 use core::{fmt::Display, marker::PhantomData};
 
-use super::{request::CoapRequest, MessageClass, MessageType, Packet};
+use crate::{request::CoapRequest, MessageClass, MessageType, Packet};
 
 const DEFAULT_UNACKNOWLEDGED_LIMIT: u8 = 10;
 
@@ -198,12 +198,10 @@ impl<Endpoint: Display + PartialEq + Clone> Default for Subject<Endpoint> {
 
 #[cfg(test)]
 mod test {
-    use super::{
-        super::{
-            header::{MessageType, RequestType as Method},
-            packet::ObserveOption,
-        },
-        *,
+    use super::*;
+    use crate::{
+        header::{MessageType, RequestType as Method},
+        packet::ObserveOption,
     };
 
     type Endpoint = String;
