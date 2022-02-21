@@ -69,7 +69,7 @@ impl error::Error for InvalidObserve {}
 /// The error that can occur when parsing an option value.
 #[derive(Debug, PartialEq)]
 pub struct IncompatibleOptionValueFormat {
-    pub(crate) message: String,
+    pub message: String,
 }
 
 impl fmt::Display for IncompatibleOptionValueFormat {
