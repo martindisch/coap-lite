@@ -322,7 +322,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
   }
 }
 
-/// Similar to [Vec::slice] except that the Vec's length may be extended to support the splice,
+/// Similar to [Vec::splice] except that the Vec's length may be extended to support the splice,
 /// but only up to an increase of `maximum_reserve_len` (for security reasons if
 /// the data you're receiving is untrusted ensure this is reasonably limited to avoid memory
 /// pressure denial of service attacks).
