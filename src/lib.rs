@@ -130,6 +130,8 @@ extern crate alloc;
 #[cfg_attr(tarpaulin, skip)]
 pub mod error;
 
+pub mod block_handler;
+mod block_value;
 mod header;
 pub mod link_format;
 #[macro_use]
@@ -150,3 +152,4 @@ pub use observe::{create_notification, Subject};
 pub use packet::{CoapOption, ContentFormat, ObserveOption, Packet};
 pub use request::CoapRequest;
 pub use response::CoapResponse;
+pub use block_handler::{BlockHandler, BlockHandlerConfig};

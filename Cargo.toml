@@ -18,6 +18,8 @@ doctest = false
 [dependencies]
 coap-message = { version = "^0.2.0-alpha.0", optional = true }
 log = { version = "0.4.14", default-features = false, optional = true }
+anyhow = { version = "1.0.56", default-features = false }
+lru_time_cache = "0.11.11"
 
 # actually they are dev-dependencies, but those can't be optional
 coap-handler = { version = "^0.1.0-alpha.0", optional = true }

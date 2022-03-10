@@ -1,15 +1,11 @@
 use alloc::{
-    string::{String, ToString},
+    string::{String, ToString, FromUtf8Error},
     vec::Vec,
 };
 use core::convert::TryFrom;
 
-use crate::{
-    error::InvalidObserve,
-    header::{MessageClass, RequestType as Method},
-    packet::{CoapOption, ObserveOption, Packet},
-    response::CoapResponse,
-};
+use crate::{ContentFormat, error::InvalidObserve, header::{MessageClass, RequestType as Method}, packet::{CoapOption, ObserveOption, Packet}, response::CoapResponse};
+use crate::error::HandlingError;
 
 /// The CoAP request.
 #[derive(Clone, Debug)]
@@ -35,6 +31,19 @@ impl<Endpoint> CoapRequest<Endpoint> {
             message: packet,
             source: Some(source),
         }
+    }
+
+    pub fn apply_from_error(&mut self, error: HandlingError) -> bool {
+        if let Some(reply) = &mut self.response {
+            if let Some(code) = error.code {
+                let message = &mut reply.message;
+                message.header.code = MessageClass::Response(code);
+                message.set_content_format(ContentFormat::TextPlain);
+                message.payload = error.message.into_bytes();
+                return true;
+            }
+        }
+        false
     }
 
     /// Sets the method.
@@ -85,6 +94,19 @@ impl<Endpoint> CoapRequest<Endpoint> {
             }
             _ => "".to_string(),
         }
+    }
+
+    /// Returns the path as a vector (as it is encoded in CoAP rather than in HTTP-style paths).
+    pub fn get_path_as_vec(&self) -> Result<Vec<String>, FromUtf8Error> {
+        self.message.get_option(CoapOption::UriPath)
+            .map_or_else(
+                || { Ok(vec![]) },
+                |paths| {
+                    paths.iter()
+                        .map(|path| String::from_utf8(path.clone()))
+                        .collect::<Result<_, _>>()
+                }
+            )
     }
 
     /// Returns the flag in the Observe option or InvalidObserve if the flag

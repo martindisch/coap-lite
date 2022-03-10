@@ -22,6 +22,7 @@ metal environments.
 - CoAP [RFC 7252](https://tools.ietf.org/html/rfc7252)
 - CoAP Observe Option [RFC 7641](https://tools.ietf.org/html/rfc7641)
 - Too Many Requests Response Code [RFC 8516](https://tools.ietf.org/html/rfc8516)
+- Block-Wise Transfers [RFC 7959](https://tools.ietf.org/html/rfc7959)
 - Constrained RESTful Environments (CoRE) Link Format
   [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
 
