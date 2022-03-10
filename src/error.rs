@@ -25,7 +25,7 @@ impl fmt::Display for MessageError {
                 write!(f, "CoAP error: invalid header")
             }
             MessageError::InvalidPacketLength => {
-                write!(f, "CoAP error: invalid packet length")
+                write!(f, "CoAP error: invalid packet length, consider using BlockHandler")
             }
             MessageError::InvalidTokenLength => {
                 write!(f, "CoAP error: invalid token length")
