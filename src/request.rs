@@ -4,9 +4,15 @@ use alloc::{
 };
 use core::convert::TryFrom;
 
-use crate::{ContentFormat, error::InvalidObserve, header::{MessageClass, RequestType as Method}, packet::{CoapOption, ObserveOption, Packet}, response::CoapResponse};
 use crate::error::{HandlingError, IncompatibleOptionValueFormat};
 use crate::option_value::OptionValueString;
+use crate::{
+    error::InvalidObserve,
+    header::{MessageClass, RequestType as Method},
+    packet::{CoapOption, ObserveOption, Packet},
+    response::CoapResponse,
+    ContentFormat,
+};
 
 /// The CoAP request.
 #[derive(Clone, Debug)]
@@ -97,18 +103,23 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
-    /// Returns the path as a vector (as it is encoded in CoAP rather than in HTTP-style paths).
-    pub fn get_path_as_vec(&self) -> Result<Vec<String>, IncompatibleOptionValueFormat> {
-        self.message.get_options_as::<OptionValueString>(CoapOption::UriPath)
+    /// Returns the path as a vector (as it is encoded in CoAP rather than in
+    /// HTTP-style paths).
+    pub fn get_path_as_vec(
+        &self,
+    ) -> Result<Vec<String>, IncompatibleOptionValueFormat> {
+        self.message
+            .get_options_as::<OptionValueString>(CoapOption::UriPath)
             .map_or_else(
-                || { Ok(vec![]) },
+                || Ok(vec![]),
                 |paths| {
-                    paths.into_iter()
+                    paths
+                        .into_iter()
                         .map(|segment_result| {
                             segment_result.map(|segment| segment.0)
                         })
                         .collect::<Result<Vec<_>, _>>()
-                }
+                },
             )
     }
 
@@ -269,13 +280,18 @@ mod test {
 
         request.set_path("/test-interface/second/third");
         assert_eq!(
-            Ok(["test-interface", "second", "third"].map(|x| x.to_string()).to_vec()),
-            request.get_path_as_vec());
+            Ok(["test-interface", "second", "third"]
+                .map(|x| x.to_string())
+                .to_vec()),
+            request.get_path_as_vec()
+        );
 
         let bogus_path: Vec<u8> = vec![0xfe, 0xfe, 0xff, 0xff];
         request.message.clear_option(CoapOption::UriPath);
         request.message.add_option(CoapOption::UriPath, bogus_path);
-        request.get_path_as_vec().expect_err("must be a utf-8 decoding error");
+        request
+            .get_path_as_vec()
+            .expect_err("must be a utf-8 decoding error");
     }
 
     #[test]

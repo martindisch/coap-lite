@@ -145,6 +145,7 @@ mod response;
 #[cfg(feature = "with-coap-message")]
 mod impl_coap_message;
 
+pub use block_handler::{BlockHandler, BlockHandlerConfig};
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
 };
@@ -152,4 +153,3 @@ pub use observe::{create_notification, Subject};
 pub use packet::{CoapOption, ContentFormat, ObserveOption, Packet};
 pub use request::CoapRequest;
 pub use response::CoapResponse;
-pub use block_handler::{BlockHandler, BlockHandlerConfig};
