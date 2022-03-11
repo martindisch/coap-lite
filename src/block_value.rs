@@ -21,12 +21,12 @@ impl BlockValue {
             .ok_or(InvalidBlockValue::SizeExponentEncodingError(size))?;
 
         let size_exponent = u8::try_from(true_size_exponent.saturating_sub(4))
-            .map_err(|e| InvalidBlockValue::TypeBoundsError(e))?;
+            .map_err(InvalidBlockValue::TypeBoundsError)?;
         if size_exponent > 0x7 {
             return Err(InvalidBlockValue::SizeExponentEncodingError(size));
         }
-        let num = u16::try_from(num)
-            .map_err(|e| InvalidBlockValue::TypeBoundsError(e))?;
+        let num =
+            u16::try_from(num).map_err(InvalidBlockValue::TypeBoundsError)?;
         Ok(Self {
             num,
             more,
@@ -54,11 +54,11 @@ impl BlockValue {
     }
 }
 
-impl Into<Vec<u8>> for BlockValue {
-    fn into(self) -> Vec<u8> {
-        let scalar = self.num << 4
-            | u16::from(self.more) << 3
-            | u16::from(self.size_exponent & 0x7);
+impl From<BlockValue> for Vec<u8> {
+    fn from(block_value: BlockValue) -> Vec<u8> {
+        let scalar = block_value.num << 4
+            | u16::from(block_value.more) << 3
+            | u16::from(block_value.size_exponent & 0x7);
         Vec::from(OptionValueU16(scalar))
     }
 }
@@ -70,11 +70,7 @@ impl TryFrom<Vec<u8>> for BlockValue {
         let scalar = OptionValueU16::try_from(value)?.0;
 
         let num: u16 = scalar >> 4;
-        let more = if scalar >> 3 & 0x1 == 0x1 {
-            true
-        } else {
-            false
-        };
+        let more = scalar >> 3 & 0x1 == 0x1;
         let size_exponent: u8 = (scalar & 0x7) as u8;
         Ok(Self {
             num,
