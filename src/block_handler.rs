@@ -62,11 +62,11 @@ pub struct BlockHandlerConfig {
     /// message itself (for example if we add more options), we need to
     /// dynamically tune this to meet the physical requirements of the link
     /// rather than just some arbitrary limiting of the payload block size.
-    max_total_message_size: usize,
+    pub max_total_message_size: usize,
 
     /// Length of time without interaction for cached responses to live (bumped
     /// each time the client requests some portion of the response).
-    cache_expiry_duration: Duration,
+    pub cache_expiry_duration: Duration,
 }
 
 impl Default for BlockHandlerConfig {
