@@ -38,6 +38,8 @@ const MAXIMUM_UNCOMMITTED_BUFFER_RESERVE_LENGTH: usize = 16 * 1024;
 /// Default taken from RFC 7252.
 const DEFAULT_MAX_TOTAL_MESSAGE_SIZE: usize = 1152;
 
+/// Implements block transfer by intercepting and caching requests and
+/// responses.
 pub struct BlockHandler<Endpoint: Ord + Clone> {
     config: BlockHandlerConfig,
 
@@ -48,6 +50,7 @@ pub struct BlockHandler<Endpoint: Ord + Clone> {
     states: LruCache<RequestCacheKey<Endpoint>, BlockState>,
 }
 
+/// The configuration for [`BlockHandler`].
 pub struct BlockHandlerConfig {
     /// Total framed message size to offer to the peer (packet size minus
     /// transport overhead).  In an ideal world this would be computed based on
@@ -76,6 +79,7 @@ impl Default for BlockHandlerConfig {
 }
 
 impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
+    /// Creates a new block handler.
     pub fn new(config: BlockHandlerConfig) -> Self {
         Self {
             states: LruCache::with_expiry_duration(

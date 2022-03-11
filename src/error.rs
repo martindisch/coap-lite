@@ -84,6 +84,7 @@ impl fmt::Display for IncompatibleOptionValueFormat {
 #[cfg(feature = "std")]
 impl error::Error for IncompatibleOptionValueFormat {}
 
+/// The errors that can occur when constructing a new block value.
 #[derive(Debug, PartialEq)]
 pub enum InvalidBlockValue {
     SizeExponentEncodingError(usize),

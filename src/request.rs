@@ -40,6 +40,8 @@ impl<Endpoint> CoapRequest<Endpoint> {
         }
     }
 
+    /// Applies the given error to the request and returns true if that was
+    /// successful.
     pub fn apply_from_error(&mut self, error: HandlingError) -> bool {
         if let Some(reply) = &mut self.response {
             if let Some(code) = error.code {
