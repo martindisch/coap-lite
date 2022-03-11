@@ -482,7 +482,7 @@ struct BlockState {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::LinkedList;
+    use alloc::{borrow::ToOwned, collections::LinkedList};
 
     use crate::option_value::OptionValueString;
     use crate::{CoapResponse, RequestType, ResponseType};
