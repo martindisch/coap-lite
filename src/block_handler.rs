@@ -291,7 +291,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
     /// (that in turn must be directed to [`BlockHandler::intercept_request`]).
     ///
     /// Returns true if the response has been manipulated and is being handled
-    /// using Block1 or Block2 fragmentation; false otherwise
+    /// using Block1 or Block2 fragmentation; false otherwise.
     pub fn intercept_response(
         &mut self,
         request: &mut CoapRequest<Endpoint>,
@@ -401,7 +401,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
     }
 }
 
-/// Similar to [Vec::splice] except that the Vec's length may be extended to
+/// Similar to [`Vec::splice`] except that the Vec's length may be extended to
 /// support the splice, but only up to an increase of `maximum_reserve_len`
 /// (for security reasons if the data you're receiving is untrusted ensure this
 /// is reasonably limited to avoid memory pressure denial of service attacks).
@@ -473,7 +473,7 @@ struct BlockState {
     /// Payload we are building up from a series of client requests.  Note that
     /// there is a deliberate lack of symmetry between the cached response and
     /// request due to the fact that the client is responsible for issuing
-    /// multiple requsets as we build up the cached payload.  This means that
+    /// multiple requests as we build up the cached payload.  This means that
     /// the client is ultimately responsible for making sure the last submitted
     /// packet is the one containing the interesting options we will need to
     /// handle the request and that we simply need to copy the payload into it.
