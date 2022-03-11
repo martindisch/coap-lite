@@ -4,11 +4,10 @@ use alloc::{
 };
 use core::convert::TryFrom;
 
-use crate::error::{HandlingError, IncompatibleOptionValueFormat};
-use crate::option_value::OptionValueString;
 use crate::{
-    error::InvalidObserve,
+    error::{HandlingError, IncompatibleOptionValueFormat, InvalidObserve},
     header::{MessageClass, RequestType as Method},
+    option_value::OptionValueString,
     packet::{CoapOption, ObserveOption, Packet},
     response::CoapResponse,
     ContentFormat,

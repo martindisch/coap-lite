@@ -1,12 +1,14 @@
 //! The errors of the `coap` module.
 
-use crate::ResponseType;
-use alloc::borrow::ToOwned;
-use alloc::string::{String, ToString};
-use core::fmt;
-use core::num::TryFromIntError;
+use alloc::{
+    borrow::ToOwned,
+    string::{String, ToString},
+};
+use core::{fmt, num::TryFromIntError};
 #[cfg(feature = "std")]
 use std::error;
+
+use crate::ResponseType;
 
 /// The errors that can occur when encoding/decoding packets.
 #[derive(Debug, PartialEq)]
