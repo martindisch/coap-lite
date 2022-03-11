@@ -89,7 +89,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
         }
     }
 
-    /// Intercept request before application processing has occurred.
+    /// Intercepts request before application processing has occurred.
     ///
     /// Returns true if the request requires Block1/2 handling and no further
     /// processing should occur (the response will be mutated inside the
@@ -284,7 +284,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
         }
     }
 
-    /// Intercept a prepared response before it is to be delivered over the
+    /// Intercepts a prepared response before it is to be delivered over the
     /// network.  If the payload assigned to the response is too large to be
     /// transmitted without fragmenting into blocks, the block handler will
     /// cache the response and serve it out via subsequent client requests
