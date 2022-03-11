@@ -288,7 +288,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
     /// network.  If the payload assigned to the response is too large to be
     /// transmitted without fragmenting into blocks, the block handler will
     /// cache the response and serve it out via subsequent client requests
-    /// (that in turn must be directed to [`intercept_request`]).
+    /// (that in turn must be directed to [`BlockHandler::intercept_request`]).
     ///
     /// Returns true if the response has been manipulated and is being handled
     /// using Block1 or Block2 fragmentation; false otherwise

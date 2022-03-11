@@ -112,7 +112,7 @@ impl error::Error for InvalidBlockValue {}
 /// protocol that should ideally deliver a failure message to the peer. But
 /// rather than apply that response message ourselves we yield this error and
 /// ask the caller to perform the conversion.  For convenience, this can be
-/// done with [CoapRequest::apply_from_error].
+/// done with [`crate::CoapRequest::apply_from_error`].
 #[derive(Debug, Clone)]
 pub struct HandlingError {
     pub code: Option<ResponseType>,
