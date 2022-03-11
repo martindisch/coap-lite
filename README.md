@@ -1,4 +1,5 @@
 # coap-lite
+
 [![Latest version](https://img.shields.io/crates/v/coap-lite)](https://crates.io/crates/coap-lite)
 [![Documentation](https://docs.rs/coap-lite/badge.svg)](https://docs.rs/coap-lite)
 [![License](https://img.shields.io/crates/l/coap-lite)](https://github.com/martindisch/coap-lite#license)
@@ -131,10 +132,11 @@ assert_eq!(b"Hello World!", &response.payload[..]);
 <!-- cargo-sync-readme end -->
 
 ## License
+
 Licensed under either of
 
- * [Apache License, Version 2.0](LICENSE-APACHE)
- * [MIT license](LICENSE-MIT)
+- [Apache License, Version 2.0](LICENSE-APACHE)
+- [MIT license](LICENSE-MIT)
 
 at your option.
 
