@@ -78,7 +78,8 @@ impl Default for BlockHandlerConfig {
 }
 
 impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
-    /// Creates a new block handler.
+    /// Creates a new block handler which is expected to be re-used across all subsequent
+    /// request/response pairs that may benefit from block handling.
     pub fn new(config: BlockHandlerConfig) -> Self {
         Self {
             states: LruCache::with_expiry_duration(
