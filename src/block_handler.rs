@@ -13,7 +13,6 @@ use core::ops::Bound;
 use core::ops::{Deref, RangeBounds};
 use core::time::Duration;
 
-use anyhow::anyhow;
 use lru_time_cache::LruCache;
 
 use crate::block_value::BlockValue;
@@ -410,7 +409,7 @@ fn extending_splice<R, I, T>(
     range: R,
     replace_with: I,
     maximum_reserve_len: usize,
-) -> anyhow::Result<alloc::vec::Splice<I::IntoIter>>
+) -> Result<alloc::vec::Splice<I::IntoIter>, String>
 where
     R: RangeBounds<usize>,
     I: IntoIterator<Item = T>,
@@ -424,7 +423,7 @@ where
 
     if let Some(extend_len) = end_index_plus_1.checked_sub(dst.len()) {
         if extend_len > maximum_reserve_len {
-            return Err(anyhow!(
+            return Err(format!(
                 "extend_len={}, maximum_extend_len={}",
                 extend_len,
                 maximum_reserve_len
