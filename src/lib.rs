@@ -15,6 +15,7 @@
 //! - CoAP [RFC 7252](https://tools.ietf.org/html/rfc7252)
 //! - CoAP Observe Option [RFC 7641](https://tools.ietf.org/html/rfc7641)
 //! - Too Many Requests Response Code [RFC 8516](https://tools.ietf.org/html/rfc8516)
+//! - Block-Wise Transfers [RFC 7959](https://tools.ietf.org/html/rfc7959)
 //! - Constrained RESTful Environments (CoRE) Link Format
 //!   [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
 //!
@@ -130,6 +131,8 @@ extern crate alloc;
 #[cfg_attr(tarpaulin, skip)]
 pub mod error;
 
+pub mod block_handler;
+mod block_value;
 mod header;
 pub mod link_format;
 #[macro_use]
@@ -143,6 +146,7 @@ mod response;
 #[cfg(feature = "with-coap-message")]
 mod impl_coap_message;
 
+pub use block_handler::{BlockHandler, BlockHandlerConfig};
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
 };

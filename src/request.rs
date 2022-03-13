@@ -5,10 +5,12 @@ use alloc::{
 use core::convert::TryFrom;
 
 use crate::{
-    error::InvalidObserve,
+    error::{HandlingError, IncompatibleOptionValueFormat, InvalidObserve},
     header::{MessageClass, RequestType as Method},
+    option_value::OptionValueString,
     packet::{CoapOption, ObserveOption, Packet},
     response::CoapResponse,
+    ContentFormat,
 };
 
 /// The CoAP request.
@@ -35,6 +37,21 @@ impl<Endpoint> CoapRequest<Endpoint> {
             message: packet,
             source: Some(source),
         }
+    }
+
+    /// Applies the given error to the request and returns true if that was
+    /// successful.
+    pub fn apply_from_error(&mut self, error: HandlingError) -> bool {
+        if let Some(reply) = &mut self.response {
+            if let Some(code) = error.code {
+                let message = &mut reply.message;
+                message.header.code = MessageClass::Response(code);
+                message.set_content_format(ContentFormat::TextPlain);
+                message.payload = error.message.into_bytes();
+                return true;
+            }
+        }
+        false
     }
 
     /// Sets the method.
@@ -85,6 +102,26 @@ impl<Endpoint> CoapRequest<Endpoint> {
             }
             _ => "".to_string(),
         }
+    }
+
+    /// Returns the path as a vector (as it is encoded in CoAP rather than in
+    /// HTTP-style paths).
+    pub fn get_path_as_vec(
+        &self,
+    ) -> Result<Vec<String>, IncompatibleOptionValueFormat> {
+        self.message
+            .get_options_as::<OptionValueString>(CoapOption::UriPath)
+            .map_or_else(
+                || Ok(vec![]),
+                |paths| {
+                    paths
+                        .into_iter()
+                        .map(|segment_result| {
+                            segment_result.map(|segment| segment.0)
+                        })
+                        .collect::<Result<Vec<_>, _>>()
+                },
+            )
     }
 
     /// Returns the flag in the Observe option or InvalidObserve if the flag
@@ -230,6 +267,32 @@ mod test {
         let path3 = "test-interface2/";
         request.set_path(path3);
         assert_eq!(path3, request.get_path());
+    }
+
+    #[test]
+    fn test_path_as_vec() {
+        let mut request: CoapRequest<Endpoint> = CoapRequest::new();
+
+        let path = "test-interface";
+        request
+            .message
+            .add_option(CoapOption::UriPath, path.as_bytes().to_vec());
+        assert_eq!(Ok(vec![path.to_string()]), request.get_path_as_vec());
+
+        request.set_path("/test-interface/second/third");
+        assert_eq!(
+            Ok(["test-interface", "second", "third"]
+                .map(|x| x.to_string())
+                .to_vec()),
+            request.get_path_as_vec()
+        );
+
+        let bogus_path: Vec<u8> = vec![0xfe, 0xfe, 0xff, 0xff];
+        request.message.clear_option(CoapOption::UriPath);
+        request.message.add_option(CoapOption::UriPath, bogus_path);
+        request
+            .get_path_as_vec()
+            .expect_err("must be a utf-8 decoding error");
     }
 
     #[test]

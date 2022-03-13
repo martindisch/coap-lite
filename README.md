@@ -1,4 +1,5 @@
 # coap-lite
+
 [![Latest version](https://img.shields.io/crates/v/coap-lite)](https://crates.io/crates/coap-lite)
 [![Documentation](https://docs.rs/coap-lite/badge.svg)](https://docs.rs/coap-lite)
 [![License](https://img.shields.io/crates/l/coap-lite)](https://github.com/martindisch/coap-lite#license)
@@ -22,6 +23,7 @@ metal environments.
 - CoAP [RFC 7252](https://tools.ietf.org/html/rfc7252)
 - CoAP Observe Option [RFC 7641](https://tools.ietf.org/html/rfc7641)
 - Too Many Requests Response Code [RFC 8516](https://tools.ietf.org/html/rfc8516)
+- Block-Wise Transfers [RFC 7959](https://tools.ietf.org/html/rfc7959)
 - Constrained RESTful Environments (CoRE) Link Format
   [RFC6690](https://tools.ietf.org/html/rfc6690#:~:text=well-known%2Fcore)
 
@@ -130,10 +132,11 @@ assert_eq!(b"Hello World!", &response.payload[..]);
 <!-- cargo-sync-readme end -->
 
 ## License
+
 Licensed under either of
 
- * [Apache License, Version 2.0](LICENSE-APACHE)
- * [MIT license](LICENSE-MIT)
+- [Apache License, Version 2.0](LICENSE-APACHE)
+- [MIT license](LICENSE-MIT)
 
 at your option.
 
