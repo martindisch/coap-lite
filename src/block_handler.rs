@@ -436,6 +436,7 @@ where
     Ok(dst.splice(range, replace_with))
 }
 
+/// Cache key for uniquely identifying a request.
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone)]
 pub struct RequestCacheKey<Endpoint: Ord + Clone> {
     /// Request type as an integer to make it easy to derive Ord.
@@ -458,6 +459,7 @@ impl<Endpoint: Ord + Clone> From<&CoapRequest<Endpoint>>
     }
 }
 
+/// State that is maintained over several requests.
 #[derive(Debug, Clone, Default)]
 pub struct BlockState {
     /// Last client request's block2 value (if any), which can either mean the
