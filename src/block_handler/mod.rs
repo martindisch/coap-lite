@@ -15,9 +15,11 @@ use core::time::Duration;
 
 use lru_time_cache::LruCache;
 
-use crate::block_value::BlockValue;
+mod block_value;
+
 use crate::error::HandlingError;
 use crate::{CoapOption, CoapRequest, MessageClass, Packet, ResponseType};
+pub use block_value::BlockValue;
 
 /// The maximum amount adding a block1 & block2 option to the message could add
 /// to the total size.
