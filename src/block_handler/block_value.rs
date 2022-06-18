@@ -4,6 +4,7 @@ use core::convert::TryFrom;
 use crate::error::{IncompatibleOptionValueFormat, InvalidBlockValue};
 use crate::option_value::{OptionValueType, OptionValueU16};
 
+/// The block option value.
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct BlockValue {
     pub num: u16,
