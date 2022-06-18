@@ -405,7 +405,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
 /// support the splice, but only up to an increase of `maximum_reserve_len`
 /// (for security reasons if the data you're receiving is untrusted ensure this
 /// is reasonably limited to avoid memory pressure denial of service attacks).
-fn extending_splice<R, I, T>(
+pub fn extending_splice<R, I, T>(
     dst: &mut Vec<T>,
     range: R,
     replace_with: I,
@@ -437,7 +437,7 @@ where
 }
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Clone)]
-struct RequestCacheKey<Endpoint: Ord + Clone> {
+pub struct RequestCacheKey<Endpoint: Ord + Clone> {
     /// Request type as an integer to make it easy to derive Ord.
     request_type_ord: u8,
     path: Vec<String>,
@@ -459,7 +459,7 @@ impl<Endpoint: Ord + Clone> From<&CoapRequest<Endpoint>>
 }
 
 #[derive(Debug, Clone, Default)]
-struct BlockState {
+pub struct BlockState {
     /// Last client request's block2 value (if any), which can either mean the
     /// client's attempt to suggest a block size or a request that came in
     /// after we expired our cache.

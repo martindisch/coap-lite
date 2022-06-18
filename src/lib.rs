@@ -132,7 +132,7 @@ extern crate alloc;
 pub mod error;
 
 pub mod block_handler;
-mod block_value;
+pub mod block_value;
 mod header;
 pub mod link_format;
 #[macro_use]
