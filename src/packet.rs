@@ -108,6 +108,7 @@ impl From<CoapOption> for u16 {
 
 /// The content formats.
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[non_exhaustive]
 pub enum ContentFormat {
     TextPlain,
     /// Media-Type: `application/cose; cose-type="cose-encrypt0"`, ID: 16
