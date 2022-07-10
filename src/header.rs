@@ -69,7 +69,7 @@ pub enum MessageClass {
     Empty,
     Request(RequestType),
     Response(ResponseType),
-    Reserved,
+    Reserved(u8),
 }
 
 impl From<u8> for MessageClass {
@@ -120,7 +120,8 @@ impl From<u8> for MessageClass {
             0xA4 => MessageClass::Response(ResponseType::GatewayTimeout),
             0xA5 => MessageClass::Response(ResponseType::ProxyingNotSupported),
             0xA8 => MessageClass::Response(ResponseType::HopLimitReached),
-            _ => MessageClass::Reserved,
+
+            n => MessageClass::Reserved(n),
         }
     }
 }
@@ -137,6 +138,7 @@ impl From<MessageClass> for u8 {
             MessageClass::Request(RequestType::Fetch) => 0x05,
             MessageClass::Request(RequestType::Patch) => 0x06,
             MessageClass::Request(RequestType::IPatch) => 0x07,
+            MessageClass::Request(RequestType::UnKnown) => 0xFF,
 
             MessageClass::Response(ResponseType::Created) => 0x41,
             MessageClass::Response(ResponseType::Deleted) => 0x42,
@@ -173,8 +175,9 @@ impl From<MessageClass> for u8 {
             MessageClass::Response(ResponseType::GatewayTimeout) => 0xA4,
             MessageClass::Response(ResponseType::ProxyingNotSupported) => 0xA5,
             MessageClass::Response(ResponseType::HopLimitReached) => 0xA8,
+            MessageClass::Response(ResponseType::UnKnown) => 0xFF,
 
-            _ => 0xFF,
+            MessageClass::Reserved(c) => c,
         }
     }
 }
@@ -376,7 +379,7 @@ mod test {
 
             // Reserved class could technically be many codes, so only check
             // valid items
-            if class != MessageClass::Reserved {
+            if !matches!(class, MessageClass::Reserved(_)) {
                 assert_eq!(u8::from(class), code);
                 assert_eq!(class, header.code);
                 assert_eq!(code_str, header.get_code());
