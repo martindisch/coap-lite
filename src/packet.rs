@@ -361,14 +361,14 @@ pub type Options<'a> =
     alloc::collections::btree_map::Iter<'a, u16, LinkedList<Vec<u8>>>;
 
 impl Packet {
-    /// Max size of payload that CoAP will accept. By default limited to 1280
-    /// so that CoAP packets can be sent over TCP or UDP.
+    /// Maximum allowed packet size. By default limited to 1280 so that CoAP
+    /// packets can be sent over TCP or UDP.
     #[cfg(not(feature = "udp"))]
-    pub const COAP_PAYLOAD_MAX_SIZE: usize = 1280;
+    pub const MAX_SIZE: usize = 1280;
 
-    /// Max size of payload that CoAP will accept.
+    /// Maximum allowed packet size.
     #[cfg(feature = "udp")]
-    pub const COAP_PAYLOAD_MAX_SIZE: usize = 64_000;
+    pub const MAX_SIZE: usize = 64_000;
 
     /// Creates a new packet.
     pub fn new() -> Packet {
@@ -700,7 +700,7 @@ impl Packet {
         }
         buf_length += options_bytes.len();
 
-        if buf_length > Self::COAP_PAYLOAD_MAX_SIZE {
+        if buf_length > Self::MAX_SIZE {
             return Err(MessageError::InvalidPacketLength);
         }
 
