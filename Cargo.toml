@@ -28,6 +28,9 @@ default = ["std"]
 std = []
 with-coap-message = ["coap-message"]
 
+# UDP feature enables additional optimizations for CoAP over UDP.
+udp = []
+
 example-server_coaphandler = ["with-coap-message", "coap-handler"]
 
 [badges]
