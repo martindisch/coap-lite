@@ -122,7 +122,6 @@
 //! [rust-async-coap]: https://github.com/google/rust-async-coap
 
 #![cfg_attr(not(feature = "std"), no_std)]
-#![cfg_attr(feature = "with-coap-message", feature(generic_associated_types))]
 #![allow(clippy::needless_doctest_main)]
 
 #[macro_use]
@@ -143,7 +142,6 @@ mod packet;
 mod request;
 mod response;
 
-#[cfg(feature = "with-coap-message")]
 mod impl_coap_message;
 
 #[cfg(feature = "std")]
