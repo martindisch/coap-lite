@@ -131,6 +131,7 @@ extern crate alloc;
 #[cfg_attr(tarpaulin, skip)]
 pub mod error;
 
+#[cfg(feature = "std")]
 pub mod block_handler;
 mod header;
 pub mod link_format;
@@ -145,6 +146,7 @@ mod response;
 #[cfg(feature = "with-coap-message")]
 mod impl_coap_message;
 
+#[cfg(feature = "std")]
 pub use block_handler::{BlockHandler, BlockHandlerConfig};
 pub use header::{
     Header, HeaderRaw, MessageClass, MessageType, RequestType, ResponseType,
