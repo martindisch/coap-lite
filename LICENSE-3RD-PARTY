@@ -3,6 +3,8 @@ The MIT License
 
 applies to:
 - coap, Copyright (c) 2014-2016 Yang Zhang
+- coap-handler
+- coap-message
 - log, Copyright (c) 2014 The Rust Project Developers
 - lru_time_cache, Copyright 2018 MaidSafe.net limited.
 -------------------------------------------------------------------------------
@@ -29,6 +31,8 @@ SOFTWARE.
 The Apache License
 
 applies to:
+- coap-handler
+- coap-message
 - rust-async-coap
 - log
 -------------------------------------------------------------------------------
