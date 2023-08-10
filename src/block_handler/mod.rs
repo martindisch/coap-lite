@@ -280,7 +280,6 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
         dst.header.set_version(src.header.get_version());
         dst.header.set_type(src.header.get_type());
         dst.header.code = src.header.code;
-        dst.set_token(src.get_token().to_vec());
         for (&option, value) in src.options() {
             dst.set_option(CoapOption::from(option), value.clone());
         }
