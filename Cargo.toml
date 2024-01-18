@@ -22,7 +22,8 @@ log = { version = "0.4.19", default-features = false, optional = true }
 lru_time_cache = { version = "0.11.11", optional = true }
 
 [dev-dependencies]
-coap-handler = "0.1.5"
+coap-handler = "0.2.0"
+coap-handler-implementations = "0.5.0"
 
 [features]
 default = ["std"]

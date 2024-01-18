@@ -9,19 +9,14 @@
 use coap_lite::{CoapRequest, Packet};
 use std::net::UdpSocket;
 
-use coap_handler::implementations::{
-    HandlerBuilder, SimpleRendered, TypedStaticResponse,
-};
 use coap_handler::Handler as _;
+use coap_handler_implementations::{HandlerBuilder, SimpleRendered};
 
 fn main() {
-    let mut handler = coap_handler::implementations::new_dispatcher()
+    let mut handler = coap_handler_implementations::new_dispatcher()
         .at(
             &[".well-known", "core"],
-            TypedStaticResponse {
-                payload: b"</>,</time>",
-                contentformat: &[40],
-            },
+            SimpleRendered::new_typed_str("</>,</time>", Some(40)),
         )
         .at(&[], SimpleRendered("Welcome to the Demo server"));
 
@@ -38,7 +33,21 @@ fn main() {
         let extracted = handler.extract_request_data(&request.message);
 
         let mut response = request.response.unwrap();
-        handler.build_response(&mut response.message, extracted);
+        use coap_message_0_3::error::RenderableOnMinimal;
+        match extracted {
+            Ok(extracted) => {
+                if let Err(e2) =
+                    handler.build_response(&mut response.message, extracted)
+                {
+                    response.message.payload = Default::default();
+                    response.message.clear_all_options();
+                    e2.render(&mut response.message).unwrap();
+                }
+            }
+            Err(e) => {
+                e.render(&mut response.message).unwrap();
+            }
+        }
 
         let packet = response.message.to_bytes().unwrap();
         socket
