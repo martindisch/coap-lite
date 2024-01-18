@@ -143,6 +143,7 @@ mod request;
 mod response;
 
 mod impl_coap_message;
+mod impl_coap_message_0_3;
 
 #[cfg(feature = "std")]
 pub use block_handler::{BlockHandler, BlockHandlerConfig};
