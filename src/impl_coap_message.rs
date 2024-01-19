@@ -1,3 +1,5 @@
+use alloc::vec::Vec;
+
 use coap_message::{
     Code, MinimalWritableMessage, MutableWritableMessage, OptionNumber,
     ReadableMessage, SeekWritableMessage, WithSortedOptions,

@@ -1,3 +1,5 @@
+use alloc::vec::Vec;
+
 use coap_message_0_3 as coap_message;
 
 use coap_message_0_3::{
