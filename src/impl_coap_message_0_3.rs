@@ -107,12 +107,19 @@ impl MinimalWritableMessage for Packet {
         self.header.code = code;
     }
 
-    fn add_option(&mut self, option: Self::OptionNumber, data: &[u8]) -> Result<(), Self::AddOptionError> {
+    fn add_option(
+        &mut self,
+        option: Self::OptionNumber,
+        data: &[u8],
+    ) -> Result<(), Self::AddOptionError> {
         self.add_option(option, data.into());
         Ok(())
     }
 
-    fn set_payload(&mut self, payload: &[u8]) -> Result<(), Self::SetPayloadError> {
+    fn set_payload(
+        &mut self,
+        payload: &[u8],
+    ) -> Result<(), Self::SetPayloadError> {
         self.payload = payload.into();
         Ok(())
     }
@@ -122,11 +129,17 @@ impl MutableWritableMessage for Packet {
     fn available_space(&self) -> usize {
         usize::MAX
     }
-    fn payload_mut_with_len(&mut self, len: usize) -> Result<&mut [u8], Self::SetPayloadError> {
+    fn payload_mut_with_len(
+        &mut self,
+        len: usize,
+    ) -> Result<&mut [u8], Self::SetPayloadError> {
         self.payload.resize(len, 0);
         Ok(&mut self.payload)
     }
-    fn truncate(&mut self, length: usize) -> Result<(), Self::SetPayloadError> {
+    fn truncate(
+        &mut self,
+        length: usize,
+    ) -> Result<(), Self::SetPayloadError> {
         self.payload.truncate(length);
         Ok(())
     }
