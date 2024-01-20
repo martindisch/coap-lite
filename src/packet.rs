@@ -490,7 +490,7 @@ impl Packet {
     pub fn get_content_format(&self) -> Option<ContentFormat> {
         self.get_first_option_as::<OptionValueU16>(CoapOption::ContentFormat)
             .and_then(|option| option.ok())
-            .map(|value| usize::try_from(value.0).unwrap())
+            .map(|value| usize::from(value.0))
             .and_then(|value| ContentFormat::try_from(value).ok())
     }
 
@@ -611,7 +611,7 @@ impl Packet {
 
                     options
                         .entry(options_number)
-                        .or_insert_with(LinkedList::new)
+                        .or_default()
                         .push_back(options_value);
 
                     idx += length;
@@ -663,7 +663,7 @@ impl Packet {
                 if delta > 12 && delta < 269 {
                     header.push((delta - 13) as u8);
                 } else if delta >= 269 {
-                    let fix = (delta - 269) as u16;
+                    let fix = delta - 269;
                     header.push((fix >> 8) as u8);
                     header.push((fix & 0xFF) as u8);
                 }
@@ -901,19 +901,15 @@ mod test {
     #[test]
     fn option() {
         for i in 0..512 {
-            match CoapOption::try_from(i) {
-                Ok(o) => assert_eq!(i, o.into()),
-                _ => (),
-            }
+            assert_eq!(i, CoapOption::from(i).into());
         }
     }
 
     #[test]
     fn content_format() {
         for i in 0..512 {
-            match ContentFormat::try_from(i) {
-                Ok(o) => assert_eq!(i, o.into()),
-                _ => (),
+            if let Ok(o) = ContentFormat::try_from(i) {
+                assert_eq!(i, o.into());
             }
         }
     }
@@ -921,9 +917,8 @@ mod test {
     #[test]
     fn observe_option() {
         for i in 0..8 {
-            match ObserveOption::try_from(i) {
-                Ok(o) => assert_eq!(i, o.into()),
-                _ => (),
+            if let Ok(o) = ObserveOption::try_from(i) {
+                assert_eq!(i, o.into());
             }
         }
     }

@@ -275,7 +275,7 @@ impl<'a> Iterator for LinkFormatParser<'a> {
         let link_len =
             iter.as_str().as_ptr() as usize - link_ref.as_ptr() as usize;
 
-        let link_ref = (&link_ref[..link_len]).trim_end_matches('>');
+        let link_ref = (link_ref[..link_len]).trim_end_matches('>');
 
         let mut attr_keys = iter.as_str();
 
@@ -286,7 +286,7 @@ impl<'a> Iterator for LinkFormatParser<'a> {
                 Some(LINK_SEPARATOR_CHAR) | None => {
                     break;
                 }
-                Some(c) if c == '"' => {
+                Some('"') => {
                     // Handle quotes.
                     loop {
                         match iter.next() {
@@ -308,7 +308,7 @@ impl<'a> Iterator for LinkFormatParser<'a> {
         let attr_len =
             iter.as_str().as_ptr() as usize - attr_keys.as_ptr() as usize;
         attr_keys =
-            (&attr_keys[..attr_len]).trim_end_matches(LINK_SEPARATOR_CHAR);
+            attr_keys[..attr_len].trim_end_matches(LINK_SEPARATOR_CHAR);
 
         self.inner = iter.as_str();
         return Some(Ok((
@@ -357,7 +357,7 @@ impl<'a> Iterator for LinkAttributeParser<'a> {
                 Some(ATTR_SEPARATOR_CHAR) | None => {
                     break;
                 }
-                Some(c) if c == '"' => {
+                Some('"') => {
                     // Handle quotes.
                     loop {
                         match iter.next() {

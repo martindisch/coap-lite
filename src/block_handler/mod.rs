@@ -354,7 +354,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
         let max_block_size = max_total_message_size
             .checked_sub(max_non_payload_size)
             .ok_or_else(|| {
-                HandlingError::internal(&format!(
+                HandlingError::internal(format!(
             "Message too large to encode at any block size: {} exceeds {}",
             max_total_message_size,
             max_non_payload_size))
@@ -508,7 +508,7 @@ mod tests {
         let mut sent_req = create_get_request("test", 1, None);
         let mut received_response = harness
             .exchange_messages(&mut sent_req, move |received_request| {
-                let mut sent_response =
+                let sent_response =
                     received_request.response.as_mut().unwrap();
                 sent_response.message.header.code =
                     MessageClass::Response(ResponseType::Content);
@@ -574,7 +574,7 @@ mod tests {
             .add_option_as::<BlockValue>(CoapOption::Block2, followup_block2);
         let followup_response = harness
             .exchange_messages(&mut followup_req, move |received_request| {
-                let mut sent_response =
+                let sent_response =
                     received_request.response.as_mut().unwrap();
                 sent_response.message.header.code =
                     MessageClass::Response(ResponseType::Content);

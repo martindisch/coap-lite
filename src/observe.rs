@@ -213,7 +213,7 @@ mod test {
         let mut request = CoapRequest::new();
         request.source = Some(String::from("0.0.0.0"));
         request.set_method(Method::Get);
-        request.set_path(resource_path.clone());
+        request.set_path(resource_path);
         request.message.set_token(vec![0x7d, 0x34]);
         request.set_observe_flag(ObserveOption::Register);
 
@@ -221,7 +221,7 @@ mod test {
         subject.register(&request);
 
         let observers = subject
-            .get_resource_observers(resource_path.clone())
+            .get_resource_observers(resource_path)
             .unwrap();
 
         assert_eq!(observers.len(), 1);
@@ -234,14 +234,14 @@ mod test {
         let mut request1 = CoapRequest::new();
         request1.source = Some(String::from("0.0.0.0"));
         request1.set_method(Method::Get);
-        request1.set_path(resource_path.clone());
+        request1.set_path(resource_path);
         request1.message.set_token(vec![0x00, 0x00]);
         request1.set_observe_flag(ObserveOption::Register);
 
         let mut request2 = CoapRequest::new();
         request2.source = Some(String::from("0.0.0.0"));
         request2.set_method(Method::Get);
-        request2.set_path(resource_path.clone());
+        request2.set_path(resource_path);
         request2.message.set_token(vec![0xff, 0xff]);
         request2.set_observe_flag(ObserveOption::Register);
 
@@ -250,12 +250,12 @@ mod test {
         subject.register(&request2);
 
         let observers = subject
-            .get_resource_observers(resource_path.clone())
+            .get_resource_observers(resource_path)
             .unwrap();
 
         assert_eq!(observers.len(), 1);
 
-        let observer = observers.get(0).unwrap();
+        let observer = observers.first().unwrap();
 
         assert_eq!(observer.token, vec![0xff, 0xff]);
     }
@@ -267,7 +267,7 @@ mod test {
         let mut request1 = CoapRequest::new();
         request1.source = Some(String::from("0.0.0.0"));
         request1.set_method(Method::Get);
-        request1.set_path(resource_path.clone());
+        request1.set_path(resource_path);
         request1.message.set_token(vec![0x00, 0x00]);
         request1.set_observe_flag(ObserveOption::Register);
 
@@ -282,9 +282,9 @@ mod test {
 
         {
             let observers = subject
-                .get_resource_observers(resource_path.clone())
+                .get_resource_observers(resource_path)
                 .unwrap();
-            let observer = observers.get(0).unwrap();
+            let observer = observers.first().unwrap();
 
             assert_eq!(observer.unacknowledged_messages, 1);
         }
@@ -292,7 +292,7 @@ mod test {
         let mut ack = CoapRequest::new();
         ack.source = Some(String::from("0.0.0.0"));
         ack.message.header.set_type(MessageType::Acknowledgement);
-        ack.set_path(resource_path.clone());
+        ack.set_path(resource_path);
         ack.message.set_token(vec![0x00, 0x00]);
         ack.message.header.message_id = 1;
 
@@ -300,9 +300,9 @@ mod test {
 
         {
             let observers = subject
-                .get_resource_observers(resource_path.clone())
+                .get_resource_observers(resource_path)
                 .unwrap();
-            let observer = observers.get(0).unwrap();
+            let observer = observers.first().unwrap();
 
             assert_eq!(observer.unacknowledged_messages, 0);
         }
@@ -315,7 +315,7 @@ mod test {
         let mut request1 = CoapRequest::new();
         request1.source = Some(String::from("0.0.0.0"));
         request1.set_method(Method::Get);
-        request1.set_path(resource_path.clone());
+        request1.set_path(resource_path);
         request1.message.set_token(vec![0x00, 0x00]);
         request1.set_observe_flag(ObserveOption::Register);
 
@@ -331,7 +331,7 @@ mod test {
         subject.resource_changed(resource_path, 6);
 
         let observers = subject
-            .get_resource_observers(resource_path.clone())
+            .get_resource_observers(resource_path)
             .unwrap();
 
         assert_eq!(observers.len(), 0);

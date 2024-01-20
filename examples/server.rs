@@ -11,7 +11,7 @@ fn main() {
     let packet = Packet::from_bytes(&buf[..size]).unwrap();
     let request = CoapRequest::from_packet(packet, src);
 
-    let method = request.get_method().clone();
+    let method = *request.get_method();
     let path = request.get_path();
 
     println!("Received CoAP request '{:?} {}' from {}", method, path, src);
@@ -21,6 +21,6 @@ fn main() {
 
     let packet = response.message.to_bytes().unwrap();
     socket
-        .send_to(&packet[..], &src)
+        .send_to(&packet[..], src)
         .expect("Could not send the data");
 }

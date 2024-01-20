@@ -94,7 +94,7 @@ mod test {
 
     #[test]
     fn test_new_response_valid() {
-        for mtyp in vec![MessageType::Confirmable, MessageType::NonConfirmable]
+        for mtyp in [MessageType::Confirmable, MessageType::NonConfirmable]
         {
             let mut packet = Packet::new();
             packet.header.set_type(mtyp);

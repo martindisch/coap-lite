@@ -58,7 +58,7 @@ impl<'a> Iterator for MessageOptionAdapter<'a> {
 
 impl<'a> coap_message::MessageOption for MessageOption<'a> {
     fn number(&self) -> u16 {
-        self.number.into()
+        self.number
     }
     fn value(&self) -> &[u8] {
         self.value
@@ -77,15 +77,15 @@ impl ReadableMessage for Packet {
     fn payload(&self) -> &[u8] {
         &self.payload
     }
-    fn options<'a>(&'a self) -> Self::OptionsIter<'a> {
+    fn options(&self) -> Self::OptionsIter<'_> {
         MessageOptionAdapter {
-            raw_iter: (&self.options).iter(),
+            raw_iter: self.options.iter(),
             head: None,
         }
     }
 }
 
-impl<'a> WithSortedOptions for Packet {}
+impl WithSortedOptions for Packet {}
 
 impl OptionNumber for CoapOption {
     type Error = core::convert::Infallible;

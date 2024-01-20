@@ -51,7 +51,7 @@ fn main() {
 
         let packet = response.message.to_bytes().unwrap();
         socket
-            .send_to(&packet[..], &src)
+            .send_to(&packet[..], src)
             .expect("Could not send the data");
     }
 }
