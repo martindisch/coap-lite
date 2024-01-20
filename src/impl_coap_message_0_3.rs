@@ -1,6 +1,8 @@
 use alloc::vec::Vec;
 
-use coap_message::{
+use coap_message_0_3 as coap_message;
+
+use coap_message_0_3::{
     Code, MinimalWritableMessage, MutableWritableMessage, OptionNumber,
     ReadableMessage, SeekWritableMessage, WithSortedOptions,
 };
@@ -8,7 +10,11 @@ use coap_message::{
 use crate::{CoapOption, MessageClass, Packet};
 
 impl Code for MessageClass {
-    // Conveniently, it already satisfies the requirements
+    type Error = core::convert::Infallible;
+
+    fn new(code: u8) -> Result<Self, core::convert::Infallible> {
+        Ok(code.into())
+    }
 }
 
 // pub only in name: We don't expose this whole module, so all users will know
@@ -81,22 +87,34 @@ impl ReadableMessage for Packet {
 
 impl<'a> WithSortedOptions for Packet {}
 
-impl OptionNumber for CoapOption {}
+impl OptionNumber for CoapOption {
+    type Error = core::convert::Infallible;
+
+    fn new(option: u16) -> Result<Self, core::convert::Infallible> {
+        Ok(option.into())
+    }
+}
 
 impl MinimalWritableMessage for Packet {
     type Code = MessageClass;
     type OptionNumber = CoapOption;
 
+    type AddOptionError = core::convert::Infallible;
+    type SetPayloadError = core::convert::Infallible;
+    type UnionError = core::convert::Infallible;
+
     fn set_code(&mut self, code: Self::Code) {
         self.header.code = code;
     }
 
-    fn add_option(&mut self, option: Self::OptionNumber, data: &[u8]) {
+    fn add_option(&mut self, option: Self::OptionNumber, data: &[u8]) -> Result<(), Self::AddOptionError> {
         self.add_option(option, data.into());
+        Ok(())
     }
 
-    fn set_payload(&mut self, payload: &[u8]) {
+    fn set_payload(&mut self, payload: &[u8]) -> Result<(), Self::SetPayloadError> {
         self.payload = payload.into();
+        Ok(())
     }
 }
 
@@ -104,15 +122,13 @@ impl MutableWritableMessage for Packet {
     fn available_space(&self) -> usize {
         usize::MAX
     }
-    fn payload_mut(&mut self) -> &mut [u8] {
-        &mut self.payload
-    }
-    fn payload_mut_with_len(&mut self, len: usize) -> &mut [u8] {
+    fn payload_mut_with_len(&mut self, len: usize) -> Result<&mut [u8], Self::SetPayloadError> {
         self.payload.resize(len, 0);
-        &mut self.payload
+        Ok(&mut self.payload)
     }
-    fn truncate(&mut self, length: usize) {
-        self.payload.truncate(length)
+    fn truncate(&mut self, length: usize) -> Result<(), Self::SetPayloadError> {
+        self.payload.truncate(length);
+        Ok(())
     }
     fn mutate_options<F>(&mut self, mut callback: F)
     where

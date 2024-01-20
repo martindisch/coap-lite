@@ -472,6 +472,11 @@ impl Packet {
         }
     }
 
+    /// Removes all options.
+    pub fn clear_all_options(&mut self) {
+        self.options.clear()
+    }
+
     /// Sets the content-format.
     pub fn set_content_format(&mut self, cf: ContentFormat) {
         let content_format: u16 = u16::try_from(usize::from(cf)).unwrap();

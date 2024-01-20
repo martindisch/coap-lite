@@ -16,26 +16,30 @@ edition = "2021"
 doctest = false
 
 [dependencies]
-coap-message = { version = "0.2.3", optional = true }
+coap-message = "0.2.3"
+coap-message-0-3 = { package = "coap-message", version = "0.3" }
 log = { version = "0.4.19", default-features = false, optional = true }
 lru_time_cache = { version = "0.11.11", optional = true }
 
-# actually they are dev-dependencies, but those can't be optional
-coap-handler = { version = "0.1.5", optional = true }
+[dev-dependencies]
+coap-handler = "0.2.0"
+coap-handler-implementations = "0.5.0"
 
 [features]
 default = ["std"]
 std = ["lru_time_cache"]
-with-coap-message = ["coap-message"]
+
+# The dependencies behind these features hasve become non-optional when they
+# became buildable on stable Rust. The features are deprecated to use, and can
+# be removed in a breaking release.
+with-coap-message = []
+example-server_coaphandler = []
 
 # UDP feature enables additional optimizations for CoAP over UDP.
 udp = []
-
-example-server_coaphandler = ["with-coap-message", "coap-handler"]
 
 [badges]
 maintenance = { status = "passively-maintained" }
 
 [[example]]
 name = "server_coaphandler"
-required-features = ["example-server_coaphandler"]
