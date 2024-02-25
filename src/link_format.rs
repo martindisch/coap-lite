@@ -97,7 +97,7 @@ pub const LINK_ATTR_TITLE: &str = "title";
 /// Is is typically formatted as `"utf-8'<LANG_CODE&>'<TITLE_TEXT>"`. For
 /// example:
 ///
-/// * `"utf-8'en'£ rates"`</code>
+/// * `"utf-8'en'£ rates"`
 ///
 /// Note that since <a href="https://tools.ietf.org/html/rfc6690">RFC6690</a>
 /// requires the link format serialization to always be in UTF-8 format, the
