@@ -636,6 +636,28 @@ impl Packet {
 
     /// Returns a vector of bytes representing the Packet.
     pub fn to_bytes(&self) -> Result<Vec<u8>, MessageError> {
+        self.to_bytes_internal(Some(Self::MAX_SIZE))
+    }
+
+    /// Returns a vector of bytes representing the Packet, using a custom
+    /// `limit` instead of [`Packet::MAX_SIZE`] for the message size check.
+    pub fn to_bytes_with_limit(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<u8>, MessageError> {
+        self.to_bytes_internal(Some(limit))
+    }
+
+    /// Returns a vector of bytes representing the Packet, skipping the message
+    /// size check against [`Packet::MAX_SIZE`].
+    pub fn to_bytes_unlimited(&self) -> Result<Vec<u8>, MessageError> {
+        self.to_bytes_internal(None)
+    }
+
+    fn to_bytes_internal(
+        &self,
+        limit: Option<usize>,
+    ) -> Result<Vec<u8>, MessageError> {
         let mut options_delta_length = 0;
         let mut options_bytes: Vec<u8> = Vec::new();
         for (number, value_list) in self.options.iter() {
@@ -705,7 +727,7 @@ impl Packet {
         }
         buf_length += options_bytes.len();
 
-        if buf_length > Self::MAX_SIZE {
+        if limit.is_some() && buf_length > limit.unwrap() {
             return Err(MessageError::InvalidPacketLength);
         }
 
