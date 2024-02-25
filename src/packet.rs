@@ -1001,4 +1001,17 @@ mod test {
         p.set_observe_value(0);
         assert_eq!(Some(Ok(0)), p.get_observe_value());
     }
+
+    #[test]
+    fn to_bytes_limits_work() {
+        let mut packet = Packet::new();
+
+        packet.payload = vec![0u8; 1200];
+        assert!(packet.to_bytes().is_ok());
+
+        packet.payload = vec![0u8; 1300];
+        assert_eq!(packet.to_bytes(), Err(MessageError::InvalidPacketLength));
+        assert!(packet.to_bytes_with_limit(1380).is_ok());
+        assert!(packet.to_bytes_unlimited().is_ok());
+    }
 }
