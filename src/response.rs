@@ -25,8 +25,6 @@ impl CoapResponse {
         packet.header.message_id = request.header.message_id;
         packet.set_token(request.get_token().to_vec());
 
-        packet.payload = request.payload.clone();
-
         Some(CoapResponse { message: packet })
     }
 
