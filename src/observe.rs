@@ -340,4 +340,34 @@ mod test {
 
         assert_eq!(observers.len(), 0);
     }
+
+    #[test]
+    fn combine_ack_and_no_ack() {
+        let resource_path = "temp";
+
+        let mut request1 = CoapRequest::new();
+        request1.source = Some(String::from("0.0.0.0"));
+        request1.set_method(Method::Get);
+        request1.set_path(resource_path);
+        request1.message.set_token(vec![0x00, 0x00]);
+        request1.set_observe_flag(ObserveOption::Register);
+
+        let mut subject: Subject<Endpoint> = Subject::default();
+        subject.set_unacknowledged_limit(2);
+        subject.register(&request1);
+
+        subject.resource_changed(resource_path, 1, false);
+        subject.resource_changed(resource_path, 2, false);
+        subject.resource_changed(resource_path, 3, false);
+
+        let observers = subject.get_resource_observers(resource_path).unwrap();
+        assert_eq!(observers.len(), 1);
+
+        subject.resource_changed(resource_path, 4, true);
+        subject.resource_changed(resource_path, 5, true);
+        subject.resource_changed(resource_path, 6, true);
+
+        let observers = subject.get_resource_observers(resource_path).unwrap();
+        assert_eq!(observers.len(), 0);
+    }
 }
