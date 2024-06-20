@@ -98,8 +98,13 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
     /// Updates the resource information after having notified the observers.
     ///
     /// It increments the resource sequence and counter of unacknowledged
-    /// updates.
-    pub fn resource_changed(&mut self, resource: &str, message_id: u16) {
+    /// updates (the latter only if `is_confirmable` is `true`).
+    pub fn resource_changed(
+        &mut self,
+        resource: &str,
+        message_id: u16,
+        is_confirmable: bool,
+    ) {
         let unacknowledged_limit = self.unacknowledged_limit;
         coap_debug!("Resource changed");
 
@@ -109,8 +114,10 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
                 resource.sequence += 1;
 
                 resource.observers.iter_mut().for_each(|observer| {
-                    observer.unacknowledged_messages += 1;
                     observer.message_id = Some(message_id);
+                    if is_confirmable {
+                        observer.unacknowledged_messages += 1;
+                    }
                 });
 
                 resource.observers.retain(|observer| {
@@ -172,11 +179,16 @@ pub fn create_notification(
     token: Vec<u8>,
     sequence: u32,
     payload: Vec<u8>,
+    is_confirmable: bool,
 ) -> Packet {
     let mut packet = Packet::new();
 
     packet.header.set_version(1);
-    packet.header.set_type(MessageType::Confirmable);
+    packet.header.set_type(if is_confirmable {
+        MessageType::Confirmable
+    } else {
+        MessageType::NonConfirmable
+    });
     packet.header.code = MessageClass::Response(crate::ResponseType::Content);
     packet.header.message_id = message_id;
     packet.set_token(token);
