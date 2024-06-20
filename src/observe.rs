@@ -283,7 +283,7 @@ mod test {
         subject.register(&request1);
 
         let sequence1 = subject.get_resource(resource_path).unwrap().sequence;
-        subject.resource_changed(resource_path, 1);
+        subject.resource_changed(resource_path, 1, true);
         let sequence2 = subject.get_resource(resource_path).unwrap().sequence;
 
         assert!(sequence2 > sequence1);
@@ -329,12 +329,12 @@ mod test {
         subject.set_unacknowledged_limit(5);
         subject.register(&request1);
 
-        subject.resource_changed(resource_path, 1);
-        subject.resource_changed(resource_path, 2);
-        subject.resource_changed(resource_path, 3);
-        subject.resource_changed(resource_path, 4);
-        subject.resource_changed(resource_path, 5);
-        subject.resource_changed(resource_path, 6);
+        subject.resource_changed(resource_path, 1, true);
+        subject.resource_changed(resource_path, 2, true);
+        subject.resource_changed(resource_path, 3, true);
+        subject.resource_changed(resource_path, 4, true);
+        subject.resource_changed(resource_path, 5, true);
+        subject.resource_changed(resource_path, 6, true);
 
         let observers = subject.get_resource_observers(resource_path).unwrap();
 
