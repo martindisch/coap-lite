@@ -98,8 +98,13 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
     /// Updates the resource information after having notified the observers.
     ///
     /// It increments the resource sequence and counter of unacknowledged
-    /// updates.
-    pub fn resource_changed(&mut self, resource: &str, message_id: u16) {
+    /// updates (the latter only if `is_confirmable` is `true`).
+    pub fn resource_changed(
+        &mut self,
+        resource: &str,
+        message_id: u16,
+        is_confirmable: bool,
+    ) {
         let unacknowledged_limit = self.unacknowledged_limit;
         coap_debug!("Resource changed");
 
@@ -109,8 +114,10 @@ impl<Endpoint: Display + PartialEq + Clone> Subject<Endpoint> {
                 resource.sequence += 1;
 
                 resource.observers.iter_mut().for_each(|observer| {
-                    observer.unacknowledged_messages += 1;
                     observer.message_id = Some(message_id);
+                    if is_confirmable {
+                        observer.unacknowledged_messages += 1;
+                    }
                 });
 
                 resource.observers.retain(|observer| {
@@ -172,11 +179,16 @@ pub fn create_notification(
     token: Vec<u8>,
     sequence: u32,
     payload: Vec<u8>,
+    is_confirmable: bool,
 ) -> Packet {
     let mut packet = Packet::new();
 
     packet.header.set_version(1);
-    packet.header.set_type(MessageType::Confirmable);
+    packet.header.set_type(if is_confirmable {
+        MessageType::Confirmable
+    } else {
+        MessageType::NonConfirmable
+    });
     packet.header.code = MessageClass::Response(crate::ResponseType::Content);
     packet.header.message_id = message_id;
     packet.set_token(token);
@@ -271,7 +283,7 @@ mod test {
         subject.register(&request1);
 
         let sequence1 = subject.get_resource(resource_path).unwrap().sequence;
-        subject.resource_changed(resource_path, 1);
+        subject.resource_changed(resource_path, 1, true);
         let sequence2 = subject.get_resource(resource_path).unwrap().sequence;
 
         assert!(sequence2 > sequence1);
@@ -317,15 +329,45 @@ mod test {
         subject.set_unacknowledged_limit(5);
         subject.register(&request1);
 
-        subject.resource_changed(resource_path, 1);
-        subject.resource_changed(resource_path, 2);
-        subject.resource_changed(resource_path, 3);
-        subject.resource_changed(resource_path, 4);
-        subject.resource_changed(resource_path, 5);
-        subject.resource_changed(resource_path, 6);
+        subject.resource_changed(resource_path, 1, true);
+        subject.resource_changed(resource_path, 2, true);
+        subject.resource_changed(resource_path, 3, true);
+        subject.resource_changed(resource_path, 4, true);
+        subject.resource_changed(resource_path, 5, true);
+        subject.resource_changed(resource_path, 6, true);
 
         let observers = subject.get_resource_observers(resource_path).unwrap();
 
+        assert_eq!(observers.len(), 0);
+    }
+
+    #[test]
+    fn combine_ack_and_no_ack() {
+        let resource_path = "temp";
+
+        let mut request1 = CoapRequest::new();
+        request1.source = Some(String::from("0.0.0.0"));
+        request1.set_method(Method::Get);
+        request1.set_path(resource_path);
+        request1.message.set_token(vec![0x00, 0x00]);
+        request1.set_observe_flag(ObserveOption::Register);
+
+        let mut subject: Subject<Endpoint> = Subject::default();
+        subject.set_unacknowledged_limit(2);
+        subject.register(&request1);
+
+        subject.resource_changed(resource_path, 1, false);
+        subject.resource_changed(resource_path, 2, false);
+        subject.resource_changed(resource_path, 3, false);
+
+        let observers = subject.get_resource_observers(resource_path).unwrap();
+        assert_eq!(observers.len(), 1);
+
+        subject.resource_changed(resource_path, 4, true);
+        subject.resource_changed(resource_path, 5, true);
+        subject.resource_changed(resource_path, 6, true);
+
+        let observers = subject.get_resource_observers(resource_path).unwrap();
         assert_eq!(observers.len(), 0);
     }
 }
