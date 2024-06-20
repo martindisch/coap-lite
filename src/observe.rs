@@ -220,9 +220,7 @@ mod test {
         let mut subject: Subject<Endpoint> = Subject::default();
         subject.register(&request);
 
-        let observers = subject
-            .get_resource_observers(resource_path)
-            .unwrap();
+        let observers = subject.get_resource_observers(resource_path).unwrap();
 
         assert_eq!(observers.len(), 1);
     }
@@ -249,9 +247,7 @@ mod test {
         subject.register(&request1);
         subject.register(&request2);
 
-        let observers = subject
-            .get_resource_observers(resource_path)
-            .unwrap();
+        let observers = subject.get_resource_observers(resource_path).unwrap();
 
         assert_eq!(observers.len(), 1);
 
@@ -281,9 +277,8 @@ mod test {
         assert!(sequence2 > sequence1);
 
         {
-            let observers = subject
-                .get_resource_observers(resource_path)
-                .unwrap();
+            let observers =
+                subject.get_resource_observers(resource_path).unwrap();
             let observer = observers.first().unwrap();
 
             assert_eq!(observer.unacknowledged_messages, 1);
@@ -299,9 +294,8 @@ mod test {
         subject.acknowledge(&ack);
 
         {
-            let observers = subject
-                .get_resource_observers(resource_path)
-                .unwrap();
+            let observers =
+                subject.get_resource_observers(resource_path).unwrap();
             let observer = observers.first().unwrap();
 
             assert_eq!(observer.unacknowledged_messages, 0);
@@ -330,9 +324,7 @@ mod test {
         subject.resource_changed(resource_path, 5);
         subject.resource_changed(resource_path, 6);
 
-        let observers = subject
-            .get_resource_observers(resource_path)
-            .unwrap();
+        let observers = subject.get_resource_observers(resource_path).unwrap();
 
         assert_eq!(observers.len(), 0);
     }
