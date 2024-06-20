@@ -212,7 +212,7 @@ impl<Endpoint: Ord + Clone> BlockHandler<Endpoint> {
             .message
             .get_first_option_as::<BlockValue>(CoapOption::Block2)
             .and_then(|x| x.ok());
-        state.last_request_block2 = maybe_block2.clone();
+        state.last_request_block2.clone_from(&maybe_block2);
 
         if let Some(block2) = maybe_block2 {
             if let Some(ref response) = state.cached_response {
