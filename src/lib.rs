@@ -127,7 +127,6 @@
 #[macro_use]
 extern crate alloc;
 
-#[cfg_attr(tarpaulin, skip)]
 pub mod error;
 
 #[cfg(feature = "std")]
