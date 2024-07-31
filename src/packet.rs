@@ -348,7 +348,7 @@ impl From<ObserveOption> for usize {
 }
 
 /// The CoAP packet.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Packet {
     pub header: Header,
     token: Vec<u8>,

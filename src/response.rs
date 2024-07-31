@@ -4,7 +4,7 @@ use crate::{
 };
 
 /// The CoAP response.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CoapResponse {
     pub message: Packet,
 }

@@ -253,7 +253,7 @@ pub enum MessageType {
 }
 
 /// The message header.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Header {
     ver_type_tkl: u8,
     pub code: MessageClass,

@@ -14,7 +14,7 @@ use crate::{
 };
 
 /// The CoAP request.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CoapRequest<Endpoint> {
     pub message: Packet,
     pub response: Option<CoapResponse>,
