@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.0] - 2024-07-31
+
+### Features
+
+- [**breaking**] Make observe notifications optionally confirmable ([cf15358](https://github.com/martindisch/coap-lite/commit/cf1535839d79f468beb685d3aed0df6fd2aff1dc))
+- Derive PartialEq for some structs ([3ca88e7](https://github.com/martindisch/coap-lite/commit/3ca88e743d4324f9d0947eb744060bea552ec94d))
+
+### Bug Fixes
+
+- Remove unexpected cfg condition ([503cd88](https://github.com/martindisch/coap-lite/commit/503cd8838eedad3234b38538cd3fb089d683574a))
+
 ## [0.12.0] - 2024-04-29
 
 ### Bug Fixes
