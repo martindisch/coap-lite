@@ -311,12 +311,12 @@ impl<'a> Iterator for LinkFormatParser<'a> {
             attr_keys[..attr_len].trim_end_matches(LINK_SEPARATOR_CHAR);
 
         self.inner = iter.as_str();
-        return Some(Ok((
+        Some(Ok((
             link_ref,
             LinkAttributeParser {
                 inner: attr_keys.trim_matches(ATTR_SEPARATOR_CHAR),
             },
-        )));
+        )))
     }
 }
 
@@ -391,7 +391,7 @@ impl<'a> Iterator for LinkAttributeParser<'a> {
             (attr_str, "")
         };
 
-        return Some((key.trim(), Unquote::new(value.trim())));
+        Some((key.trim(), Unquote::new(value.trim())))
     }
 }
 
@@ -430,9 +430,9 @@ enum UnquoteState {
     Quoted,
 }
 
-impl<'a> Eq for Unquote<'a> {}
+impl Eq for Unquote<'_> {}
 
-impl<'a> PartialEq for Unquote<'a> {
+impl PartialEq for Unquote<'_> {
     fn eq(&self, other: &Self) -> bool {
         let self_s = self.inner.as_str();
         let other_s = other.inner.as_str();
@@ -448,9 +448,9 @@ impl<'a> From<Unquote<'a>> for Cow<'a, str> {
     }
 }
 
-impl<'a> FusedIterator for Unquote<'a> {}
+impl FusedIterator for Unquote<'_> {}
 
-impl<'a> Display for Unquote<'a> {
+impl Display for Unquote<'_> {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         self.clone().try_for_each(|c| f.write_char(c))
     }
@@ -499,7 +499,7 @@ impl<'a> Unquote<'a> {
     }
 }
 
-impl<'a> Iterator for Unquote<'a> {
+impl Iterator for Unquote<'_> {
     type Item = char;
 
     #[inline]
@@ -633,7 +633,7 @@ pub struct LinkAttributeWrite<'a, 'b, T: ?Sized>(
     &'b mut LinkFormatWrite<'a, T>,
 );
 
-impl<'a, 'b, T: Write + ?Sized> LinkAttributeWrite<'a, 'b, T> {
+impl<T: Write + ?Sized> LinkAttributeWrite<'_, '_, T> {
     /// Prints just the key and an equals sign, prefixed with ';'
     fn internal_attr_key_eq(&mut self, key: &str) {
         debug_assert!(key

@@ -56,7 +56,7 @@ impl<'a> Iterator for MessageOptionAdapter<'a> {
     }
 }
 
-impl<'a> coap_message::MessageOption for MessageOption<'a> {
+impl coap_message::MessageOption for MessageOption<'_> {
     fn number(&self) -> u16 {
         self.number
     }
