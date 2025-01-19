@@ -64,7 +64,7 @@ impl TryFrom<&[u8]> for HeaderRaw {
 }
 
 /// The detailed class (request/response) of a message with the code.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum MessageClass {
     Empty,
     Request(RequestType),
@@ -192,7 +192,7 @@ impl fmt::Display for MessageClass {
 }
 
 /// The request codes.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum RequestType {
     Get,
     Post,
@@ -205,7 +205,7 @@ pub enum RequestType {
 }
 
 /// The response codes.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum ResponseType {
     // 200 Codes
     Created,
@@ -241,6 +241,13 @@ pub enum ResponseType {
     HopLimitReached,
 
     UnKnown,
+}
+
+impl ResponseType {
+    pub fn is_error(&self) -> bool {
+        MessageClass::Response(*self)
+            >= MessageClass::Response(ResponseType::BadRequest)
+    }
 }
 
 /// The message types.
@@ -417,5 +424,14 @@ mod test {
         assert_eq!(MessageType::NonConfirmable, h.get_type());
         h.set_type(MessageType::Reset);
         assert_eq!(MessageType::Reset, h.get_type());
+    }
+
+    #[test]
+    fn is_error() {
+        assert!(!ResponseType::Created.is_error());
+        assert!(!ResponseType::Continue.is_error());
+        assert!(ResponseType::BadRequest.is_error());
+        assert!(ResponseType::TooManyRequests.is_error());
+        assert!(ResponseType::HopLimitReached.is_error());
     }
 }
