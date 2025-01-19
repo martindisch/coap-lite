@@ -243,6 +243,13 @@ pub enum ResponseType {
     UnKnown,
 }
 
+impl ResponseType {
+    pub fn is_error(&self) -> bool {
+        MessageClass::Response(*self)
+            >= MessageClass::Response(ResponseType::BadRequest)
+    }
+}
+
 /// The message types.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MessageType {
@@ -417,5 +424,14 @@ mod test {
         assert_eq!(MessageType::NonConfirmable, h.get_type());
         h.set_type(MessageType::Reset);
         assert_eq!(MessageType::Reset, h.get_type());
+    }
+
+    #[test]
+    fn is_error() {
+        assert!(!ResponseType::Created.is_error());
+        assert!(!ResponseType::Continue.is_error());
+        assert!(ResponseType::BadRequest.is_error());
+        assert!(ResponseType::TooManyRequests.is_error());
+        assert!(ResponseType::HopLimitReached.is_error());
     }
 }
