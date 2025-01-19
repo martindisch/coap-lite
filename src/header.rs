@@ -64,7 +64,7 @@ impl TryFrom<&[u8]> for HeaderRaw {
 }
 
 /// The detailed class (request/response) of a message with the code.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum MessageClass {
     Empty,
     Request(RequestType),
@@ -192,7 +192,7 @@ impl fmt::Display for MessageClass {
 }
 
 /// The request codes.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum RequestType {
     Get,
     Post,
@@ -205,7 +205,7 @@ pub enum RequestType {
 }
 
 /// The response codes.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub enum ResponseType {
     // 200 Codes
     Created,
