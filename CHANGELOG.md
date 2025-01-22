@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.1] - 2025-01-22
+
+### Features
+
+- Derive PartialOrd for ResponseType ([4a45bd5](https://github.com/martindisch/coap-lite/commit/4a45bd5c74bc08665c7ad9962ac018446543a452))
+- Implement is_error() for ResponseType ([41e3bea](https://github.com/martindisch/coap-lite/commit/41e3beabd9db25ac5b6ff2d0bca055d3b9a49a73))
+
 ## [0.13.0] - 2024-07-31
 
 ### Features
