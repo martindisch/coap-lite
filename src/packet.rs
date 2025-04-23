@@ -562,7 +562,9 @@ impl Packet {
                                 idx,
                                 idx + 1,
                                 u16
-                            )).checked_add(269).ok_or(MessageError::InvalidOptionDelta)?;
+                            ))
+                            .checked_add(269)
+                            .ok_or(MessageError::InvalidOptionDelta)?;
                             idx += 2;
                         }
                         15 => {
@@ -591,7 +593,10 @@ impl Packet {
                                 idx,
                                 idx + 1,
                                 u16
-                            )).checked_add(269).ok_or(MessageError::InvalidOptionLength)?).into();
+                            ))
+                            .checked_add(269)
+                            .ok_or(MessageError::InvalidOptionLength)?)
+                            .into();
                             idx += 2;
                         }
                         15 => {
@@ -1035,7 +1040,10 @@ mod test {
         let output = Packet::from_bytes(&bytes).unwrap();
         assert_eq!(output.options().len(), 2);
         assert_eq!(output.get_first_option(option_1), Some(vec![0]).as_ref());
-        assert_eq!(output.get_first_option(option_258), Some(vec![1]).as_ref());
+        assert_eq!(
+            output.get_first_option(option_258),
+            Some(vec![1]).as_ref()
+        );
     }
 
     #[test]
