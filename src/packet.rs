@@ -528,7 +528,7 @@ impl Packet {
                 let token = buf[4..options_start].to_vec();
 
                 let mut idx = options_start;
-                let mut options_number = 0;
+                let mut options_number = 0u16;
                 let mut options: BTreeMap<u16, LinkedList<Vec<u8>>> =
                     BTreeMap::new();
                 while idx < buf.len() {
@@ -549,7 +549,7 @@ impl Packet {
                             if idx >= buf.len() {
                                 return Err(MessageError::InvalidOptionLength);
                             }
-                            delta = (buf[idx] + 13).into();
+                            delta = buf[idx] as u16 + 13;
                             idx += 1;
                         }
                         14 => {
@@ -562,7 +562,7 @@ impl Packet {
                                 idx,
                                 idx + 1,
                                 u16
-                            )) + 269;
+                            )).checked_add(269).ok_or(MessageError::InvalidOptionDelta)?;
                             idx += 2;
                         }
                         15 => {
@@ -591,8 +591,7 @@ impl Packet {
                                 idx,
                                 idx + 1,
                                 u16
-                            )) + 269)
-                                as usize;
+                            )).checked_add(269).ok_or(MessageError::InvalidOptionLength)?).into();
                             idx += 2;
                         }
                         15 => {
@@ -601,7 +600,9 @@ impl Packet {
                         _ => {}
                     };
 
-                    options_number += delta;
+                    options_number = options_number
+                        .checked_add(delta)
+                        .ok_or(MessageError::InvalidOptionDelta)?;
 
                     let end = idx + length;
                     if end > buf.len() {
@@ -1013,5 +1014,67 @@ mod test {
         assert_eq!(packet.to_bytes(), Err(MessageError::InvalidPacketLength));
         assert!(packet.to_bytes_with_limit(1380).is_ok());
         assert!(packet.to_bytes_unlimited().is_ok());
+    }
+
+    #[test]
+    fn option_delta_u8_overflow() {
+        // Build a packet with options 1 and 258, which have a delta of 257.
+        // Although 257 does not fit into a u8, it does fit into the
+        // 1-byte extended option delta, because that is biased by 13.
+        //
+        // coap_lite 0.13.1 and earlier decoded this delta incorrectly.
+        let mut input = Packet::new();
+        let option_1 = CoapOption::IfMatch;
+        let option_258 = CoapOption::NoResponse;
+
+        input.add_option(option_1, vec![0]);
+        input.add_option(option_258, vec![1]);
+        let bytes = input.to_bytes().unwrap();
+
+        // Verify everything round-trips
+        let output = Packet::from_bytes(&bytes).unwrap();
+        assert_eq!(output.options().len(), 2);
+        assert_eq!(output.get_first_option(option_1), Some(vec![0]).as_ref());
+        assert_eq!(output.get_first_option(option_258), Some(vec![1]).as_ref());
+    }
+
+    #[test]
+    fn reject_excessive_option_delta() {
+        // The 2-byte extended option delta field is biased by 269, and
+        // therefore can represent values as high as 0x1_010C. Deltas
+        // larger than 0x0_FFFF are illegal and should be rejected.
+        //
+        // coap_lite 0.13.1 and earlier did not reject this input and
+        // instead presented an incorrect set of options.
+        let bytes = [
+            // header
+            0x40, 0x01, 0x00, 0x00,
+            // option delta = 0x1_0000, option length = 0
+            0xe0, 0xfe, 0xf3,
+        ];
+
+        let result = Packet::from_bytes(&bytes);
+        assert_eq!(result, Err(MessageError::InvalidOptionDelta));
+    }
+
+    #[test]
+    fn reject_excessive_option_number() {
+        // It's possible to arrive at an option number > 0xFFFF by
+        // adding deltas. Option numbers > 0xFFFF are illegal and
+        // should be rejected.
+        //
+        // coap_lite 0.13.1 and earlier did not reject this input and
+        // instead presented an incorrect set of options.
+        let bytes = [
+            // header
+            0x40, 0x01, 0x00, 0x00,
+            // option delta = 0xFFFF, option length = 0
+            0xe0, 0xfe, 0xf2,
+            // option delta = 0x01, option length = 0
+            0x10,
+        ];
+
+        let result = Packet::from_bytes(&bytes);
+        assert_eq!(result, Err(MessageError::InvalidOptionDelta));
     }
 }
