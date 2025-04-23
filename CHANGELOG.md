@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.2] - 2025-04-23
+
+### Bug Fixes
+
+- Handle integer overflow in option delta and length (#44) ([e5cf583](https://github.com/martindisch/coap-lite/commit/e5cf5839b4a4c800c5ce57e8863c5afb564ba345))
+
 ## [0.13.1] - 2025-01-22
 
 ### Features
