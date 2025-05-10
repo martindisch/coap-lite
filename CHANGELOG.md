@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.13.3] - 2025-05-10
+
+### Bug Fixes
+
+- Return all known codes from CoapResponse.get_status (#45) ([0a32eb4](https://github.com/martindisch/coap-lite/commit/0a32eb453283b07d82989ec77d18e382720addf8))
+
 ## [0.13.2] - 2025-04-23
 
 ### Bug Fixes
